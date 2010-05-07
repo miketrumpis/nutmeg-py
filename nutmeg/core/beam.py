@@ -1,11 +1,11 @@
+__docformat__ = 'restructuredtext'
 import os
 import numpy as np
 from nipy.core import api as ni_api
-from nutmeg.external import descriptors as desc
-# want to be rid of these eventually
-from nutmeg.core.coordinate_grids import BEAM_space, MNI_space
 
-__docformat__ = 'restructuredtext'
+
+from nutmeg.external import descriptors as desc
+from nutmeg.core import BEAM_SPACE_LEFT, BEAM_SPACE_POST, BEAM_SPACE_INF
 
 legacy_argnames = {'sig': ('sig', 's')}
 legacy_kwnames = {}
@@ -85,10 +85,24 @@ def search_any_pybeam(recarr, name):
 ## ##             kws['fixed_comparison'] = 'unknown'
 ##         return class_type(*args, **kws)
 
-class coreg(object):
+class MEG_coreg(object):
+    """A light class to keep track of MEG-to-MRI coregistration information
+    """
     _argnames = ['mrpath', 'norm_mrpath', 'affine', 'fiducials']
     
     def __init__(self, mrpath, norm_mrpath, affine, fiducials):
+        """
+        Parameters
+        ----------
+        mrpath : str
+          Path to coregistered MRI file
+        norm_mrpath : str
+          Path to coregistered normalized MRI file (???)
+        affine : ndarray
+          4x4 affine transformation matrix from MEG coords to MRI coords
+        fiducials : ndarray
+          3 3-vectors of fiducial locations (???)
+        """
         self.mrpath = str(mrpath)
         self.norm_mrpath = str(norm_mrpath)
         if not affine.dtype.isbuiltin:
@@ -109,26 +123,48 @@ class coreg(object):
     @staticmethod
     def from_array(a):
         a = a.reshape(1)
-        args = (a[n][0] for n in coreg._argnames)
-        return coreg(*args)
+        args = (a[n][0] for n in MEG_coreg._argnames)
+        return MEG_coreg(*args)
 
     @staticmethod
     def from_mat_struct(m):
-##         m = m.reshape(1)
+        """Create a MEG_coreg object from the coreg record array created
+        by scipy.io when reading in a beam file
+        """
         fields = m.dtype.names
         mrpath = m['mripath'][0] if 'mripath' in fields else ''
         norm_mr = m['norm_mripath'][0] if 'norm_mripath' in fields else ''
         tfm = m['meg2mri_tfm'] if 'meg2mri_tfm' in fields else np.eye(4)
         fid = m['fiducials_mri_mm'] \
               if 'fiducials_mri_mm' in fields else np.eye(4)
-        return coreg(mrpath, norm_mr, tfm, fid)
+        return MEG_coreg(mrpath, norm_mr, tfm, fid)
 
 class Beam(object):
-
+    """The basic MEG Beam object for Nutmeg.
+    """
     _argnames = ['voxelsize', 'voxels', 'srate', 'timepts', 'sig', 'coreg']
     _kwnames = ['coordmap'] 
     def __init__(self, voxelsize, voxels, srate, timepts,
                  sig, coreg, coordmap=None):
+        """
+        Parameters
+        ----------
+        voxelsize : len-3 iterable
+          the voxel edge lengths
+        voxels : ndarray shaped (nvox, 3)
+          the voxel coordinates, in this Beam's target coordinate space
+        srate : float
+          the sampling rate of the MEG time series
+        timepts : ndarray
+          the sample times
+        sig : ndarray
+          the MEG signal data
+        coreg : MEG_coreg object
+          the MEG-to-MRI coregistration info
+        coordmap : NIPY Affine object
+          the MEG voxel index coordinate to voxel location coordinate mapping
+
+        """
         self.voxelsize = voxelsize.astype('d')
         self.voxels = voxels.astype('d')
         self.vox_lookup = dict(((tuple(vx), n) for n, vx in enumerate(voxels)))
@@ -139,14 +175,22 @@ class Beam(object):
         self.timepts = timepts
         self.coreg = coreg # still just a bucket!
         if coordmap is None:
-            v_offset = np.array([BEAM_space.left, BEAM_space.post,
-                             BEAM_space.inf], 'd')
+            v_offset = np.array([BEAM_SPACE_LEFT, BEAM_SPACE_POST,
+                                 BEAM_SPACE_INF], 'd')
             coordmap = ni_api.Affine.from_start_step('ijk', 'xyz',
                                                      v_offset,
-                                                     self.voxelsize.astype('f'))
+                                                     self.voxelsize.astype('d'))
         self.coordmap = coordmap
 
     def vox_lookup_from_mr(self, vox):
+        """Given a location in the coregistered MRI space, return
+        the index into this Beam's voxels list.
+
+        Parameters
+        ----------
+        vox : len-3 iterable
+          the MRI space location coordinate
+        """
         meg_vox = self.coreg.meg2mri.inverse(vox)
         vol_idx = self.coordmap.inverse(meg_vox)
         all_idx = self.voxel_indices
@@ -157,22 +201,15 @@ class Beam(object):
             return a[0,0]
         return -1
 
-        
-##         dist = ( (self.voxels - meg_vox)**2 ).sum(axis=-1)
-##         vidx = np.argmin(dist)
-##         dist = np.abs(meg_vox - self.voxels[vidx])
-##         print 'looking up', vox, '-->', meg_vox, 'closest to', self.voxels[vidx], dist
-##         if (dist > self.voxelsize).any():
-## ##             raise ValueError('voxel not close to MEG grid')
-##             return -1
-##         return vidx
-## ##         return np.argmin(((self.voxels-meg_vox)**2).sum(axis=0))
-
     def save(self, fpath):
+        """Save this Beam as a numpy file type
+        """
         np.save(fpath, self._to_recarray())
 
     @classmethod
     def from_npy_file(class_type, npyfile, **kwargs):
+        """Create a new Beam-ish object from a numpy file
+        """
         rec_arr = np.load(npyfile)
         if os.path.splitext(npyfile)[-1] == '.npz':
             # this was a npz file?
@@ -237,101 +274,3 @@ def cmap_from_params(arr):
                                      arr['outcoord'][0],
                                      arr['affine'][0].astype('f'))
 
-def signal_array_to_masked_vol(sig, vox_indices,
-                               grid_shape=[],
-                               prior_mask=None,
-                               **ma_kw):
-    """Make a 3D array representing a mask for valid voxels locations,
-    given an array of voxel indices.
-
-    Parameters
-    ----------
-    sig : ndarray
-        nvox x [num_measures] array of signal measurements, whose spatial
-        order is given by the corresponding (following) voxel array
-    vox_indices : ndarray
-        nvox x 3 array of voxel indices (NOT voxel locations in MNI space)
-    grid_shape : list (optional)
-        an list of dimension extents, eg [imax, jmax, kmax]
-    prior_mask : array-like (optional)
-        an nvox length array indicating points to mask in the final volume
-        (True = unmasked, opposite of MaskedArray convention)
-    ma_kw : dict
-        Keyword arguments for np.ma.masked_array
-
-    Returns
-    -------
-    s_masked : a numpy MaskedArray, with non-map voxels masked out
-    """
-    if not grid_shape:
-        if not len(sig):
-            return np.ma.masked_array(np.empty((1,1,1)),
-                                      mask=np.ones((1,1,1), dtype=np.bool),
-                                      **ma_kw)
-        ix, jx, kx = map(lambda x: x+1, vox_indices.max(axis=0))
-    else:
-        ix, jx, kx = grid_shape
-
-    vmask = np.ones((ix,jx,kx) + sig.shape[1:], np.bool)
-    s = np.zeros((ix,jx,kx) + sig.shape[1:], sig.dtype)
-
-    if prior_mask is not None:
-        i, j, k = vox_indices[prior_mask].T
-        sig = sig[prior_mask]
-    else:
-        i, j, k = vox_indices.T
-
-    flat_idx = i*(jx*kx) + j*kx + k
-
-    if sig.shape[1:]:
-        # then we need to add more indices
-        vx = np.product(sig.shape[1:])
-        v = np.arange(vx)
-        flat_idx *= vx
-        flat_idx += v
-
-    s.flat[flat_idx] = sig
-    vmask.flat[flat_idx] = False
-    return np.ma.masked_array(s, mask=vmask, **ma_kw)
-
-## def signal_array_to_masked_vol(sig, vox_indices,
-##                                grid_shape=[],
-##                                prior_mask=None):
-##     """Make a 3D array representing a mask for valid voxels locations,
-##     given an array of voxel indices.
-
-##     Parameters
-##     ----------
-##     sig : ndarray
-##         nvox x [num_measures] array of signal measurements, whose spatial
-##         order is given by the corresponding (following) voxel array
-##     vox_indices : ndarray
-##         nvox x 3 array of voxel indices (NOT voxel locations in MNI space)
-##     grid_shape : list (optional)
-##         an list of dimension extents, eg [imax, jmax, kmax]
-##     prior_mask : array-like (optional)
-##         an nvox length array indicating points to mask in the final volume
-
-##     Returns
-##     -------
-##     s_masked : a numpy MaskedArray, with non-map voxels masked out
-##     """
-##     if prior_mask is None:
-##         # cheap generator to unmask every point
-##         prior_mask = (False for x in xrange(len(sig)))
-##     elif prior_mask.shape != (sig.shape[0],):
-##         raise ValueError('mask shape does not match signal shape')
-##     if not grid_shape:
-##         ix, jx, kx = map(lambda x: x+1, vox_indices.max(axis=0))
-##     else:
-##         ix, jx, kx = grid_shape
-##     vmask = np.ones((ix,jx,kx) + sig.shape[1:], np.bool)
-##     s = np.empty((ix,jx,kx) + sig.shape[1:], sig.dtype)
-
-##     # iterating over 1st dimension of sig yields blocks of all other dims,
-##     # so assignment of s[i,j,k] = sig[n] works for any number of signal dims
-##     for ((i,j,k), scl, block) in zip(vox_indices, sig, prior_mask):
-##         vmask[i,j,k] = block
-##         s[i,j,k] = scl
-##     s_masked = np.ma.masked_where(vmask, s)
-##     return s_masked

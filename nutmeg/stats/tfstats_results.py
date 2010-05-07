@@ -8,6 +8,14 @@ from nutmeg.core import tfbeam
 import nutmeg.stats.stats_utils as su
 
 def load_tf_snpm_stats(avg_beam, snpm_arrays):
+    """Loads a TimeFreqSnPMResults
+
+    Parameters
+    ----------
+    avg_beam : a path or TFBeam-ish object
+
+    snpm_arrays : a path or ndarray of SnPM data
+    """
     avg_beam = tfbeam.load_tfbeam(avg_beam)
     if type(snpm_arrays) in (str, unicode):
         ext_type = os.path.splitext(snpm_arrays)[-1]

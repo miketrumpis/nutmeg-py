@@ -53,9 +53,20 @@ def map_t(np.ndarray[np.npy_double, ndim=1] t,
     CDF[t] --> n*(dp) := order{ tm | (tm in M) and tm < t } / order{M}
 
     Given quantized p values in the set { n*(dp) } for some n in [0,1/dp)
-    and corresponding test values, his method attempts to roughly invert
+    and corresponding test values, this method attempts to roughly invert
     the relationship of the CDF.
 
+    Parameters
+    ----------
+    t : ndarray
+      A set of test statistic values
+    pvals : ndarray
+      measures of (1-CDF[t])
+
+    Returns
+    -------
+    (edges, pbins)
+    the inverse relationship F{pbins} = edges
     """
     nbins = int(1.0/dp)
     cdef np.ndarray[np.npy_double, ndim=1] pbins = \

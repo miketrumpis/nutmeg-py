@@ -1,5 +1,6 @@
 __docformat__ = 'restructuredtext'
 
+fft_notes = \
 """
 This module provides N-D FFTs for functions taken on the interval
 n = [-N/2, ..., N/2-1] in all transformed directions. This is accomplished
@@ -16,20 +17,133 @@ from nutmeg.utils import loads_extension_on_call
 #______________________ Some convenience wrappers ___________________________
 
 def fft1(a, shift=True, inplace=False, axis=-1):
+    """Perform a forward FFT on a given axis
+
+    Parameters
+    ----------
+    a : ndarray
+      the N-dimensional data
+    shift : bool, default=True
+      whether to consider the origin of FFT axis to be in the center
+      or the beginning.
+    inplace : bool, default=False
+      whether to compute the FFT inplace
+    axis : int, default=-1
+      the data axis to transform
+
+    Returns
+    -------
+    Transformed array if inplace==False
+    """
     return _fftn(a, axes=(axis,), shift=shift, inplace=inplace)
 
 def ifft1(a, shift=True, inplace=False, axis=-1):
+    """Perform an inverse FFT on a given axis
+
+    Parameters
+    ----------
+    a : ndarray
+      the N-dimensional data
+    shift : bool, default=True
+      whether to consider the origin of FFT axis to be in the center
+      or the beginning.
+    inplace : bool, default=False
+      whether to compute the FFT inplace
+    axis : int, default=-1
+      the data axis to transform
+
+    Returns
+    -------
+    Transformed array if inplace==False
+    """
+
     return _ifftn(a, axes=(axis,), shift=shift, inplace=inplace)
 
 def fft2(a, shift=True, inplace=False, axes=(-2,-1)):
+    """Perform a forward FFT on two given axes
+
+    Parameters
+    ----------
+    a : ndarray
+      the N-dimensional data
+    shift : bool, default=True
+      whether to consider the origin of FFT axes to be in the center
+      or the beginning.
+    inplace : bool, default=False
+      whether to compute the FFT inplace
+    axes : len-2 iterable of ints, default=(-2,-1)
+      the data axess to transform
+
+    Returns
+    -------
+    Transformed array if inplace==False
+    """
     return _fftn(a, axes=axes, shift=shift, inplace=inplace)    
 
 def ifft2(a, shift=True, inplace=False, axes=(-2,-1)):
+    """Perform an inverse FFT on two given axes
+
+    Parameters
+    ----------
+    a : ndarray
+      the N-dimensional data
+    shift : bool, default=True
+      whether to consider the origin of FFT axes to be in the center
+      or the beginning.
+    inplace : bool, default=False
+      whether to compute the FFT inplace
+    axes : len-2 iterable of ints, default=(-2,-1)
+      the data axess to transform
+
+    Returns
+    -------
+    Transformed array if inplace==False
+    """
+    return _ifftn(a, axes=axes, shift=shift, inplace=inplace)
+
+def fftn(a, shift=True, inplace=False, axes=(-1)):
+    """Perform a forward FFT on any given axes
+
+    Parameters
+    ----------
+    a : ndarray
+      the N-dimensional data
+    shift : bool, default=True
+      whether to consider the origin of FFT axes to be in the center
+      or the beginning.
+    inplace : bool, default=False
+      whether to compute the FFT inplace
+    axes : len-n iterable of ints, default=(-1,)
+      the data axess to transform
+
+    Returns
+    -------
+    Transformed array if inplace==False
+    """
+    return _fftn(a, axes=axes, shift=shift, inplace=inplace)
+
+def ifftn(a, shift=True, inplace=False, axes=(-1)):
+    """Perform an inverse FFT on any given axes
+
+    Parameters
+    ----------
+    a : ndarray
+      the N-dimensional data
+    shift : bool, default=True
+      whether to consider the origin of FFT axes to be in the center
+      or the beginning.
+    inplace : bool, default=False
+      whether to compute the FFT inplace
+    axes : len-n iterable of ints, default=(-1,)
+      the data axess to transform
+
+    Returns
+    -------
+    Transformed array if inplace==False
+    """
     return _ifftn(a, axes=axes, shift=shift, inplace=inplace)
 #____________________________________________________________________________
 
-## if fftw_info and sys.platform != 'win32':
-##     @loads_extension_on_call('fft_ext', locals())
 try:
     import fft_ext    
     def _fftn(a, axes=(-1,), shift=1, inplace=0, fft_sign=-1):

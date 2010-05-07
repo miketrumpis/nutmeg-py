@@ -15,11 +15,9 @@ from nutmeg.stats import snpm_testing as snpm
 from nutmeg.stats.tfstats_results import TimeFreqSnPMResults
 from nutmeg.numutils import calc_fft_grid_and_map
 
-# want to be rid of these eventually-- can replace with ArrayCoordMap
-from nutmeg.core.coordinate_grids import BEAM_space, MNI_space
-
 def find_vox_intersection(vox_lists):
-    """ Find the interesction of all voxel coordinates in vox_lists.
+    """
+    Find the interesction of all voxel coordinates in vox_lists.
 
     Parameters
     ----------
@@ -60,7 +58,8 @@ def find_vox_intersection(vox_lists):
     return inter_vox, vox_idx
 
 class BeamComparator(object):
-    """ This class will manage beam comparisons among conditions or across
+    """
+    This class will manage beam comparisons among conditions or across
     conditions. For any comparison specified, it will prune the voxels in
     each beam such that all voxels intersect with each other, and also with
     the MNI voxel space.
@@ -133,7 +132,8 @@ class BeamComparator(object):
         return bl
         
     def align_voxels(self, align_all=False):
-        """ The "prototype" of align_voxels() aligns voxels across
+        """
+        The "prototype" of align_voxels() aligns voxels across
         subjects at each condition. All resulting data are dicts keyed
         by condition.
 
@@ -156,11 +156,8 @@ class BeamComparator(object):
             voxels list of each beam.
         """
 
-##         if align_all:
-##             super(BeamActivationAverager, self).align_voxels()
-##             return
         vs = self.beams[0].voxelsize
-        mni_vox, _ = BEAM_space.voxel_list(vs)
+        mni_vox = full_beam_coords(vs)
         self.inter_vox = {}
         self.mni_voxel_map = {}
         self.beam_voxel_maps = {}
@@ -198,7 +195,8 @@ class BeamComparator(object):
 ##             b.voxels = b.voxels[m]
 
     def compare(self, conditions=[]):
-        """ prototype
+        """
+        prototype
         
         Returns
         -------
@@ -216,7 +214,8 @@ class BeamComparator(object):
 
     @classmethod
     def from_matlab_ptr_file(class_type, mfile, **kwargs):
-        """This method creates a BeamComparator-type object from a MATLAB
+        """
+        This method creates a BeamComparator-type object from a MATLAB
         (or NUTMEG) pointer file.
 
         ex: (a shallow sublass of BeamComparitor)
@@ -252,8 +251,8 @@ class BeamComparator(object):
 
 
     def beam(self, cond, subj):
-        """Returns the beam object corresponding to a given condition and
-        subject.
+        """
+        Returns the beam object corresponding to a given condition and subject.
         """
         c_map = self.c_labels == cond
         s_map = self.s_labels == subj
@@ -263,7 +262,8 @@ class BeamComparator(object):
         return self.beams[beam_idx]
         
     def beam_sig(self, cond, subj):
-        """Returns the signal from the beam indexed by (cond, subj).
+        """
+        Returns the signal from the beam indexed by (cond, subj).
         Importantly, returned samples of the function s(vox) ordered in
         a consistent voxel ordering
         """
@@ -277,12 +277,14 @@ class BeamComparator(object):
         return beam.s[m]    
 
 class BeamActivationAverager(BeamComparator):
-    """This BeamComparator looks at the activation in a given condition for
+    """
+    This BeamComparator looks at the activation in a given condition for
     a group of subjects.
     """
 
     def beam_sig(self, cond, subj):
-        """Returns the signal from the beam indexed by (cond, subj).
+        """
+        Returns the signal from the beam indexed by (cond, subj).
         Importantly, returned samples of the function s(vox) ordered in
         a consistent voxel ordering
         """
@@ -292,7 +294,8 @@ class BeamActivationAverager(BeamComparator):
         return b.s[m]
 
     def compare(self, conditions=[]):
-        """ Returns a list of activations, and an average activation for
+        """
+        Returns a list of activations, and an average activation for
         each condition specified
         """
         if type(conditions) is not list:
@@ -330,14 +333,16 @@ class BeamActivationAverager(BeamComparator):
             
 
 class BeamContrastAverager(BeamComparator):
-    """This BeamComparator looks at the contrast between conditions for a
+    """
+    This BeamComparator looks at the contrast between conditions for a
     group of subjects.
     """
 
     # Uses default voxel alignment across condition and subject
 
     def compare(self, conditions=[]):
-        """ Returns a contrast beam for each subject, for each condition pair
+        """
+        Returns a contrast beam for each subject, for each condition pair
         specified, as well as an average contrast beam for each condition pair.
         If the conditions are specified as [(a,b)], the contrast is
         beam(a, subj) - beam(b, subj)
@@ -407,7 +412,8 @@ class SnPMTester(object):
         pass
 
     def test(self, correct_tpts=False, correct_fpts=False):
-        """Runs a univariate statistical test at each time-frequency-voxel,
+        """
+        Runs a univariate statistical test at each time-frequency-voxel,
         filling in these measures:
 
         T -- the statistic at each point
@@ -509,7 +515,8 @@ class SnPMTester(object):
 ##             # create new beams
 
 class SnPMOneSampT(SnPMTester):
-    """Performs a one sample t-test on the results of
+    """
+    Performs a one sample t-test on the results of
     beam_comp.compare(conditions=conditions).
     May be a test of activation significance, contrast significance, etc.
 
@@ -518,7 +525,8 @@ class SnPMOneSampT(SnPMTester):
 
     @staticmethod
     def num_observations(condition, c_labels, s_labels):
-        """Find the number of observations in a One Sample SnPM T-test
+        """
+        Find the number of observations in a One Sample SnPM T-test
         set up, for given specs
 
         Parameters
@@ -549,7 +557,8 @@ sn            all subject labels in the comparison (IE, BeamComparator.s_labels)
 ##                  sample_beams = [],
                  force_half_perms=False,
                  init=True):
-        """Sets up an SnPMTester for a 1-sample T test.
+        """
+        Sets up an SnPMTester for a 1-sample T test.
 
         Parameters
         ----------
@@ -630,7 +639,8 @@ tests"""%n_perm
         
 
 class SnPMUnpairedT(SnPMTester):
-    """Performs a t-test of significance between either:
+    """
+    Performs a t-test of significance between either:
     2 conditions listed in conditions (eg: [1, 2])
     2 condition contrasts listed in conditions (eg: [[1,2],[3,4]])
 
@@ -639,7 +649,8 @@ class SnPMUnpairedT(SnPMTester):
     """
     @staticmethod
     def num_observations(cpair, c_labels, s_labels):
-        """Find the number of observations in Unpaired SnPM T-test
+        """
+        Find the number of observations in Unpaired SnPM T-test
         set up, for given specs
 
         Parameters

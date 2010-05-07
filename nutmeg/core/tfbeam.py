@@ -1,7 +1,3 @@
-from nutmeg.core.beam import Beam, signal_array_to_masked_vol, \
-     search_any_pybeam, coreg
-from nutmeg.external import descriptors as desc
-from nutmeg.core import TEMPLATE_MRI_PATH
 from nipy.core import api as ni_api
 from nipy.core.reference.coordinate_map import compose
 import numpy as np
@@ -9,17 +5,11 @@ import os
 import scipy.io as sio
 import warnings as w
 
-## def blockedbylist(l):
-##     def dec(f):
-##         if f.func_name not in l:
-##             return None
-##         def runner(*args, **kwargs):
-##             return f(*args, **kwargs)
-##         for attr in ['func_doc', 'func_name']:
-##             setattr(runner, attr, getattr(f, attr))
-##         return runner
-##     return dec
-        
+from xipy.volume_utils import signal_array_to_masked_vol
+
+from nutmeg.core.beam import Beam, search_any_pybeam, MEG_coreg
+from nutmeg.external import descriptors as desc
+from nutmeg.core import TEMPLATE_MRI_PATH
 
 class TFBeam(Beam):
 
@@ -114,6 +104,10 @@ class TFBeam(Beam):
             self.reinterpret_signal_as(fixed_comparison)
             
     def _init_signal(self, sig, voxels, fcomp):
+        """Try to parse out the signal components and valid voxels in
+        data coming from a variety of sources.
+        """
+        
         # In this case  there are no separable active/control components.
         if len(sig) not in (2,3) and len(sig.dtype) not in (2,3):
             if fcomp:
@@ -121,8 +115,8 @@ class TFBeam(Beam):
             else:
                 raise ValueError(
 """Ambiguous signal argument has only 1 component and no fixed active to noise
-comparison has been specified. Should have at least 2 corresponding to
-(active, control, [noise]).
+comparison has been specified. The signal should have at least 2 components
+corresponding to (active, control, [noise]).
 """)
 
         beam_dtype = np.dtype([('active', np.float64),
@@ -157,47 +151,8 @@ comparison has been specified. Should have at least 2 corresponding to
                     new_sig[f] = sig[f]
                 for f in nomatch:
                     new_sig[f] = np.zeros(sig.shape)
-                sig = new_sig
-                
-                
-##         if fixed_comp:
-##             # In this case a fixed comparison is being used in order
-##             # to reduce the data (and also the memory footprint).
-##             # Calculate the fixed comparison once, and then throw away the
-##             # signal components.
-##             self.sig = sig
-##             self.uses = fixed_comp
-##             # get the attribute name of the fixed comparison
-##             attr = self.__signal_transforms[self.uses]
-##             # compute the comparison, and later return it as "sig"
-##             sig = self.s
-##             # make self.s synonymous with self.sig, and also
-##             # make it the only available trasform/signal
-##             self.__signal_transforms = dict( ((self.uses,'sig'),) )
-##             # remove the old attribute from this object
-##             delattr(self, attr)            
+                sig = new_sig                
         return sig, voxels
-    
-##     @classmethod
-##     def from_npy_file(class_type, npyfile, **kwargs):
-##         rec_arr = np.load(npyfile)
-##         if os.path.splitext(npyfile)[-1] == '.npz':
-##             # this was a npz file?
-##             rec_arr = rec_arr[rec_arr.files[0]]
-
-##         args = (search_any_pybeam(rec_arr, name)[0]
-##                 for name in class_type._argnames)
-##         kws = dict( ((name,search_any_pybeam(rec_arr, name)[0])
-##                      for name in class_type._kwnames) )
-
-##         # this way, the user-defined keywords take precedence of whatever is
-##         # found (or not found) in the record array
-##         kws.update(kwargs)
-##         sig_type = search_any_pybeam(rec_arr, 'sig')[0].dtype
-##         if len(sig_type) not in (2,3) and \
-##                kws['fixed_comparison'] is None:
-##             kws['fixed_comparison'] = 'unknown'
-##         return class_type(*args, **kws)
 
     @classmethod
     def from_mat_file(class_type, matfile, **kwargs):
@@ -224,7 +179,7 @@ comparison has been specified. Should have at least 2 corresponding to
            'fixed_comparison' not in kwargs:
             kwargs['fixed_comparison'] = 'unknown'
 
-        coregi = coreg.from_mat_struct(argdict['coreg'])
+        coregi = MEG_coreg.from_mat_struct(argdict['coreg'])
 
         return class_type(argdict['voxelsize'], argdict['voxels'],
                           argdict['srate'], argdict['timepts'],
@@ -246,14 +201,13 @@ comparison has been specified. Should have at least 2 corresponding to
         # NOTE: written this way, fixed_comp can be "user defined",
         # and doesn't need to be one of the predefined options
         if len(self.sig.dtype) not in (2,3):
-            self.__signal_transforms = dict( ((fixed_comparison, 'sig'),) )
+            self.__signal_transforms = dict(( (fixed_comparison, 'sig'), ))
             self.uses = fixed_comparison
         else:
             # In this case a fixed comparison is being used in order
             # to reduce the data (and also the memory footprint).
             # Calculate the fixed comparison once, and then throw away the
             # signal components.
-            print 'reassigning self.sig and throwing away old data'
             prev_attrs = self.__signal_transforms.values()
             self.uses = fixed_comparison
             self.sig = self.s
@@ -263,14 +217,13 @@ comparison has been specified. Should have at least 2 corresponding to
                     delattr(self, attr)
                 except:
                     pass
-##         if self.uses not in TFBeam.__signal_transforms.keys():
-##             w.warn('This active to control comparison is not a known comparison: %s'%self.uses)
         self.fixed_comparison = fixed_comparison
             
     def get_array_by_name(self, name):
         return getattr(self, self.__signal_transforms[name])
 
     #### A little property magic for run-time control of behavior ####
+    # The "uses" attribute
     def _get_ratio_type(self):
         return self._ratio_type
     def _set_ratio_type(self, name):
@@ -283,6 +236,8 @@ comparison has been specified. Should have at least 2 corresponding to
             w.warn('ratio type %s not available, see TFBeam.signal_transforms'%name)
     uses = property(_get_ratio_type, _set_ratio_type, None,
                     'what type of active-to-control ratio is exposed')
+
+    # The "s" attribute
     def _get_ratio_signal(self):
         return self.get_array_by_name(self.uses)
     s = property(_get_ratio_signal, None, None,
@@ -309,8 +264,8 @@ comparison has been specified. Should have at least 2 corresponding to
         if new_vox is None:
             new_vox = self.voxels
         if multi_subj:
-            coregi = coreg(TEMPLATE_MRI_PATH, TEMPLATE_MRI_PATH,
-                           np.eye(4), self.coreg.fiducials)
+            coregi = MEG_coreg(TEMPLATE_MRI_PATH, TEMPLATE_MRI_PATH,
+                               np.eye(4), self.coreg.fiducials)
         else:
             coregi = self.coreg
         return TFBeam(self.voxelsize, new_vox, self.srate, self.timepts,
@@ -319,6 +274,13 @@ comparison has been specified. Should have at least 2 corresponding to
                       fixed_comparison=fixed_comparison)
 
 def tfbeam_from_file(fname, **kwargs):
+    """Return a TFBeam object from a valid TFBeam file
+
+    Parameters
+    ----------
+    fname : str
+      path to a numpy or MATLAB TFBeam file
+    """
     if not os.path.exists(fname):
         raise ValueError('no such file %s'%fname)
     if os.path.splitext(fname)[-1] in ('.npz', '.npy'):
@@ -327,6 +289,13 @@ def tfbeam_from_file(fname, **kwargs):
         return TFBeam.from_mat_file(fname, **kwargs)
     
 def load_tfbeam(beam):
+    """Return a TFBeam from various descriptions
+
+    Parameters
+    ----------
+    beam : str, or TFBeam
+      Either an exiting TFBeam object, or the path to a valid TFBeam file  
+    """
     if type(beam) in (str, unicode):
         if os.path.splitext(beam)[-1] == '.mat':
             beam = TFBeam.from_mat_file(beam)

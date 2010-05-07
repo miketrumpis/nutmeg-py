@@ -2,24 +2,18 @@ import numpy as np
 import scipy.linalg as la
 from scipy import ndimage
 from nipy.core import api
+
 from nutmeg.numutils import gaussian_smooth
-from nutmeg.core.coordinate_grids import BEAM_space
+from nutmeg.core import full_beam_volume_shape
 
 def rank(a):
     svals = la.svdvals(a)
     tol = np.finfo(a.dtype).eps * np.array(a.shape).max()
     return (svals>tol).sum()
 
-## # this is a little too slow
-## from nipy.algorithms import kernel_smooth
-## def make_MNI_linear_filter(voxelsize, fwhm=10.):
-##     shape = BEAM_space.dim_sizes(voxelsize)
-##     affine = BEAM_space.index2vox_xform(voxelsize)
-##     coordmap = api.Affine.from_params('ijk', 'xyz', affine)
-##     return kernel_smooth.LinearFilter(coordmap, shape, fwhm=fwhm)
-
 class ReGenerator(object):
-    """Acts like a generator, but can be reset to the initial state
+    """
+    Acts like a generator, but can be reset to the initial state
     """
     def __init__(self):
         self._generator = (f for f in [])
@@ -65,7 +59,8 @@ class one_sample_ttest_design_generator(ReGenerator):
         self._generator = (r.reshape(self.n_obs, 1) for r in self.p)
 
 class unpaired_ttest_design_generator(ReGenerator):
-    """ An unpaired T-test design matrix is H*[a,b]^T = X,
+    """
+    An unpaired T-test design matrix is H*[a,b]^T = X,
     where X is [ [tser(i=0,j=0)],
                  [tser(i=1,j=0)],
                  [...], ...] for subjects{i}, conditions{j}
@@ -119,7 +114,8 @@ class unpaired_ttest_design_generator(ReGenerator):
     pass
 
 class anova_design_generator(ReGenerator):
-    """ An ANOVA design matrix is H*[a,b]^T = X,
+    """
+    An ANOVA design matrix is H*[a,b]^T = X,
     where X is [ [tser(i=0,j=0)],
                  [tser(i=0,j=1)],
                  [...], ...] for subjects{i}, conditions{j}
@@ -169,7 +165,7 @@ def snpm_test(meas_arr, dmat_generator, n_perm, good_vox, vox_size,
 ##     vol_size = smoother.bshape
 
     fwhm_pix = np.array([20.,20.,20.])/vox_size
-    vol_size = BEAM_space.dim_sizes(vox_size)
+    vol_size = full_beam_volume_shape(vox_size)
 
     dmat = dmat_generator.next()
     df = n_meas - rank(dmat)
@@ -241,7 +237,7 @@ def snpm_ttest_one_samp_opt(meas_arr, dmat_generator, n_perm, good_vox,
     n_goodvox = len(good_vox)
 
     fwhm_pix = np.array([20., 20., 20.])/vox_size
-    vol_size = BEAM_space.dim_sizes(vox_size)
+    vol_size = full_beam_volume_shape(vox_size)
 
     D = dmat_generator.next()
     df = n_meas - rank(D)
