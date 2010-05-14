@@ -13,7 +13,7 @@ def tfbeam_manager_test():
     win = NmTimeFreqWindow((), (), (), [ [-100,100] ]*3)
     bman = win.func_man
     bman.update_beam(bfile)
-    sres = tfstats_results.load_tf_snpm_stats(bman.beam, bfile)
+    sres = tfstats_results.load_tf_snpm_stats(bfile)
     bman.bstats_manager.stats_results = sres
     win.activate()
     win.show()

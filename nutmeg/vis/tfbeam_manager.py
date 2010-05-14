@@ -375,8 +375,7 @@ class TFBeamManager( OverlayInterface ):
         f = browse_files(None, dialog='Select SnPM Arrays',
                          wildcard='*.mat *.npy *.npz')
         if f:
-            
-            sres = tfstats_results.load_tf_snpm_stats(self.beam, f)
+            sres = tfstats_results.load_tf_snpm_stats(f)
             self.bstats_manager.stats_results = sres
 
     def _rbutton_fired(self):        

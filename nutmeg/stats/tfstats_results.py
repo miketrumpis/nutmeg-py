@@ -5,37 +5,25 @@ from scipy import stats, ndimage
 import xipy.volume_utils as vu
 
 from nutmeg.core import tfbeam
+from nutmeg.utils import array_pickler_mixin
 import nutmeg.stats.stats_utils as su
 
-def load_tf_snpm_stats(avg_beam, snpm_arrays):
+def load_tf_snpm_stats(snpm_array):
     """Loads a TimeFreqSnPMResults
 
     Parameters
     ----------
-    avg_beam : a path or TFBeam-ish object
-
     snpm_arrays : a path or ndarray of SnPM data
     """
-    avg_beam = tfbeam.load_tfbeam(avg_beam)
     if type(snpm_arrays) in (str, unicode):
         ext_type = os.path.splitext(snpm_arrays)[-1]
         if ext_type == '.mat':
-            return adapt_mlab_tf_snpm_stats(snpm_arrays, avg_beam=avg_beam)
+            return adapt_mlab_tf_snpm_stats(snpm_arrays)
         elif ext_type in ('.npz', '.npy'):
-            snpm_arrays = np.load(snpm_arrays)
-            if ext_type == '.npz':
-                # this was a npz file?
-                snpm_arrays = snpm_arrays[snpm_arrays.files[0]]
+            return TimeFreqSnPMResults.load(snpm_array)
         else:
             raise ValueError('did not recognize the file format: '+snpm_arrays)
-    try:
-        t = snpm_arrays[0]['t']
-        p = snpm_arrays[0]['p_vals_uncorr']
-        mxt = snpm_arrays[0]['max_t']
-        mnt = snpm_arrays[0]['min_t']
-    except:
-        raise ValueError("The SnPM array was structured incorrectly")
-    return TimeFreqSnPMResults(avg_beam, t, p, mxt, mnt)
+    return TimeFreqSnPMResults(t, vox_map, p, mxt, mnt)
     
 
 def adapt_mlab_tf_snpm_stats(combo_beam, avg_beam=None):
@@ -47,11 +35,11 @@ def adapt_mlab_tf_snpm_stats(combo_beam, avg_beam=None):
     if avg_beam is None:
         avg_beam = mbeam
     return AdaptedTimeFreqSnPMResults(
-        avg_beam, stat, ranks, p_scores_pos, p_scores_neg
+        stat, avg_beam.voxel_indices, ranks, p_scores_pos, p_scores_neg
         )
 
 
-class TimeFreqSnPMResults(object):
+class TimeFreqSnPMResults(array_pickler_mixin):
     threshold_types = [
         'MEG activation',
         'Test score',
@@ -60,10 +48,13 @@ class TimeFreqSnPMResults(object):
         'Test score (neg tail)',
         'Cluster size (pos tail)',
         'Cluster size (neg tail)']
+
+    # these are the names of the attributes on the object
+    _argnames = ['t', 'vox_idx', 't_rank', '_max_t', '_min_t']
     
     def __init__(self,
-                 avg_beam,
                  vox_stat,
+                 vox_map,
                  vox_stat_ranking,
                  max_stat_dist,
                  min_stat_dist):
@@ -72,9 +63,10 @@ class TimeFreqSnPMResults(object):
 
         Parameters
         ----------
-        avg_beam : a TFBeam of the average signal
         vox_stat : ndarray
           The statistical test value at each voxel
+        vox_map : ndarray
+          The (nvox x 3) voxel index map into a volume array
         vox_stat_ranking : ndarray
           The true test ranking in the sorted set of permuted test values.
           EG: if the true test value is the 75th largest among 100 permuted
@@ -84,22 +76,13 @@ class TimeFreqSnPMResults(object):
         min_stat_dist : ndarray
           The minimal test result found at each voxel
         """
-        self.avg_beam = avg_beam
+        self.vox_idx = vox_map
         self.t = vox_stat
         self.t_rank = vox_stat_ranking
         self._max_t = max_stat_dist
         self._min_t = min_stat_dist
         # the step size of significance quantiles
         self.dp = 1.0 / self._max_t.shape[0]
-
-    def to_recarray(self):
-        beam_arr = self.avg_beam._to_recarray()
-        arr_names = ['t', 't_rank', 'max_t', 'min_t']
-        dtype = [(name, object) for name in arr_names]
-        snpm_arr = np.empty(1, dtype=dtype)
-        for name in arr_names:
-            snpm_arr[name][0] = getattr(self, name)
-        return beam_arr, snpm_arr
 
     def _fix_dist(self, tail, corrected_dims, pooled_dims):
         """Return the requested distribution, sorted (in the sense of
@@ -282,8 +265,7 @@ class TimeFreqSnPMResults(object):
         # convert back to voxel lists
         p_score = self.uncorrected_p_score(tail)
         nt, nf = p_score.shape[1:]
-        vox_idc = self.avg_beam.voxel_indices
-        ni, nj, nk = vox_idc.max(axis=0)+1
+        ni, nj, nk = self.vox_idx.max(axis=0)+1
         cluster_vols = np.empty( (ni, nj, nk, nt, nf) )
         max_labels = np.empty((nt,nf))
         c_sizes = []
@@ -291,7 +273,7 @@ class TimeFreqSnPMResults(object):
             for f in xrange(nf):
                 vol = vu.signal_array_to_masked_vol(
                     p_score[:,t,f],
-                    vox_idc,
+                    self.vox_idx,
                     fill_value=1
                     ).filled()
                 cluster_vols[:,:,:,t,f], max_labels[t,f] = ndimage.label(
@@ -317,19 +299,18 @@ class TimeFreqSnPMResults(object):
         # now re-map to voxel list arrays
         tf_size = nt*nf
         strides = np.array([nj*nk, nk, 1]) * tf_size
-        flat_map = (vox_idc * strides).sum(axis=1)
+        flat_map = (self.vox_idx * strides).sum(axis=1)
         flat_map = (flat_map[:,None] + np.arange(tf_size)[None,:]).flatten()
         cluster_map = cluster_vols.flat[flat_map]
         del cluster_vols
         return cluster_map.reshape(self.t.shape)
-
 
 class AdaptedTimeFreqSnPMResults(TimeFreqSnPMResults):
     """This class adapts MATLAB Nutmeg results for TimeFreqSnPMResults
     functionality. 
     """
 
-    def __init__(self, avg_beam, vox_stat, vox_stat_ranking,
+    def __init__(self, vox_stat, vox_map, vox_stat_ranking,
                  p_scores_pos, p_scores_neg):
         """Create an object that can report various statistical thresholds
         from MATLAB Nutmeg SnPM testing results. These results include
@@ -337,9 +318,10 @@ class AdaptedTimeFreqSnPMResults(TimeFreqSnPMResults):
 
         Parameters
         ----------
-        avg_beam : a TFBeam of the average signal
         vox_stat : ndarray
           The statistical test value at each voxel
+        vox_map : ndarray
+          The (nvox x 3) voxel index map into a volume array
         vox_stat_ranking : ndarray
           This is equivalent to "uncorrected p values", which is 
           the true test ranking in the sorted set of permuted test values.
@@ -359,7 +341,7 @@ class AdaptedTimeFreqSnPMResults(TimeFreqSnPMResults):
             vox_stat, p_scores_pos, p_scores_neg, dp
             )
         TimeFreqSnPMResults.__init__(
-            self, avg_beam, vox_stat, vox_stat_ranking, max_t, min_t
+            self, vox_stat, vox_map, vox_stat_ranking, max_t, min_t
             )
 
     def _estimate_maximal_stats(self, ts, ppos, pneg, dp):
@@ -376,6 +358,6 @@ class AdaptedTimeFreqSnPMResults(TimeFreqSnPMResults):
         return min_t, max_t
         
     
-    def to_recarray(self):
+    def __array__(self):
         raise NotImplementedError("Adapted results will not be saved")
 

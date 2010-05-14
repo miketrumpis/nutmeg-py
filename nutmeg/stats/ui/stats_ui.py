@@ -3,6 +3,8 @@ from xipy.vis.qt4_widgets import browse_files, browse_multiple_files
 ## from nutmeg.vis import ortho_plot_window_qt4 as plotter
 from nutmeg.stats import beam_stats as bstats
 from nutmeg.core import tfbeam
+from nutmeg.vis import plot_tfbeam
+
 import numpy as np
 from enthought.traits.api import Str, List, HasTraits, Button, File, \
      Instance, Int, Range, Property, Any, Event, Enum, Bool
@@ -166,7 +168,7 @@ class ComparisonResult(HasTraits):
 
     def _plot_fired(self):
         print 'would plot:', self.beam, self.bdict[self.beam]
-        plotter.view_beam(self.bdict[self.beam])
+        plot_tfbeam(self.bdict[self.beam])
 
     view = View(
         Item('comp_name', show_label=False, style='readonly'),
@@ -184,19 +186,23 @@ class StatsResult(HasTraits):
     avg_beam = Enum(values='_avg_beams')
     plot_avg = Button('Plot Average')
     # this doesn't actually do anything yet
-    stats_maps = Enum(*tfstats_results.TimeFreqSnPMStatsResults.threshold_types)
+    stats_maps = Enum(*tfstats_results.TimeFreqSnPMResults.threshold_types)
     plot_stat = Button('Plot Stats Map')
 
     def __init__(self, condition, avg_beams, stats_results, **traits):
         HasTraits.__init__(self, **traits)
         self._avg_dict = {}
+        self.stats_results = stats_results
         
         for c, b in zip(condition, avg_beams):
             self._avg_beams.append(str(c))
             self._avg_dict[str(c)] = b
 
     def _plot_avg_fired(self):
-        plotter.view_beam(self._avg_dict[self.avg_beam])
+        plot_tfbeam(self._avg_dict[self.avg_beam], stats=self.stats_results)
+
+    def _plot_stat_fired(self):
+        pass
 
     view = View(
         HGroup(
@@ -332,8 +338,6 @@ class SnPMTesterUI(HasTraits):
                                                        comp_name=ctitle) )
         del comp
 
-    
-
     def _make_test(self):
         cond_titles, conditions = self._make_comp_params()
         if not conditions:
@@ -346,64 +350,39 @@ class SnPMTesterUI(HasTraits):
         
         if self.snpm_test == 'One sample T test':
             test_class = bstats.SnPMOneSampT
+            step_sz = 1
         elif self.snpm_test == 'Unpaired T test':
             test_class = bstats.SnPMUnpairedT
+            step_sz = 2
 
         kws = dict(fixed_comparison=self.beam_transform)
         comp = self._comp_class(*self._comp_args, **kws)
-        
-        if not len(existing_comps):
-            all_samps, all_avgs = comp.compare(conditions=conditions)
-            test = test_class(comp, conditions, self.n_perm,
-##                               sample_beams=all_samps,
+        for n in xrange(len(conditions)/step_sz):
+            condition = conditions[n*step_sz:(n+1)*step_sz]
+            c_title = cond_titles[n*step_sz:(n+1)*step_sz]
+
+            test = test_class(comp, condition, self.n_perm,
                               force_half_perms=self.sym_perms,
-                              init=False)
-        else:
-            # try to just assemble the sample_beams that have
-            # not been calculated yet
-            new_conditions = [conditions[n] for n in new_comp_idx]
-            if new_conditions:
-                print 'finding new samps', new_conditions
-                new_samps, new_avgs = comp.compare(conditions=new_conditions)
-            else:
-                new_samps = new_avgs = []
-            all_samps = [None]*(len(conditions))
-            all_avgs = [None]*(len(conditions))
-            print 'interleaving old samps', old_comp_idx
-            for n in old_comp_idx:
-                idx = existing_comps.index(cond_titles[n])
-                result = self.comp_results[idx]
-                all_samps[n] = [result.bdict[s] for s in comp.subjs]
-                all_avgs[n] = result.bdict['Average']
-                
-            for n, samps, avgs in zip(new_comp_idx, new_samps, new_avgs):
-                all_samps[n] = new_samps
-                all_avgs[n] = avgs
-            print all_samps, all_avgs
-            test = test_class(comp, conditions, self.n_perm,
-##                               sample_beams=all_samps,
-                              force_half_perms=self.sym_perms,
-                              init=False)
-        print 'would run test here:', type(test), test.n_perm, test.conditions
-        stats = test.test()
-        print cond_titles
-        for n in xrange(test.n_tests):
+                              init=True)
+            
             # if unpaired test, then there are two averages and two conditions
             # if one-samp, then there is one average, and either:
             #  * a contrast pair
             #  * an activation condition
             if self.snpm_test == 'Unpaired T test':
-                cond = [ cond_titles[0], cond_titles[1] ]
-                avgs = [ all_avgs[0], all_avgs[1] ]
-                ctitle = cond_titles[0] + ' vs ' + cond_titles[1]
+                cond = [ c_title[0], c_title[1] ]
+                avgs = test.avg_beams
+                ctitle = c_title[0] + ' vs ' + c_title[1]
             else:
-                avgs = [ all_avgs[n] ]
+                avgs = test.avg_beams
                 cond = [ cond_titles[n] ]
                 ctitle = cond_titles[n]
+
+            print cond, ctitle
+            stats = test.test()
             
-            sresult = StatsResult(cond, avgs, stats[n], comp_name=ctitle)
+            sresult = StatsResult(cond, avgs, stats, comp_name=ctitle)
             self.stat_results.append(sresult)
-            
 
     cond_selector = TabularEditor(
         adapter=StringAdapter('Conditions'),

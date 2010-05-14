@@ -35,7 +35,33 @@ class ReGenerator(object):
     
 
 class one_sample_ttest_design_generator(ReGenerator):
+    """
+    The 1-sample T test design matrix for N observations is simply
+
+    >>> H = np.array([ [1.0] * N ]).T
+
+    such that H*[a] = X
+    where X is [ [vox_samples(subj=0)],
+                 [vox_samples(subj=1)],
+                 [...] ] for all subjects
+                 
+    This generator yields all combinations of matrices that are re-weighted
+    such that the polarity of rows are flipped. The number of toggled
+    versions of H is 2**N
+    """
     def __init__(self, n_obs, half=True, random_order=True):
+        """
+        Parameters
+        ----------
+        n_obs : int
+          Order of the sample
+        half : bool, optional
+          Only compute half of the polarity flips (by symmetry, 1/2 of
+          the matrices have the inverse polarity of the other half)
+        random_order: bool, optional
+          After the first ("true") design matrix, yield reweighted
+          matrices in random order
+        """
         n = n_obs-1 if half else n_obs
         n_rows = 2**n
         p = np.ones((n_rows, n_obs))
@@ -60,13 +86,18 @@ class one_sample_ttest_design_generator(ReGenerator):
 
 class unpaired_ttest_design_generator(ReGenerator):
     """
-    An unpaired T-test design matrix is H*[a,b]^T = X,
-    where X is [ [tser(i=0,j=0)],
-                 [tser(i=1,j=0)],
-                 [...], ...] for subjects{i}, conditions{j}
-    and H is [ eye(n_conditions) ] * n_subjects
+    An unpaired T-test design matrix operates as H*[alpha,beta]^T = X,
+    where X is [ [vox_samples(subj=0,cond=0)],
+                 [vox_samples(subj=1,cond=0)],
+                 [...],
+                 [vox_samples(subj=0,cond=1)],
+                 [vox_samples(subj=1,cond=1)],
+                 [...] ] for subjects, and conditions 0 and 1
+    and H is
+    >>> H = np.vstack( [ np.repeat([[1.0, 0.0]], n_obs_a, axis=0),
+                         np.repeat([[0.0, 1.0]], n_obs_b, axis=0) ] )
 
-    Each permutation of H will toggle the labels for a subset subjects
+    Each permutation of H will toggle the labels for a subset of subjects
     based on a binary counter patterned selection
     (counting from 0 to 2**(n_subjects-1))    
     """
@@ -104,11 +135,11 @@ class unpaired_ttest_design_generator(ReGenerator):
         
     def _design_mat(self, pattern):
         m = np.zeros((2, self.n_obs))
-        mb = m[0]; ma = m[1]
+        m_alpha = m[0]; m_beta = m[1]
         ra = pattern == +1
         rb = pattern == -1
-        ma[ra] = 1
-        mb[rb] = 1
+        m_alpha[ra] = 1
+        m_beta[rb] = 1
         return m.T
     
     pass
@@ -230,59 +261,85 @@ def snpm_test(meas_arr, dmat_generator, n_perm, good_vox, vox_size,
 # hide from Nose
 snpm_test.__test__ = False
 
-def snpm_ttest_one_samp_opt(meas_arr, dmat_generator, n_perm, good_vox,
-                            vox_size, half_perms=False):
 
-    n_meas = meas_arr.shape[0]
-    n_goodvox = len(good_vox)
+def run_snpm_tests(samps, dgen, co, n_perm, grid_shape, flat_map, vox_size,
+                   smoothed_variance=True, out=None):
+    """
+    Parameters
+    ----------
+    samps : ndarray
+      (samples x voxels) array
+    dgen : design matrix generator
+    co : ndarray
+      comparison weights for the solution to dgen(p)*b = samps
+    n_perm : int
+      number of permutations to actual test
+    grid_shape : tuple
+      volume shape in which to embed voxel data, for variance smoothing
+    flat_map : 1D list
+      flat voxel index into the volume
+    vox_size : len-3 list
+      edge lengths for the volume
+    smoothed_variance : bool, optional
+      do spatial variance smoothing
+    out : ndarray, optional
+      a (n_permutation x voxels) array to store the test distribution
 
-    fwhm_pix = np.array([20., 20., 20.])/vox_size
-    vol_size = full_beam_volume_shape(vox_size)
+    Returns
+    -------
+    test_distribution : ndarray
+      A (n_permutation x voxels) shaped array of the test distribution.
+      The "true" value test is always in the 0th row.
+    """
 
-    D = dmat_generator.next()
-    df = n_meas - rank(D)
-    nPc = np.ones((n_goodvox,), 'd')
-    MaxTc = np.zeros((n_perm, 2), 'd')
+    n_meas = samps.shape[0]
+    n_vox = samps.shape[1]
+    if out is None:
+        pX = np.empty((n_perm, n_vox))
+    else:
+        assert out.shape == (n_perm, n_vox), 'output array has the wrong shape'
+        pX = out
 
-    # do 1st (correctly aligned) T test
-    beta = meas_arr.mean(axis=0)
-    #sd = np.std(meas_arr, ddof=1)
-    Ss = ((meas_arr - beta)**2).sum(axis=0)
+    if smoothed_variance:
+        fwhm_pix = np.array([20.]*3) / np.asarray(vox_size)
+        sigma = np.array(fwhm_pix / np.sqrt( 8 * np.log(2) ) )
+        res_sm = np.empty((n_vox,), 'd')
+##         r_vol = np.empty(grid_shape, 'd')
+        r_sm = np.empty(grid_shape, 'd')
+##         n_vol = np.empty(grid_shape, 'd')
+        n_sm = np.empty(grid_shape, 'd')
+        
+    df = -1
+    for p in xrange(n_perm):
+        dm = dgen.next()
+        if df < 0:
+            df = n_meas - rank(dm)
+        beta = np.dot(la.pinv(dm), samps)
+        err = ((samps - np.dot(dm, beta))**2).sum(axis=0)
 
-    tmp = np.zeros(vol_size)
-    tmp.flat[good_vox] = 1.
-    sm_mask = gaussian_smooth(tmp, fwhm=fwhm_pix, inplace=False, axes=(0,1,2))
-
-    tmp.flat[good_vox] = Ss.flat
-    Ss_smooth = gaussian_smooth(tmp, fwhm=fwhm_pix, inplace=False, axes=(0,1,2))
-
-    Ss = Ss_smooth.flat[good_vox] / sm_mask.flat[good_vox]
-
-    s_norm = df * n_meas
-    Tc = beta
-    Tc /= np.sqrt(Ss/s_norm)
-
-    MaxTc[0,:] = Tc.max(), -Tc.min()
-
-    for p in xrange(1, n_perm):
-        D = dmat_generator.next()
-        beta = np.mean(D*meas_arr, axis=0)
-        Ss = ((meas_arr - D*beta)**2).sum(axis=0)
-        tmp.flat[good_vox] = Ss.flat
-        Ss_smooth = gaussian_smooth(tmp, fwhm=fwhm_pix,
-                                    inplace=False, axes=(0,1,2))
-        Ss = Ss_smooth.flat[good_vox] / sm_mask.flat[good_vox]
-        Tpc = beta
-        Tpc /= np.sqrt(Ss/s_norm)
-
-        MaxTc[p,:] = Tpc.max(), -Tpc.min()
-        if half_perms:
-            nPc += (Tpc >= Tc).astype('i') + (-Tpc >= Tc).astype('i')
+        if smoothed_variance:
+            r_sm[:] = 0
+            n_sm[:] = 0
+            r_sm.flat[flat_map] = err
+            n_sm.flat[flat_map] = 1.0
+            ndimage.gaussian_filter(r_sm, sigma, mode='constant', output=r_sm)
+            ndimage.gaussian_filter(n_sm, sigma, mode='constant', output=n_sm)
+            res_sm = r_sm.flat[flat_map] / n_sm.flat[flat_map]
         else:
-            nPc += (Tpc >= Tc).astype('i')
+            res_sm = err
 
-    return Tc, MaxTc, nPc
-    
+        pooling = np.dot(co, np.dot(la.pinv(np.dot(dm.T, dm)), co.T))
+        res_sm *= np.squeeze((pooling/df))
+        np.sqrt(res_sm, res_sm)
+        pX[p] = np.dot(co, beta)
+        pX[p] /= res_sm
+
+    if out is None:
+        return pX
+
+# hide from Nose
+run_snpm_tests.__test__ = False
+
 def snpm_1samp_ttest(samps, pmat, grid_shape,
                      flat_map, vox_size,
                      out=None,

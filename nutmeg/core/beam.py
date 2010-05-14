@@ -3,7 +3,7 @@ import os
 import numpy as np
 from nipy.core import api as ni_api
 
-
+from nutmeg.utils import array_pickler_mixin, parameterize_cmap, cmap_from_array
 from nutmeg.external import descriptors as desc
 from nutmeg.core import BEAM_SPACE_LEFT, BEAM_SPACE_POST, BEAM_SPACE_INF
 
@@ -37,55 +37,8 @@ def search_any_pybeam(recarr, name):
     # if failing all else, return this
     return None
 
-## class array_pickler_mixin(object):
-##     """ Can save itself as a funky ass record array
-##     """
-    
-##     _argnames = []
-##     _kwnames = []
 
-##     dt = np.dtype( [(n, object) for n in _argnames+_kwargs] )
-
-##     def save(self, fname):
-##         np.save(fname, self._to_recarray())
-    
-##     def _to_recarray(self):
-##         a = np.empty(1, dtype=self.dt)
-##         names = self._argnames + self._kwnames
-##         for n in names:
-##             # XYZ: NEED TO MAKE OBJECTS THAT CAN ASARRAY THEMSELVES
-##             a[name][0] = np.asarray(getattr(self, name, None))
-## ##             if name=='coordmap':
-## ##                 obj = parameterize_cmap(getattr(self, name))
-## ##                 arr[name][0] = obj
-## ##                 continue
-##         return a
-
-##     @classmethod
-##     def from_array(klass, a, **kwargs):
-##         if a.dtype != klass.dt:
-##             raise ValueError('dtype of input array does not match')
-
-## ##         args = (search_any_pybeam(rec_arr, name)
-## ##                 for name in class_type._argnames)
-## ##         kws = dict( ((name,search_any_pybeam(rec_arr, name))
-## ##                      for name in class_type._kwnames) )
-##         args = (a[n][0] for n in klass._argnames)
-##         kws = dict( ((n, a[n][0]) for n in klass._kwnames) )
-
-##         # this way, the user-defined keywords take precedence of whatever is
-##         # found (or not found) in the record array
-##         kws.update(kwargs)
-## ##         if kws['coordmap'] is not None:
-## ##             kws['coordmap'] = cmap_from_params(kws['coordmap'])
-
-## ##         sig_type = search_any_pybeam(rec_arr, 'sig')[0].dtype
-## ##         if len(sig_type) not in (2,3) and \
-## ##                kws['fixed_comparison'] is None:
-## ##             kws['fixed_comparison'] = 'unknown'
-##         return class_type(*args, **kws)
-
-class MEG_coreg(object):
+class MEG_coreg(array_pickler_mixin):
     """A light class to keep track of MEG-to-MRI coregistration information
     """
     _argnames = ['mrpath', 'norm_mrpath', 'affine', 'fiducials']
@@ -113,19 +66,6 @@ class MEG_coreg(object):
         self.meg2mri = ni_api.Affine.from_params('xyz', 'xyz', affine)
         self.fiducials = fiducials
 
-    def wrap_up_as_array(self):
-        dt = [ (n, object) for n in self._argnames ]
-        a = np.empty(1, dtype=dt)
-        for n in self._argnames:
-            a[n][0] = getattr(self, n)
-        return a
-
-    @staticmethod
-    def from_array(a):
-        a = a.reshape(1)
-        args = (a[n][0] for n in MEG_coreg._argnames)
-        return MEG_coreg(*args)
-
     @staticmethod
     def from_mat_struct(m):
         """Create a MEG_coreg object from the coreg record array created
@@ -139,11 +79,20 @@ class MEG_coreg(object):
               if 'fiducials_mri_mm' in fields else np.eye(4)
         return MEG_coreg(mrpath, norm_mr, tfm, fid)
 
-class Beam(object):
+class Beam(array_pickler_mixin):
     """The basic MEG Beam object for Nutmeg.
     """
     _argnames = ['voxelsize', 'voxels', 'srate', 'timepts', 'sig', 'coreg']
-    _kwnames = ['coordmap'] 
+    _kwnames = ['coordmap']
+
+    @staticmethod
+    def _array_from_coordmap(cmap):
+        return parameterize_cmap(cmap)
+
+    @staticmethod
+    def _reconstruct_coordmap(arr):
+        return cmap_from_array(arr)
+    
     def __init__(self, voxelsize, voxels, srate, timepts,
                  sig, coreg, coordmap=None):
         """
@@ -201,56 +150,6 @@ class Beam(object):
             return a[0,0]
         return -1
 
-    def save(self, fpath):
-        """Save this Beam as a numpy file type
-        """
-        np.save(fpath, self._to_recarray())
-
-    @classmethod
-    def from_npy_file(class_type, npyfile, **kwargs):
-        """Create a new Beam-ish object from a numpy file
-        """
-        rec_arr = np.load(npyfile)
-        if os.path.splitext(npyfile)[-1] == '.npz':
-            # this was a npz file?
-            rec_arr = rec_arr[rec_arr.files[0]]
-
-        args = [search_any_pybeam(rec_arr, name)
-                for name in class_type._argnames]
-        # XYZ: BIG HACK!!!
-        idx = class_type._argnames.index('coreg')
-        c = args[idx]
-        args[idx] = coreg.from_array(c)
-        kws = dict( ((name,search_any_pybeam(rec_arr, name))
-                     for name in class_type._kwnames) )
-
-        # this way, the user-defined keywords take precedence of whatever is
-        # found (or not found) in the record array
-        kws.update(kwargs)
-        if kws['coordmap'] is not None:
-            kws['coordmap'] = cmap_from_params(kws['coordmap'])
-
-##         sig_type = search_any_pybeam(rec_arr, 'sig')[0].dtype
-##         if len(sig_type) not in (2,3) and \
-##                kws['fixed_comparison'] is None:
-##             kws['fixed_comparison'] = 'unknown'
-        return class_type(*args, **kws)
-        
-
-    def _to_recarray(self):
-        all_names = self._argnames + self._kwnames
-        dt = [(name, object) for name in all_names]
-        arr = np.empty(1, dtype=dt)
-        for name in all_names:
-            if name=='coordmap':
-                obj = parameterize_cmap(getattr(self, name))
-            elif name=='coreg':
-                obj = self.coreg.wrap_up_as_array()
-            else:
-                obj = getattr(self, name, None)
-            arr[name][0] = obj
-        return arr
-
     @desc.auto_attr
     def voxel_indices(self):
         """Return the indices of this object's voxel locations on the 3D
@@ -260,17 +159,4 @@ class Beam(object):
 ##         # Using the implicit floor operation on the array index coordinates
 ##         return self.coordmap.inverse(self.voxels).astype('i')
 
-
-def parameterize_cmap(coordmap):
-    dt = [('incoord', object), ('outcoord', object), ('affine', object)]
-    a = np.zeros(1, dtype=dt)
-    a['incoord'][0] = coordmap.input_coords.coord_names
-    a['outcoord'][0] = coordmap.output_coords.coord_names
-    a['affine'][0] = coordmap.affine
-    return a
-
-def cmap_from_params(arr):
-    return ni_api.Affine.from_params(arr['incoord'][0],
-                                     arr['outcoord'][0],
-                                     arr['affine'][0].astype('f'))
 

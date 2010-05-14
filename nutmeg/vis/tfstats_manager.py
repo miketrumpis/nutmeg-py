@@ -162,7 +162,7 @@ class TimeFreqSnPMaps(t_api.HasTraits):
         return TimeFreqSnPMResults.threshold_types[:]
             
     def _create_mask_fired(self):
-        vox = self.stats_results.avg_beam.voxels
+        vox = self.tfbeam_man.beam.voxels
         if self.map_type in ('MEG activation', 'Test score'):
             t = SimpleThresholdMask(stats_manager=self,
                                     map_voxels=vox)
@@ -373,7 +373,7 @@ class SimpleThresholdMask(TimeFreqThresholdMap):
                not self.stats_manager.stats_results:
             return np.zeros(1)
         if self.thresh_map_name == 'MEG activation':
-            return self.stats_manager.stats_results.avg_beam.s
+            return self.stats_manager.tfbeam_man.beam.s
         elif self.thresh_map_name == 'Test score':
             return self.stats_manager.stats_results.t
     @cached_property

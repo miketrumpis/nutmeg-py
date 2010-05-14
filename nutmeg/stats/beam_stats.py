@@ -9,7 +9,7 @@ from sets import Set
 
 import nutmeg
 import nutmeg.external.descriptors as desc
-from nutmeg.core import TEMPLATE_MRI_PATH
+from nutmeg.core import TEMPLATE_MRI_PATH, full_beam_coords
 from nutmeg.core import tfbeam as tfb
 from nutmeg.stats import snpm_testing as snpm
 from nutmeg.stats.tfstats_results import TimeFreqSnPMResults
@@ -169,30 +169,19 @@ class BeamComparator(object):
             # just repeat the same data over conditions
             # XYZ: THIS COULD BE RE-ENGINEERED FOR REDUNDANCY
             for c in self.conds:
+                cmap = self.c_labels == c
                 self.inter_vox[c] = ivox
                 self.mni_voxel_map[c] = mni_vox_map
-                self.beam_voxel_maps[c] = bvox_map
+                self.beam_voxel_maps[c] = [bvox_map[cidx]
+                                           for cidx, b in enumerate(cmap) if b]
             return
         for c in self.conds:
             print 'condition', c, 'comparing subjs: ',
-##             for i in self.subjs:
-##                 subj_vox.append(self.beam(c,i).voxels)
             subj_vox = [mni_vox] + [self.beam(c,i).voxels for i in self.subjs]
             self.inter_vox[c], self.beam_voxel_maps[c] = \
                             find_vox_intersection(subj_vox)
             self.mni_voxel_map[c] = self.beam_voxel_maps[c].pop(0)
             print 'n_vox:', len(self.inter_vox[c])
-##             self.inter_vox[c] = i_vox
-##             vox_maps[c] = vox_maps
-##             print 'n_vox:', len(i_vox)
-##         self.beam_voxel_maps = vox_maps
-##         self.inter_vox = inter_vox
-##         self.mni_voxel_map = mni_maps        
-
-##         # prune the voxel list and signal rows
-##         for b,m in zip(self.beams, vox_maps):
-##             b.s = b.s[m]
-##             b.voxels = b.voxels[m]
 
     def compare(self, conditions=[]):
         """
@@ -256,9 +245,11 @@ class BeamComparator(object):
         """
         c_map = self.c_labels == cond
         s_map = self.s_labels == subj
-        if not (c_map.any() and s_map.any()):
+        if not (c_map & s_map).sum():
             raise ValueError('no beam with (cond, subj)=(%d, %d)'%(cond, subj))
-        beam_idx = np.argmax(c_map & s_map)
+        if (c_map & s_map).sum() > 1:
+            raise ValueError('Beams not uniquely specified: ambiguously labeled BeamComparator')
+        beam_idx = np.argwhere(c_map & s_map)
         return self.beams[beam_idx]
         
     def beam_sig(self, cond, subj):
@@ -267,14 +258,17 @@ class BeamComparator(object):
         Importantly, returned samples of the function s(vox) ordered in
         a consistent voxel ordering
         """
+        beam = self.beam(cond, subj)
         c_map = self.c_labels == cond
-        s_map = self.s_labels == subj
-        if not (c_map.any() and s_map.any()):
-            raise ValueError('no beam with (cond, subj)=(%d, %d)'%(cond, subj))
-        beam_idx = np.argmax(c_map & s_map)
-        beam = self.beams[beam_idx]
+        s_map = self.s_labels[c_map]
+        beam_idx = np.argwhere(s_map==subj)
+        if beam_idx.sum() < 1:
+            err = 'Subject '+str(subj)+' has no map for condition '+str(cond)
+            raise ValueError(err)
+        if beam_idx.sum() > 1:
+            raise ValueError('Beams not uniquely specified: ambiguously labeled BeamComparator')
         m = self.beam_voxel_maps[cond][beam_idx]
-        return beam.s[m]    
+        return beam.s[m]
 
 class BeamActivationAverager(BeamComparator):
     """
@@ -406,12 +400,12 @@ class SnPMTester(object):
         # self.sample_beams -- the list of beams whose signals to test
         # self.dm_gen -- the appropriate design matrix generator
         # self.test_stat -- the type of stat to calculate in snpm_testing
-        # self.co -- the __covariance???__
+        # self.co -- the comparison weights for the stats design solution
         # self.inter_vox -- the mni voxels of the stat comparison
         # self.mni_vox_map -- the indices of the mni voxels of the stat comp
         pass
 
-    def test(self, correct_tpts=False, correct_fpts=False):
+    def test(self):
         """
         Runs a univariate statistical test at each time-frequency-voxel,
         filling in these measures:
@@ -427,92 +421,54 @@ class SnPMTester(object):
             print 'loading and comparing beams'
             self._init_data()
 
-##         ncorr_pval_pos_beams = []
-##         ncorr_pval_neg_beams = []
-##         corr_pval_pos_beams = []
-##         corr_pval_neg_beams = []
-##         stat_map_beams = []
-        results = []
-        test_fn = self._test_fn()
         n_perm_tested = self.n_perm/2 if self.half_perms else self.n_perm
-        for tst in xrange(self.n_tests):
-            beams = self.sample_beams[tst]
-            b = beams[0]
-            n_vox = len(b.voxels)
-            n_bands = len(b.bands)
-            n_times = len(b.timewindow)
-            vox_size = b.voxelsize
-            inter_vox = self.inter_vox[tst]
-            grid_shape, flat_map = calc_fft_grid_and_map(b)
-            # now find the flat map for these voxels, repeated across
-            # the number of permutations--IE, find the map for these voxels
-            # in an array shaped (n_perm, ni, nj, nk)
-            ni, nj, nk = grid_shape
-            # add offsets for each permutation
-##             n_perm = 2**(len(beams))
-##             n_perm_tested = n_perm/2
-            vol_sz = ni*nj*nk
-            offsets = np.arange(n_perm_tested)*vol_sz
-            flat_map = (flat_map + offsets[:,None]).reshape(-1)
-            pmat = self.dm_gen.p / float(len(beams))
+        beams = self.sample_beams
+        b = beams[0]
+        n_vox = len(b.voxels)
+        n_bands = len(b.bands)
+        n_times = len(b.timewindow)
+        vox_size = b.voxelsize
+        # padding the volume to be centered can't hurt, leave it for now
+        grid_shape, flat_map = calc_fft_grid_and_map(b)
 
-            # at each (t, f) pt, want to find:
-            # T test
-            # max T stat
-            # min T stat
-            # percentiles (converted to uncorrected p scores)
-            T = np.empty( (n_vox, n_times, n_bands) )
-            maxT = np.empty((self.n_perm, n_times, n_bands))
-            minT = np.empty((self.n_perm, n_times, n_bands))
-            percentiles = np.empty_like(T)
-            # the array of test results
-            tt = np.empty((self.n_perm, n_vox))
-            for t in xrange(n_times):
-                for f in xrange(n_bands):
-                    print 'performing stat test at (t,f) = (',t,f,')'
-                    X = np.array([b.s[:,t,f] for b in beams])
-                    test_fn(X, pmat, grid_shape, flat_map, vox_size,
-                            smoothed_variance=self.smoothed_variance,
-                            out=tt[:n_perm_tested])
-                    true_t = tt[0]
-                    # get T distributions 
-                    if self.half_perms:
-                        tt[n_perm_tested:] = -tt[:n_perm_tested]
-                    maxT[:,t,f] = tt.max(axis=1)
-                    minT[:,t,f] = tt.min(axis=1)
-                    tt = np.sort(tt, axis=0)
-                    # The 1st column holds the number of test values
-                    # smaller than true_t.
-                    # The 2nd column is the voxel index.
-                    locs = np.argwhere(true_t==tt)
-                    vloc = locs[:,1]
-                    percentiles[vloc,t,f] = locs[:,0]/float(self.n_perm)
-                    T[:,t,f] = true_t
+        # at each (t, f) pt, want to find:
+        # T test
+        # max T stat
+        # min T stat
+        # percentiles (converted to uncorrected p scores)
+        T = np.empty( (n_vox, n_times, n_bands) )
+        maxT = np.empty((self.n_perm, n_times, n_bands))
+        minT = np.empty((self.n_perm, n_times, n_bands))
+        percentiles = np.empty_like(T)
+        # the array of test results
+        tt = np.empty((self.n_perm, n_vox))
+        for t in xrange(n_times):
+            for f in xrange(n_bands):
+                print 'performing stat test at (t,f) = (',t,f,')'
+                X = np.array([b.s[:,t,f] for b in beams])
+                snpm.run_snpm_tests(X, self.dm_gen, self.co, n_perm_tested,
+                                    grid_shape, flat_map, vox_size,
+                                    smoothed_variance=self.smoothed_variance,
+                                    out=tt[:n_perm_tested])
+                self.dm_gen.reset()
+                true_t = tt[0]
+                # get T distributions 
+                if self.half_perms:
+                    tt[n_perm_tested:] = -tt[:n_perm_tested]
+                maxT[:,t,f] = tt.max(axis=1)
+                minT[:,t,f] = tt.min(axis=1)
+                tt = np.sort(tt, axis=0)
+                # The 1st column holds the number of test values
+                # smaller than true_t.
+                # The 2nd column is the voxel index.
+                locs = np.argwhere(true_t==tt)
+                vloc = locs[:,1]
+                percentiles[vloc,t,f] = locs[:,0]/float(self.n_perm)
+                T[:,t,f] = true_t
 
-            results.append( TimeFreqSnPMResults(
-                self.avg_beams[tst], T, percentiles, maxT, minT
-                ) )
-        return results
-    
-##             quantiles_pos = quantiles
-##             quantiles_neg = 1-quantiles
-
-##             # now want to look at the max/min statistic distributions
-##             # to find thresholds/ pvals/ whatever
-##             # --thresholding at 95% of dist should be the same as
-##             # --a pscore of .95 ???
-##             max_stat_quantiles = np.empty_like(T)
-##             min_stat_quantiles = np.empty_like(T)
-##             for t in xrange(n_times):
-##                 for f in xrange(n_bands):
-##                     max_stat_quantiles = \
-##                         (T[None,:,t,f] >= maxT.flatten()[:,None]).sum(axis=0)
-##                     min_stat_quantiles = \
-##                         (T[None,:,t,f] <= minT.flatten()[:,None]).sum(axis=0)
-##             max_stat_quantiles /= float(np.size(maxT))
-##             min_stat_quantiles /= float(np.size(minT))
-
-##             # create new beams
+        return TimeFreqSnPMResults(
+            T, self.avg_beams[0].voxel_indices, percentiles, maxT, minT
+            )
 
 class SnPMOneSampT(SnPMTester):
     """
@@ -522,6 +478,9 @@ class SnPMOneSampT(SnPMTester):
 
     Tests whether the mean of the comparisons is significantly different than 0.
     """
+
+    test_stat = 'T'
+    co = np.array([[1]])
 
     @staticmethod
     def num_observations(condition, c_labels, s_labels):
@@ -536,7 +495,7 @@ class SnPMOneSampT(SnPMTester):
         c_labels : iterable
             all condition labels in the comparison (IE, BeamComparator.c_labels)
         s_labels : iterable
-sn            all subject labels in the comparison (IE, BeamComparator.s_labels)
+            all subject labels in the comparison (IE, BeamComparator.s_labels)
 
         Returns
         -------
@@ -553,8 +512,7 @@ sn            all subject labels in the comparison (IE, BeamComparator.s_labels)
     def num_possible_permutations(condition, c_labels, s_labels):
         return 2**SnPMOneSampT.num_observations(condition, c_labels, s_labels)
 
-    def __init__(self, beam_comp, conditions, n_perm,
-##                  sample_beams = [],
+    def __init__(self, beam_comp, condition, n_perm,
                  force_half_perms=False,
                  init=True):
         """
@@ -563,29 +521,37 @@ sn            all subject labels in the comparison (IE, BeamComparator.s_labels)
         Parameters
         ----------
         beam_comp : a BeamComparator
-        conditions : label, or list of labels
-            If testing a BeamActivationAverager: a subset of beam_comp.conds
-            If testing a BeamContrastAveragor: pairs drawn from beam_comp.conds
+        condition : label, or list of labels
+            If testing a BeamActivationAverager: one of beam_comp.conds
+            If testing a BeamContrastAveragor: a pair drawn from beam_comp.conds
         n_perm : int
             The number of permutations, up to 2**(number-of-observations).
             If n_perm is given as the maximum, only half the permutations
             will actually be tested (from symmetry of the permutations).
         force_half_perms : bool, optional
             Ignore the n_perm argument, and test half the permutations
-        sample_beams : list, optional
-            The pre-computed list of observation beams
+            (in order to compute the full set of permutations)
         init : bool, optional
             Enforce loading and computation of comparisons at construction
             time. Otherwise, initialization will be deferred until test time.
         """
 
-        self.conditions = conditions
+        if type(beam_comp) is BeamContrastAverager and \
+               len(condition) != 2:
+            raise ValueError(
+"""You only may test one contrast pair for a contrast test"""
+        )
+
+        if type(beam_comp) is BeamActivationAverager and \
+           hasattr(condition, '__iter__'):
+            raise ValueError(
+"""You only may test one condition for an activation test"""
+        )
+
+        self.condition = condition
         self.comp = beam_comp
-        self.n_tests = len(self.conditions)
         
-        # (XYZ: UMMM CURRENTLY USING ONLY ONE CONDITION, EVEN IF
-        # CONDITIONS ARE A LIST OF ACTIVATION CONDITIONS)
-        n_obs = SnPMOneSampT.num_observations(conditions[0],
+        n_obs = SnPMOneSampT.num_observations(condition,
                                               self.comp.c_labels,
                                               self.comp.s_labels)
 
@@ -610,31 +576,21 @@ tests"""%n_perm
                 )
             self.half_perms = False
             
-        self.test_stat = 'T'
-        self.co = 1
+
 ##         self.sample_beams = sample_beams
         if init:
             self._init_data()
         else:
             self._is_init = False
-
-    def _test_fn(self):
-        return snpm.snpm_1samp_ttest
     
     def _init_data(self):
-        conditions = self.conditions
-        self.sample_beams, self.avg_beams = self.comp.compare(conditions=conditions)
+        self.sample_beams, self.avg_beams = self.comp.compare(
+            conditions=self.condition
+            )
+        self.sample_beams = self.sample_beams[0]
+        # XYZ: I think this is redundant, given the call above?
         if not self.comp.aligned:
             self.comp.align_voxels()
-        # get the voxel info for each comparison
-        if hasattr(conditions[0], '__iter__'):
-            # if the conditions are pairs, only use the first one to index
-            self.mni_vox_maps = [self.comp.mni_voxel_map[c[0]]
-                                 for c in conditions]
-            self.inter_vox = [self.comp.inter_vox[c[0]] for c in conditions]
-        else:
-            self.mni_vox_maps = [self.comp.mni_voxel_map[c] for c in conditions]
-            self.inter_vox = [self.comp.inter_vox[c] for c in conditions]
         self._is_init = True
         
 
@@ -647,6 +603,10 @@ class SnPMUnpairedT(SnPMTester):
     If sample_beams is provided, it is also a lenth-2 list-of-lists,
     where each sublist contains the TFBeam samples for its condition.
     """
+    
+    test_stat = 'T'
+    co = np.array([[-1,1]])
+    
     @staticmethod
     def num_observations(cpair, c_labels, s_labels):
         """
@@ -682,18 +642,13 @@ class SnPMUnpairedT(SnPMTester):
                          sp.special.gamma(n_obs_a+1) / \
                          sp.special.gamma(n_obs_b+1)))
 
-    def _test_fn(self):
-        raise NotImplementedError
-    
     def __init__(self, beam_comp, conditions, n_perm,
 ##                  sample_beams=[],
                  force_half_perms=False,
                  init=True):
-        # for now..
-        self.n_tests = 1
         if len(conditions) != 2:
             raise ValueError(
-"""Condition list must be length-2 currently"""
+"""Condition list must be length-2"""
         )
         if type(beam_comp) is BeamContrastAverager and len(conditions[0]) != 2:
             raise ValueError(
@@ -727,12 +682,6 @@ tests"""%n_perm
                 n_obs_a, n_obs_b, half=False
                 )
             
-        self.test_stat = 'T'
-        self.co = np.array([[-1,1]])
-##         if len(sample_beams)==2 and hasattr(sample_beams[0], '__iter__'):
-##             self.sample_beams = [ sample_beams[0] + sample_beams[1] ]
-##         else:
-##             self.sample_beams = sample_beams
         if init:
             self._init_data()
         else:
@@ -740,23 +689,12 @@ tests"""%n_perm
         
     def _init_data(self):
         conditions = self.conditions
-        sample_beams, self.avg_beams = self.comp.compare(conditions)
-        self.sample_beams = [ sample_beams[0]+sample_beams[1] ]
-            
-        if not self.comp.aligned:
+        if not self.comp.aligned or \
+               len(self.comp.inter_vox[conditions[0]]) != len(self.comp.inter_vox[conditions[1]]):
             self.comp.align_voxels(align_all=True)
 
-        if hasattr(conditions[0], '__iter__') and \
-               type(self.comp) is BeamContrastAverager:
-            # Comparing two different contrasts
-
-            # currently n_tests is 1, and all subj/condition vox lists are equal
-            self.mni_vox_maps = [self.comp.mni_voxel_map[conditions[0][0]]]
-            self.inter_vox = [self.comp.inter_vox[conditions[0][0]]]
-        else:
-            # Comparing two different activations
-            self.mni_vox_maps = [self.comp.mni_voxel_map[conditions[0]]]
-            self.inter_vox = [self.comp.inter_vox[conditions[0]]]
+        sample_beams, self.avg_beams = self.comp.compare(conditions)
+        self.sample_beams = sample_beams[0]+sample_beams[1]
         self._is_init = True
 
             

@@ -12,12 +12,11 @@ interval. To take regular FFTs, shifting can be turned off.
 import numpy as np
 from os.path import join, split, abspath
 import os, sys
-from nutmeg.utils import loads_extension_on_call
-
 #______________________ Some convenience wrappers ___________________________
 
 def fft1(a, shift=True, inplace=False, axis=-1):
-    """Perform a forward FFT on a given axis
+    """
+    Perform a forward FFT on a given axis
 
     Parameters
     ----------
@@ -38,7 +37,8 @@ def fft1(a, shift=True, inplace=False, axis=-1):
     return _fftn(a, axes=(axis,), shift=shift, inplace=inplace)
 
 def ifft1(a, shift=True, inplace=False, axis=-1):
-    """Perform an inverse FFT on a given axis
+    """
+    Perform an inverse FFT on a given axis
 
     Parameters
     ----------
@@ -60,7 +60,8 @@ def ifft1(a, shift=True, inplace=False, axis=-1):
     return _ifftn(a, axes=(axis,), shift=shift, inplace=inplace)
 
 def fft2(a, shift=True, inplace=False, axes=(-2,-1)):
-    """Perform a forward FFT on two given axes
+    """
+    Perform a forward FFT on two given axes
 
     Parameters
     ----------
@@ -81,7 +82,8 @@ def fft2(a, shift=True, inplace=False, axes=(-2,-1)):
     return _fftn(a, axes=axes, shift=shift, inplace=inplace)    
 
 def ifft2(a, shift=True, inplace=False, axes=(-2,-1)):
-    """Perform an inverse FFT on two given axes
+    """
+    Perform an inverse FFT on two given axes
 
     Parameters
     ----------
@@ -102,7 +104,8 @@ def ifft2(a, shift=True, inplace=False, axes=(-2,-1)):
     return _ifftn(a, axes=axes, shift=shift, inplace=inplace)
 
 def fftn(a, shift=True, inplace=False, axes=(-1)):
-    """Perform a forward FFT on any given axes
+    """
+    Perform a forward FFT on any given axes
 
     Parameters
     ----------
@@ -123,7 +126,8 @@ def fftn(a, shift=True, inplace=False, axes=(-1)):
     return _fftn(a, axes=axes, shift=shift, inplace=inplace)
 
 def ifftn(a, shift=True, inplace=False, axes=(-1)):
-    """Perform an inverse FFT on any given axes
+    """
+    Perform an inverse FFT on any given axes
 
     Parameters
     ----------

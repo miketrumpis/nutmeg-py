@@ -90,7 +90,25 @@ class TFBeam(Beam):
     def __init__(self, voxelsize, voxels, srate, timepts,
                  sig, coreg, bands, timewindow,
                  coordmap=None, fixed_comparison=None, uses='F dB'):
+        """
+        Parameters
+        ----------
+        voxelsize : len-3 iterable
+          the voxel edge lengths
+        voxels : ndarray shaped (nvox, 3)
+          the voxel coordinates, in this Beam's target coordinate space
+        srate : float
+          the sampling rate of the MEG time series
+        timepts : ndarray
+          the sample times
+        sig : ndarray
+          the MEG signal data
+        coreg : MEG_coreg object
+          the MEG-to-MRI coregistration info
+        coordmap : NIPY Affine object
+          the MEG voxel index coordinate to voxel location coordinate mapping
 
+        """
         sig, voxels = self._init_signal(sig, voxels, fixed_comparison)
         Beam.__init__(self, voxelsize, voxels, srate, timepts, sig, coreg,
                       coordmap=coordmap)
@@ -284,7 +302,8 @@ def tfbeam_from_file(fname, **kwargs):
     if not os.path.exists(fname):
         raise ValueError('no such file %s'%fname)
     if os.path.splitext(fname)[-1] in ('.npz', '.npy'):
-        return TFBeam.from_npy_file(fname, **kwargs)
+        #return TFBeam.from_npy_file(fname, **kwargs)
+        return TFBeam.load(fname, **kwargs)
     elif os.path.splitext(fname)[-1] == '.mat':
         return TFBeam.from_mat_file(fname, **kwargs)
     
@@ -300,7 +319,8 @@ def load_tfbeam(beam):
         if os.path.splitext(beam)[-1] == '.mat':
             beam = TFBeam.from_mat_file(beam)
         elif os.path.splitext(beam)[-1] in ('.npz', '.npy'):
-            beam = TFBeam.from_npy_file(beam)
+            #beam = TFBeam.from_npy_file(beam)
+            beam = TFBeam.load(beam)
         return beam
     elif type(beam) is TFBeam:
         return beam
