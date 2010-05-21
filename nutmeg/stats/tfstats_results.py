@@ -8,7 +8,7 @@ from nutmeg.core import tfbeam
 from nutmeg.utils import array_pickler_mixin
 import nutmeg.stats.stats_utils as su
 
-def load_tf_snpm_stats(snpm_array):
+def load_tf_snpm_stats(snpm_arrays):
     """Loads a TimeFreqSnPMResults
 
     Parameters
@@ -20,7 +20,7 @@ def load_tf_snpm_stats(snpm_array):
         if ext_type == '.mat':
             return adapt_mlab_tf_snpm_stats(snpm_arrays)
         elif ext_type in ('.npz', '.npy'):
-            return TimeFreqSnPMResults.load(snpm_array)
+            return TimeFreqSnPMResults.load(snpm_arrays)
         else:
             raise ValueError('did not recognize the file format: '+snpm_arrays)
     return TimeFreqSnPMResults(t, vox_map, p, mxt, mnt)

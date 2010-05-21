@@ -23,7 +23,7 @@ from enthought.traits.ui.api \
 from xipy.vis.qt4_widgets import browse_files
 from xipy.overlay import OverlayInterface, OverlayWindowInterface
 from xipy.slicing.image_slicers import SampledVolumeSlicer, \
-     ResampledVolumeSlicer
+     ResampledVolumeSlicer, ResampledIndexVolumeSlicer
 from xipy.volume_utils import maximum_world_distance, signal_array_to_masked_vol
 from nutmeg.core.tfbeam import load_tfbeam
 from nutmeg.core import tfbeam
@@ -639,9 +639,12 @@ class TFBeamManager( OverlayInterface ):
 ##         overlay = SampledVolumeSlicer(img, bbox=self.bbox,
 ##                                       mask=np.logical_not(m_arr.mask),
 ##                                       grid_spacing=grid_spacing)
-        overlay = ResampledVolumeSlicer(img, bbox=self.bbox,
-                                        mask=np.logical_not(m_arr.mask),
-                                        grid_spacing=grid_spacing)
+##         overlay = ResampledVolumeSlicer(img, bbox=self.bbox,
+##                                         mask=np.logical_not(m_arr.mask),
+##                                         grid_spacing=grid_spacing)
+        overlay = ResampledIndexVolumeSlicer(img, norm=self.norm,
+                                             bbox=self.bbox,
+                                             grid_spacing=grid_spacing)
         return overlay
         
     #-------------------------------------------------------------------------

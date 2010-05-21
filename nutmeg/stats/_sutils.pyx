@@ -11,12 +11,18 @@ cimport cython
 def index(np.ndarray[np.npy_double, ndim=1] t, 
           np.ndarray[np.npy_double, ndim=1] dist):
     """Pidgeon-hole the values of t (along the 0th dimension) based on
-    the quantiles in dist
+    the (arranged) quantiles in dist.
+
+    Notes
+    -----
+    It is assumed that the quantized values of dist are
+    ordered from low to high
 
     Returns
     -------
     ti : ndarray
-      the indices in [ 0, len(dist) )   
+      the indices mapping t[i] <= dist[ti[i]],
+      ti's range is [ 0, len(dist) )   
     """
     cdef np.ndarray si = np.argsort(t)
     cdef Py_ssize_t i, nt, nd
