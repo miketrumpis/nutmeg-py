@@ -52,7 +52,7 @@
         <li class="right" >
           <a href="nutmeg.numutils.html" title="numutils"
              accesskey="P">previous</a> |</li>
-  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
   <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
 
           <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
@@ -64,7 +64,7 @@
             <h3><a href="../../contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="">stats.beam_stats</a><ul>
-<li><a class="reference external" href="#module-stats-beam-stats">Module: <tt class="docutils literal"><span class="pre">stats.beam_stats</span></tt></a></li>
+<li><a class="reference external" href="#module-nutmeg.stats.beam_stats">Module: <tt class="docutils literal"><span class="pre">stats.beam_stats</span></tt></a></li>
 <li><a class="reference external" href="#classes">Classes</a><ul>
 <li><a class="reference external" href="#beamactivationaverager"><tt class="docutils literal"><span class="pre">BeamActivationAverager</span></tt></a></li>
 <li><a class="reference external" href="#beamcomparator"><tt class="docutils literal"><span class="pre">BeamComparator</span></tt></a></li>
@@ -113,33 +113,494 @@
             
   <div class="section" id="stats-beam-stats">
 <h1>stats.beam_stats<a class="headerlink" href="#stats-beam-stats" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-stats-beam-stats">
-<h2>Module: <tt class="xref docutils literal"><span class="pre">stats.beam_stats</span></tt><a class="headerlink" href="#module-stats-beam-stats" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-nutmeg.stats.beam_stats">
+<h2>Module: <tt class="xref docutils literal"><span class="pre">stats.beam_stats</span></tt><a class="headerlink" href="#module-nutmeg.stats.beam_stats" title="Permalink to this headline">¶</a></h2>
 <p>Inheritance diagram for <tt class="docutils literal"><span class="pre">nutmeg.stats.beam_stats</span></tt>:</p>
 </div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="beamactivationaverager">
-<h3><tt class="xref docutils literal"><span class="pre">BeamActivationAverager</span></tt><a class="headerlink" href="#beamactivationaverager" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.stats.beam_stats.BeamActivationAverager" class="reference internal" href="#nutmeg.stats.beam_stats.BeamActivationAverager"><tt class="xref docutils literal"><span class="pre">BeamActivationAverager</span></tt></a><a class="headerlink" href="#beamactivationaverager" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.beam_stats.BeamActivationAverager">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.beam_stats.</tt><tt class="descname">BeamActivationAverager</tt><big>(</big><em>beam_list</em>, <em>subject_labels</em>, <em>condition_labels</em>, <em>aligned_voxels=()</em>, <em>**b_kws</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamActivationAverager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.stats.beam_stats.BeamComparator" class="reference internal" href="#nutmeg.stats.beam_stats.BeamComparator"><tt class="xref docutils literal"><span class="pre">nutmeg.stats.beam_stats.BeamComparator</span></tt></a></p>
+<p>This BeamComparator looks at the activation in a given condition for
+a group of subjects.</p>
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamActivationAverager.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>beam_list</em>, <em>subject_labels</em>, <em>condition_labels</em>, <em>aligned_voxels=()</em>, <em>**b_kws</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamActivationAverager.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>beam_list</strong> : list</p>
+<blockquote>
+<p>a length-n list of beam objects of paths to beam files</p>
+</blockquote>
+<p><strong>subject_labels</strong> : list</p>
+<blockquote>
+<p>a length-n list of labels (num, str, whatever) labeling each beam</p>
+</blockquote>
+<p><strong>condition_labels</strong> : list</p>
+<blockquote>
+<p>a length-n list of labels (num, str, whatever) labeling each beam</p>
+</blockquote>
+<p><strong>b_kws</strong> : dict, optional</p>
+<blockquote class="last">
+<p>if the beam_list is supplied as a list of paths, then these are
+optional arguments to be used when loading the beams</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamActivationAverager.beam_sig">
+<tt class="descname">beam_sig</tt><big>(</big><em>cond</em>, <em>subj</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamActivationAverager.beam_sig" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the signal from the beam indexed by (cond, subj).
+Importantly, returned samples of the function s(vox) ordered in
+a consistent voxel ordering</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamActivationAverager.compare">
+<tt class="descname">compare</tt><big>(</big><em>conditions=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamActivationAverager.compare" title="Permalink to this definition">¶</a></dt>
+<dd>Returns a list of activations, and an average activation for
+each condition specified</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="beamcomparator">
-<h3><tt class="xref docutils literal"><span class="pre">BeamComparator</span></tt><a class="headerlink" href="#beamcomparator" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.stats.beam_stats.BeamComparator" class="reference internal" href="#nutmeg.stats.beam_stats.BeamComparator"><tt class="xref docutils literal"><span class="pre">BeamComparator</span></tt></a><a class="headerlink" href="#beamcomparator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.beam_stats.BeamComparator">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.beam_stats.</tt><tt class="descname">BeamComparator</tt><big>(</big><em>beam_list</em>, <em>subject_labels</em>, <em>condition_labels</em>, <em>aligned_voxels=()</em>, <em>**b_kws</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamComparator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">object</span></tt></p>
+<p>This class will manage beam comparisons among conditions or across
+conditions. For any comparison specified, it will prune the voxels in
+each beam such that all voxels intersect with each other, and also with
+the MNI voxel space.</p>
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamComparator.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>beam_list</em>, <em>subject_labels</em>, <em>condition_labels</em>, <em>aligned_voxels=()</em>, <em>**b_kws</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamComparator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>beam_list</strong> : list</p>
+<blockquote>
+<p>a length-n list of beam objects of paths to beam files</p>
+</blockquote>
+<p><strong>subject_labels</strong> : list</p>
+<blockquote>
+<p>a length-n list of labels (num, str, whatever) labeling each beam</p>
+</blockquote>
+<p><strong>condition_labels</strong> : list</p>
+<blockquote>
+<p>a length-n list of labels (num, str, whatever) labeling each beam</p>
+</blockquote>
+<p><strong>b_kws</strong> : dict, optional</p>
+<blockquote class="last">
+<p>if the beam_list is supplied as a list of paths, then these are
+optional arguments to be used when loading the beams</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamComparator.align_voxels">
+<tt class="descname">align_voxels</tt><big>(</big><em>align_all=False</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamComparator.align_voxels" title="Permalink to this definition">¶</a></dt>
+<dd><p>The &#8220;prototype&#8221; of align_voxels() aligns voxels across
+subjects at each condition. All resulting data are dicts keyed
+by condition.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>align_all</strong> : bool</p>
+<blockquote>
+<p>Aligns voxels across all beams in the comparison group, rather
+than separately per condition</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>(all these items get defined on the object as a result of this method)</strong> :</p>
+<p><strong>inter_vox</strong> : dict</p>
+<blockquote>
+<p>lists of intersecting voxels</p>
+</blockquote>
+<p><strong>mni_voxel_map</strong> : dict</p>
+<blockquote>
+<p>lists of index locations of intersecting voxels on an ordered
+list of MNI voxels</p>
+</blockquote>
+<p><strong>beam_voxel_maps</strong> : dict</p>
+<blockquote class="last">
+<p>lists of index locations of intersecting voxels on the ordered
+voxels list of each beam.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamComparator.beam">
+<tt class="descname">beam</tt><big>(</big><em>cond</em>, <em>subj</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamComparator.beam" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the beam object corresponding to a given condition and subject.</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamComparator.beam_sig">
+<tt class="descname">beam_sig</tt><big>(</big><em>cond</em>, <em>subj</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamComparator.beam_sig" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the signal from the beam indexed by (cond, subj).
+Importantly, returned samples of the function s(vox) ordered in
+a consistent voxel ordering</dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.stats.beam_stats.BeamComparator.beams">
+<em class="property">
+static </em><tt class="descname">beams</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamComparator.beams" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamComparator.clear_cache">
+<tt class="descname">clear_cache</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamComparator.clear_cache" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamComparator.compare">
+<tt class="descname">compare</tt><big>(</big><em>conditions=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamComparator.compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>prototype</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>sample_beams</strong> : list</p>
+<blockquote>
+<p>a len(conditions) length list of n_subj length lists of
+comparison beams</p>
+</blockquote>
+<p><strong>mni_maps</strong> : list</p>
+<blockquote>
+<p>a len(conditions) length list of maps to MNI voxels</p>
+</blockquote>
+<p><strong>inter_vox :</strong> :</p>
+<blockquote>
+<p>a len(conditions) length list</p>
+</blockquote>
+<p><strong>avg_beams</strong> : list</p>
+<blockquote class="last">
+<p>a len(conditions) length list of average comparisons</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="nutmeg.stats.beam_stats.BeamComparator.from_matlab_ptr_file">
+<em class="property">
+classmethod </em><tt class="descname">from_matlab_ptr_file</tt><big>(</big><em>class_type</em>, <em>mfile</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamComparator.from_matlab_ptr_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates a BeamComparator-type object from a MATLAB
+(or NUTMEG) pointer file.</p>
+<p>ex: (a shallow sublass of BeamComparitor)</p>
+<dl class="docutils">
+<dt>class MyBeamComparison (BeamComparitor):</dt>
+<dd>pass</dd>
+</dl>
+<p>c = MyBeamComparison.from_matlab_ptr_file(m_file, ratio_type=&#8217;f raw&#8217;)
+results = c.compare()</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mfile</strong> : string</p>
+<blockquote>
+<p>the .mat file that holds subject/condition labels and paths to
+the tfbeam mat files</p>
+</blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote class="last">
+<p>keyword arguments for constructing TFBeams</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="beamcontrastaverager">
-<h3><tt class="xref docutils literal"><span class="pre">BeamContrastAverager</span></tt><a class="headerlink" href="#beamcontrastaverager" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.stats.beam_stats.BeamContrastAverager" class="reference internal" href="#nutmeg.stats.beam_stats.BeamContrastAverager"><tt class="xref docutils literal"><span class="pre">BeamContrastAverager</span></tt></a><a class="headerlink" href="#beamcontrastaverager" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.beam_stats.BeamContrastAverager">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.beam_stats.</tt><tt class="descname">BeamContrastAverager</tt><big>(</big><em>beam_list</em>, <em>subject_labels</em>, <em>condition_labels</em>, <em>aligned_voxels=()</em>, <em>**b_kws</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamContrastAverager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.stats.beam_stats.BeamComparator" class="reference internal" href="#nutmeg.stats.beam_stats.BeamComparator"><tt class="xref docutils literal"><span class="pre">nutmeg.stats.beam_stats.BeamComparator</span></tt></a></p>
+<p>This BeamComparator looks at the contrast between conditions for a
+group of subjects.</p>
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamContrastAverager.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>beam_list</em>, <em>subject_labels</em>, <em>condition_labels</em>, <em>aligned_voxels=()</em>, <em>**b_kws</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamContrastAverager.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>beam_list</strong> : list</p>
+<blockquote>
+<p>a length-n list of beam objects of paths to beam files</p>
+</blockquote>
+<p><strong>subject_labels</strong> : list</p>
+<blockquote>
+<p>a length-n list of labels (num, str, whatever) labeling each beam</p>
+</blockquote>
+<p><strong>condition_labels</strong> : list</p>
+<blockquote>
+<p>a length-n list of labels (num, str, whatever) labeling each beam</p>
+</blockquote>
+<p><strong>b_kws</strong> : dict, optional</p>
+<blockquote class="last">
+<p>if the beam_list is supplied as a list of paths, then these are
+optional arguments to be used when loading the beams</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamContrastAverager.align_voxels">
+<tt class="descname">align_voxels</tt><big>(</big><em>**kw</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamContrastAverager.align_voxels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.BeamContrastAverager.compare">
+<tt class="descname">compare</tt><big>(</big><em>conditions=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.BeamContrastAverager.compare" title="Permalink to this definition">¶</a></dt>
+<dd>Returns a contrast beam for each subject, for each condition pair
+specified, as well as an average contrast beam for each condition pair.
+If the conditions are specified as [(a,b)], the contrast is
+beam(a, subj) - beam(b, subj)</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="snpmonesampt">
-<h3><tt class="xref docutils literal"><span class="pre">SnPMOneSampT</span></tt><a class="headerlink" href="#snpmonesampt" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.stats.beam_stats.SnPMOneSampT" class="reference internal" href="#nutmeg.stats.beam_stats.SnPMOneSampT"><tt class="xref docutils literal"><span class="pre">SnPMOneSampT</span></tt></a><a class="headerlink" href="#snpmonesampt" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.beam_stats.SnPMOneSampT">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.beam_stats.</tt><tt class="descname">SnPMOneSampT</tt><big>(</big><em>beam_comp</em>, <em>condition</em>, <em>n_perm</em>, <em>force_half_perms=False</em>, <em>init=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.SnPMOneSampT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.stats.beam_stats.SnPMTester" class="reference internal" href="#nutmeg.stats.beam_stats.SnPMTester"><tt class="xref docutils literal"><span class="pre">nutmeg.stats.beam_stats.SnPMTester</span></tt></a></p>
+<p>Performs a one sample t-test on the results of
+beam_comp.compare(conditions=conditions).
+May be a test of activation significance, contrast significance, etc.</p>
+<p>Tests whether the mean of the comparisons is significantly different than 0.</p>
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.SnPMOneSampT.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>beam_comp</em>, <em>condition</em>, <em>n_perm</em>, <em>force_half_perms=False</em>, <em>init=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.SnPMOneSampT.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up an SnPMTester for a 1-sample T test.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>beam_comp</strong> : a BeamComparator</p>
+<p><strong>condition</strong> : label, or list of labels</p>
+<blockquote>
+<p>If testing a BeamActivationAverager: one of beam_comp.conds
+If testing a BeamContrastAveragor: a pair drawn from beam_comp.conds</p>
+</blockquote>
+<p><strong>n_perm</strong> : int</p>
+<blockquote>
+<p>The number of permutations, up to 2**(number-of-observations).
+If n_perm is given as the maximum, only half the permutations
+will actually be tested (from symmetry of the permutations).</p>
+</blockquote>
+<p><strong>force_half_perms</strong> : bool, optional</p>
+<blockquote>
+<p>Ignore the n_perm argument, and test half the permutations
+(in order to compute the full set of permutations)</p>
+</blockquote>
+<p><strong>init</strong> : bool, optional</p>
+<blockquote class="last">
+<p>Enforce loading and computation of comparisons at construction
+time. Otherwise, initialization will be deferred until test time.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.stats.beam_stats.SnPMOneSampT.num_observations">
+<em class="property">
+static </em><tt class="descname">num_observations</tt><big>(</big><em>condition</em>, <em>c_labels</em>, <em>s_labels</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.SnPMOneSampT.num_observations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the number of observations in a One Sample SnPM T-test
+set up, for given specs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>condition</strong> : str or iterable</p>
+<blockquote>
+<p>a condition or contrast label</p>
+</blockquote>
+<p><strong>c_labels</strong> : iterable</p>
+<blockquote>
+<p>all condition labels in the comparison (IE, BeamComparator.c_labels)</p>
+</blockquote>
+<p><strong>s_labels</strong> : iterable</p>
+<blockquote>
+<p>all subject labels in the comparison (IE, BeamComparator.s_labels)</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>the number of observations for the condition</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.stats.beam_stats.SnPMOneSampT.num_possible_permutations">
+<em class="property">
+static </em><tt class="descname">num_possible_permutations</tt><big>(</big><em>condition</em>, <em>c_labels</em>, <em>s_labels</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.SnPMOneSampT.num_possible_permutations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="snpmtester">
-<h3><tt class="xref docutils literal"><span class="pre">SnPMTester</span></tt><a class="headerlink" href="#snpmtester" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.stats.beam_stats.SnPMTester" class="reference internal" href="#nutmeg.stats.beam_stats.SnPMTester"><tt class="xref docutils literal"><span class="pre">SnPMTester</span></tt></a><a class="headerlink" href="#snpmtester" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.beam_stats.SnPMTester">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.beam_stats.</tt><tt class="descname">SnPMTester</tt><big>(</big><em>beam_comp</em>, <em>conditions</em>, <em>n_perm</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.SnPMTester" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.SnPMTester.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>beam_comp</em>, <em>conditions</em>, <em>n_perm</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.SnPMTester.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.SnPMTester.test">
+<tt class="descname">test</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.SnPMTester.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a univariate statistical test at each time-frequency-voxel,
+filling in these measures:</p>
+<p>T &#8211; the statistic at each point
+maxT &#8211; the maximum statistic of all permuted measurements
+minT &#8211; the minimum statistic of all permuted measurements
+percentiles &#8211; the &#8220;ranking&#8221; of the statistics in T relative to all</p>
+<blockquote>
+the permuted statistics</blockquote>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="snpmunpairedt">
-<h3><tt class="xref docutils literal"><span class="pre">SnPMUnpairedT</span></tt><a class="headerlink" href="#snpmunpairedt" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.stats.beam_stats.SnPMUnpairedT" class="reference internal" href="#nutmeg.stats.beam_stats.SnPMUnpairedT"><tt class="xref docutils literal"><span class="pre">SnPMUnpairedT</span></tt></a><a class="headerlink" href="#snpmunpairedt" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.beam_stats.SnPMUnpairedT">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.beam_stats.</tt><tt class="descname">SnPMUnpairedT</tt><big>(</big><em>beam_comp</em>, <em>conditions</em>, <em>n_perm</em>, <em>force_half_perms=False</em>, <em>init=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.SnPMUnpairedT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.stats.beam_stats.SnPMTester" class="reference internal" href="#nutmeg.stats.beam_stats.SnPMTester"><tt class="xref docutils literal"><span class="pre">nutmeg.stats.beam_stats.SnPMTester</span></tt></a></p>
+<p>Performs a t-test of significance between either:
+2 conditions listed in conditions (eg: [1, 2])
+2 condition contrasts listed in conditions (eg: [[1,2],[3,4]])</p>
+<p>If sample_beams is provided, it is also a lenth-2 list-of-lists,
+where each sublist contains the TFBeam samples for its condition.</p>
+<dl class="method">
+<dt id="nutmeg.stats.beam_stats.SnPMUnpairedT.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>beam_comp</em>, <em>conditions</em>, <em>n_perm</em>, <em>force_half_perms=False</em>, <em>init=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.SnPMUnpairedT.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.stats.beam_stats.SnPMUnpairedT.num_observations">
+<em class="property">
+static </em><tt class="descname">num_observations</tt><big>(</big><em>cpair</em>, <em>c_labels</em>, <em>s_labels</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.SnPMUnpairedT.num_observations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the number of observations in Unpaired SnPM T-test
+set up, for given specs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>cpair</strong> : iterable</p>
+<blockquote>
+<p>a pair of condition or contrast labels</p>
+</blockquote>
+<p><strong>c_labels</strong> : iterable</p>
+<blockquote>
+<p>all condition labels in the comparison (IE, BeamComparator.c_labels)</p>
+</blockquote>
+<p><strong>s_labels</strong> : iterable</p>
+<blockquote>
+<p>all subject labels in the comparison (IE, BeamComparator.s_labels)</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>(na, nb)</strong> : the numbers of observations for the each condition</p>
+<p class="last"><strong>in the pair</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.stats.beam_stats.SnPMUnpairedT.num_possible_permutations">
+<em class="property">
+static </em><tt class="descname">num_possible_permutations</tt><big>(</big><em>cpair</em>, <em>c_labels</em>, <em>s_labels</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.SnPMUnpairedT.num_possible_permutations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="function">
 <h2>Function<a class="headerlink" href="#function" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nutmeg.stats.beam_stats.find_vox_intersection">
+<tt class="descclassname">nutmeg.stats.beam_stats.</tt><tt class="descname">find_vox_intersection</tt><big>(</big><em>vox_lists</em><big>)</big><a class="headerlink" href="#nutmeg.stats.beam_stats.find_vox_intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the interesction of all voxel coordinates in vox_lists.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vox_lists :</strong> :</p>
+<blockquote>
+<p>is an iterable container of (nvox x ncoord) arrays</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>inter_vox</strong> : ndarray</p>
+<blockquote>
+<p>the (len(intersection) x 3) array of intersecting voxels</p>
+</blockquote>
+<p><strong>vox_idx</strong> : list</p>
+<blockquote class="last">
+<p>the original index of each voxel coordinate in its original list</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 </div>
 
@@ -164,7 +625,7 @@
         <li class="right" >
           <a href="nutmeg.numutils.html" title="numutils"
              >previous</a> |</li>
-  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
   <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
 
           <li><a href="../index.html" >API</a> &raquo;</li> 

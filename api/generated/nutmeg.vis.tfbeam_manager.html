@@ -52,7 +52,7 @@
         <li class="right" >
           <a href="nutmeg.vis.mpl_tf_plane.html" title="vis.mpl_tf_plane"
              accesskey="P">previous</a> |</li>
-  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
   <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
 
           <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
@@ -64,7 +64,7 @@
             <h3><a href="../../contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="">vis.tfbeam_manager</a><ul>
-<li><a class="reference external" href="#module-vis-tfbeam-manager">Module: <tt class="docutils literal"><span class="pre">vis.tfbeam_manager</span></tt></a></li>
+<li><a class="reference external" href="#module-nutmeg.vis.tfbeam_manager">Module: <tt class="docutils literal"><span class="pre">vis.tfbeam_manager</span></tt></a></li>
 <li><a class="reference external" href="#classes">Classes</a><ul>
 <li><a class="reference external" href="#nmtimefreqwindow"><tt class="docutils literal"><span class="pre">NmTimeFreqWindow</span></tt></a></li>
 <li><a class="reference external" href="#tfbeammanager"><tt class="docutils literal"><span class="pre">TFBeamManager</span></tt></a></li>
@@ -108,17 +108,285 @@
             
   <div class="section" id="vis-tfbeam-manager">
 <h1>vis.tfbeam_manager<a class="headerlink" href="#vis-tfbeam-manager" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-vis-tfbeam-manager">
-<h2>Module: <tt class="xref docutils literal"><span class="pre">vis.tfbeam_manager</span></tt><a class="headerlink" href="#module-vis-tfbeam-manager" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-nutmeg.vis.tfbeam_manager">
+<h2>Module: <tt class="xref docutils literal"><span class="pre">vis.tfbeam_manager</span></tt><a class="headerlink" href="#module-nutmeg.vis.tfbeam_manager" title="Permalink to this headline">¶</a></h2>
 <p>Inheritance diagram for <tt class="docutils literal"><span class="pre">nutmeg.vis.tfbeam_manager</span></tt>:</p>
 </div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="nmtimefreqwindow">
-<h3><tt class="xref docutils literal"><span class="pre">NmTimeFreqWindow</span></tt><a class="headerlink" href="#nmtimefreqwindow" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.vis.tfbeam_manager.NmTimeFreqWindow" class="reference internal" href="#nutmeg.vis.tfbeam_manager.NmTimeFreqWindow"><tt class="xref docutils literal"><span class="pre">NmTimeFreqWindow</span></tt></a><a class="headerlink" href="#nmtimefreqwindow" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.vis.tfbeam_manager.NmTimeFreqWindow">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.vis.tfbeam_manager.</tt><tt class="descname">NmTimeFreqWindow</tt><big>(</big><em>loc_connections</em>, <em>image_connections</em>, <em>image_props_connections</em>, <em>bbox</em>, <em>functional_manager=None</em>, <em>external_loc=None</em>, <em>parent=None</em>, <em>main_ref=None</em>, <em>tfbeam=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.NmTimeFreqWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">xipy.overlay.OverlayWindowInterface</span></tt></p>
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>loc_connections</em>, <em>image_connections</em>, <em>image_props_connections</em>, <em>bbox</em>, <em>functional_manager=None</em>, <em>external_loc=None</em>, <em>parent=None</em>, <em>main_ref=None</em>, <em>tfbeam=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new MplQT4TimeFreqWindow, which controls interaction
+with Nutmeg TFBeam objects. This window is a QT4TopLevelAuxiliaryWindow,
+giving it top level status. It contains:</p>
+<blockquote>
+<dl class="docutils">
+<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>a 2D image of the time-frequency plane with selectable bins (emits a</dt>
+<dd>functional image update event and a tf event, described below)</dd>
+<dt><a href="#id3"><span class="problematic" id="id4">*</span></a>a TFBeam management panel, with data management and feature</dt>
+<dd>localizations (events described below)</dd>
+</dl>
+<p><a href="#id5"><span class="problematic" id="id6">*</span></a>a threshold management panel, to create different mask criteria</p>
+<p>Time-frequency point updates cause emission of the tf_point signal.
+To cause methods to be connected to this signal, include them in the
+tf_connections iterable argument. Methods will have this signature
+pattern:
+meth(timept, freq_a, freq_b)</p>
+<p>Overlay image updates are also signalled. To cause methods to be
+connected, include them in the image_connections iterable argument.
+Methods will have this signature pattern:
+meth(obj)</p>
+<blockquote>
+<ul class="simple">
+<li>obj will give access to obj.overlay, obj.alpha,</li>
+<li>obj.norm, obj.fill_value</li>
+</ul>
+</blockquote>
+<p>Spatial location updates cause emission of the xyz_point signal. To
+cause methods to be connected to this signal, include them in the
+loc_connections interable argument. Methods will have this signature
+pattern:
+meth(x, y, z)</p>
+</blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>loc_connections: iterable</strong> :</p>
+<blockquote class="last">
+<blockquote>
+<p>Methods to connect to the xyz_point signal</p>
+</blockquote>
+<dl class="docutils">
+<dt>image_connections: iterable</dt>
+<dd><p class="first last">Methods to connect to the new_image signal</p>
+</dd>
+<dt>parent: QObject (optional)</dt>
+<dd><p class="first last">A QT4 QObject to set as the parent of this widget (thus causing
+this widget NOT to run as a top level window)</p>
+</dd>
+<dt>main_ref: QObject (optional)</dt>
+<dd><p class="first last">A QT4 QObject to be considered as the &#8220;parent&#8221; of this widget,
+when this widget is running as a top level window</p>
+</dd>
+<dt>tfbeam: TFBeam (optional)</dt>
+<dd><p class="first last">A TFBeam with which to preload the beam manager.</p>
+</dd>
+<dt><a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs:</dt>
+<dd><p class="first last">figsize, dpi for the time-frequency plane figure</p>
+</dd>
+</dl>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.activate">
+<tt class="descname">activate</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.activate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.bvox_signal">
+<tt class="descname">bvox_signal</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.bvox_signal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.deactivate">
+<tt class="descname">deactivate</tt><big>(</big><em>strip_overlay=False</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.deactivate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.update_tf_figure">
+<tt class="descname">update_tf_figure</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.update_tf_figure" title="Permalink to this definition">¶</a></dt>
+<dd>Updates the TF plane properties and array. Connect this to
+beam_vox_signal and image_props_changed</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="tfbeammanager">
-<h3><tt class="xref docutils literal"><span class="pre">TFBeamManager</span></tt><a class="headerlink" href="#tfbeammanager" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.vis.tfbeam_manager.TFBeamManager" class="reference internal" href="#nutmeg.vis.tfbeam_manager.TFBeamManager"><tt class="xref docutils literal"><span class="pre">TFBeamManager</span></tt></a><a class="headerlink" href="#tfbeammanager" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.vis.tfbeam_manager.</tt><tt class="descname">TFBeamManager</tt><big>(</big><em>bbox</em>, <em>image_signal=None</em>, <em>loc_signal=None</em>, <em>props_signal=None</em>, <em>beam_vox_signal=None</em>, <em>**traits</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">xipy.overlay.OverlayInterface</span></tt></p>
+<p>Manages the GUI manipulation of a TFBeam object, including:
+* Extrema localization in partitioned or all dimensions
+* Active to control ratio transforms
+* Reinterpreting data as various other useful types (NIPY Image,</p>
+<blockquote>
+(MaskedArray, VolumeSlicer type)</blockquote>
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>bbox</em>, <em>image_signal=None</em>, <em>loc_signal=None</em>, <em>props_signal=None</em>, <em>beam_vox_signal=None</em>, <em>**traits</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a TFBeamManager</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>bbox</strong> : iterable</p>
+<blockquote>
+<p>the {x,y,z} limits of the enrounding volume box to which TFBeam
+overlays will be mapped.</p>
+</blockquote>
+<p><strong>loc_signal</strong> : QtCore.pyqtSignal</p>
+<blockquote>
+<p>optional PyQt4 callback signal to emit when peak finding
+(call pattern is loc_signal.emit(x,y,z))</p>
+</blockquote>
+<p><strong>props_signal</strong> : QtCore.pyqtSignal</p>
+<blockquote>
+<p>optional PyQt4 callback signal to emit when image colormapping
+properties change</p>
+</blockquote>
+<p><strong>image_signal</strong> : QtCore.pyqtSignal</p>
+<blockquote>
+<p>optional PyQt4 callback signal to emit when updating the image
+(call pattern is image_signal.emit(self))</p>
+</blockquote>
+<p><strong>beam_vox_signal</strong> : QtCore.pyqtSignal</p>
+<blockquote class="last">
+<p>optional PyQt4 callback signal to emit when the current TFBeam
+voxel list index has changed. (call pattern is beam_vox_signal(vox))</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.alpha">
+<tt class="descname">alpha</tt><big>(</big><em>scale=1.0</em>, <em>threshold=True</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.alpha" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.find_alldim_peak">
+<tt class="descname">find_alldim_peak</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.find_alldim_peak" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.find_spatial_peak">
+<tt class="descname">find_spatial_peak</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.find_spatial_peak" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.find_tf_peak">
+<tt class="descname">find_tf_peak</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.find_tf_peak" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.good_vox">
+<tt class="descname">good_vox</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.good_vox" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.main_xyz_changed">
+<tt class="descname">main_xyz_changed</tt><big>(</big><em>*mri_xyz</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.main_xyz_changed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.make_panel">
+<tt class="descname">make_panel</tt><big>(</big><em>parent=None</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.make_panel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.map_stats_like_overlay">
+<tt class="descname">map_stats_like_overlay</tt><big>(</big><em>map_mask=False</em>, <em>mask_type='negative'</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.map_stats_like_overlay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a VolumeSlicer type for the current threshold scalar map.
+It is assumed that the map has the same voxel to world mapping
+as the current overlay.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>a VolumeSlicerInterface subclass (of the same type as the</strong> :</p>
+<p class="last"><strong>current overlay)</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.ordered_idx_alldim">
+<tt class="descname">ordered_idx_alldim</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.ordered_idx_alldim" title="Permalink to this definition">¶</a></dt>
+<dd>Create a list of sorted map indices for all dimensions</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.ordered_idx_spatial">
+<tt class="descname">ordered_idx_spatial</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.ordered_idx_spatial" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.ordered_idx_tf">
+<tt class="descname">ordered_idx_tf</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.ordered_idx_tf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.signal_image_props">
+<tt class="descname">signal_image_props</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.signal_image_props" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.signal_new_beam_vox_idx">
+<tt class="descname">signal_new_beam_vox_idx</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.signal_new_beam_vox_idx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.signal_new_image">
+<tt class="descname">signal_new_image</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.signal_new_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.signal_new_tf">
+<tt class="descname">signal_new_tf</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.signal_new_tf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.signal_new_vox">
+<tt class="descname">signal_new_vox</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.signal_new_vox" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.to_masked_array">
+<tt class="descname">to_masked_array</tt><big>(</big><em>t_idx</em>, <em>f_idx</em>, <em>grid_shape=None</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.to_masked_array" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.to_ni_image">
+<tt class="descname">to_ni_image</tt><big>(</big><em>t_idx</em>, <em>f_idx</em>, <em>grid_shape=None</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.to_ni_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.to_overlay">
+<tt class="descname">to_overlay</tt><big>(</big><em>t_idx</em>, <em>f_idx</em>, <em>grid_spacing=None</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.to_overlay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.update_beam">
+<tt class="descname">update_beam</tt><big>(</big><em>b</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.update_beam" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.work_arr">
+<tt class="descname">work_arr</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.work_arr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 </div>
@@ -144,7 +412,7 @@
         <li class="right" >
           <a href="nutmeg.vis.mpl_tf_plane.html" title="vis.mpl_tf_plane"
              >previous</a> |</li>
-  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
   <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
 
           <li><a href="../index.html" >API</a> &raquo;</li> 

@@ -52,7 +52,7 @@
         <li class="right" >
           <a href="nutmeg.stats.stats_utils.html" title="stats.stats_utils"
              accesskey="P">previous</a> |</li>
-  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
   <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
 
           <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
@@ -64,7 +64,7 @@
             <h3><a href="../../contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="">stats.tfstats_results</a><ul>
-<li><a class="reference external" href="#module-stats-tfstats-results">Module: <tt class="docutils literal"><span class="pre">stats.tfstats_results</span></tt></a></li>
+<li><a class="reference external" href="#module-nutmeg.stats.tfstats_results">Module: <tt class="docutils literal"><span class="pre">stats.tfstats_results</span></tt></a></li>
 <li><a class="reference external" href="#classes">Classes</a><ul>
 <li><a class="reference external" href="#adaptedtimefreqsnpmresults"><tt class="docutils literal"><span class="pre">AdaptedTimeFreqSnPMResults</span></tt></a></li>
 <li><a class="reference external" href="#timefreqsnpmresults"><tt class="docutils literal"><span class="pre">TimeFreqSnPMResults</span></tt></a></li>
@@ -109,21 +109,275 @@
             
   <div class="section" id="stats-tfstats-results">
 <h1>stats.tfstats_results<a class="headerlink" href="#stats-tfstats-results" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-stats-tfstats-results">
-<h2>Module: <tt class="xref docutils literal"><span class="pre">stats.tfstats_results</span></tt><a class="headerlink" href="#module-stats-tfstats-results" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-nutmeg.stats.tfstats_results">
+<h2>Module: <tt class="xref docutils literal"><span class="pre">stats.tfstats_results</span></tt><a class="headerlink" href="#module-nutmeg.stats.tfstats_results" title="Permalink to this headline">¶</a></h2>
 <p>Inheritance diagram for <tt class="docutils literal"><span class="pre">nutmeg.stats.tfstats_results</span></tt>:</p>
 </div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="adaptedtimefreqsnpmresults">
-<h3><tt class="xref docutils literal"><span class="pre">AdaptedTimeFreqSnPMResults</span></tt><a class="headerlink" href="#adaptedtimefreqsnpmresults" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.stats.tfstats_results.AdaptedTimeFreqSnPMResults" class="reference internal" href="#nutmeg.stats.tfstats_results.AdaptedTimeFreqSnPMResults"><tt class="xref docutils literal"><span class="pre">AdaptedTimeFreqSnPMResults</span></tt></a><a class="headerlink" href="#adaptedtimefreqsnpmresults" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.tfstats_results.AdaptedTimeFreqSnPMResults">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.tfstats_results.</tt><tt class="descname">AdaptedTimeFreqSnPMResults</tt><big>(</big><em>vox_stat</em>, <em>vox_map</em>, <em>vox_stat_ranking</em>, <em>p_scores_pos</em>, <em>p_scores_neg</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.AdaptedTimeFreqSnPMResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.stats.tfstats_results.TimeFreqSnPMResults" class="reference internal" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMResults"><tt class="xref docutils literal"><span class="pre">nutmeg.stats.tfstats_results.TimeFreqSnPMResults</span></tt></a></p>
+<p>This class adapts MATLAB Nutmeg results for TimeFreqSnPMResults
+functionality.</p>
+<dl class="method">
+<dt id="nutmeg.stats.tfstats_results.AdaptedTimeFreqSnPMResults.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>vox_stat</em>, <em>vox_map</em>, <em>vox_stat_ranking</em>, <em>p_scores_pos</em>, <em>p_scores_neg</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.AdaptedTimeFreqSnPMResults.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object that can report various statistical thresholds
+from MATLAB Nutmeg SnPM testing results. These results include
+the voxel statistic map, and the un/corrected p scores.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vox_stat</strong> : ndarray</p>
+<blockquote>
+<p>The statistical test value at each voxel</p>
+</blockquote>
+<p><strong>vox_map</strong> : ndarray</p>
+<blockquote>
+<p>The (nvox x 3) voxel index map into a volume array</p>
+</blockquote>
+<p><strong>vox_stat_ranking</strong> : ndarray</p>
+<blockquote>
+<p>This is equivalent to &#8220;uncorrected p values&#8221;, which is 
+the true test ranking in the sorted set of permuted test values.
+EG: if the true test value is the 75th largest among 100 permuted
+test results, vox_stat_ranking(r) = 0.75</p>
+</blockquote>
+<p><strong>p_scores_pos</strong> : ndarray</p>
+<blockquote>
+<p>The family-wise corrected significance scores at each voxel
+(positive tail)</p>
+</blockquote>
+<p><strong>p_scores_neg</strong> : ndarray</p>
+<blockquote class="last">
+<p>The family-wise corrected significance scores at each voxel
+(negative tail)</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="timefreqsnpmresults">
-<h3><tt class="xref docutils literal"><span class="pre">TimeFreqSnPMResults</span></tt><a class="headerlink" href="#timefreqsnpmresults" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.stats.tfstats_results.TimeFreqSnPMResults" class="reference internal" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMResults"><tt class="xref docutils literal"><span class="pre">TimeFreqSnPMResults</span></tt></a><a class="headerlink" href="#timefreqsnpmresults" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMResults">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.tfstats_results.</tt><tt class="descname">TimeFreqSnPMResults</tt><big>(</big><em>vox_stat</em>, <em>vox_map</em>, <em>vox_stat_ranking</em>, <em>max_stat_dist</em>, <em>min_stat_dist</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.utils.array_pickler_mixin" class="reference external" href="nutmeg.utils.html#nutmeg.utils.array_pickler_mixin"><tt class="xref docutils literal"><span class="pre">nutmeg.utils.array_pickler_mixin</span></tt></a></p>
+<dl class="method">
+<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMResults.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>vox_stat</em>, <em>vox_map</em>, <em>vox_stat_ranking</em>, <em>max_stat_dist</em>, <em>min_stat_dist</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMResults.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an object that can report various statistical thresholds
+from SnPM testing results.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vox_stat</strong> : ndarray</p>
+<blockquote>
+<p>The statistical test value at each voxel</p>
+</blockquote>
+<p><strong>vox_map</strong> : ndarray</p>
+<blockquote>
+<p>The (nvox x 3) voxel index map into a volume array</p>
+</blockquote>
+<p><strong>vox_stat_ranking</strong> : ndarray</p>
+<blockquote>
+<p>The true test ranking in the sorted set of permuted test values.
+EG: if the true test value is the 75th largest among 100 permuted
+test results, vox_stat_ranking(r) = 0.75</p>
+</blockquote>
+<p><strong>max_stat_dist</strong> : ndarray</p>
+<blockquote>
+<p>The maximal test result found at each voxel</p>
+</blockquote>
+<p><strong>min_stat_dist</strong> : ndarray</p>
+<blockquote class="last">
+<p>The minimal test result found at each voxel</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMResults.map_of_significant_clusters">
+<tt class="descname">map_of_significant_clusters</tt><big>(</big><em>tail</em>, <em>alpha=0.050000000000000003</em>, <em>gamma=0.050000000000000003</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMResults.map_of_significant_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a map based on cluster-size significance.
+First find all the clusters of voxels exceeding the
+individual-statistic p value of alpha. Then, from a distribution
+of cluster sizes, return a map of clusters whose size exceed
+the p value of gamma.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>tail</strong> : str in {&#8216;pos&#8217;, &#8216;neg&#8217;}</p>
+<blockquote>
+<p>Use p values for whether the test statistic if significantly
+large or small, respectively</p>
+</blockquote>
+<p><strong>alpha</strong> : float</p>
+<blockquote>
+<p>Individual test statistic confidence level</p>
+</blockquote>
+<p><strong>gamma</strong> : float</p>
+<blockquote>
+<p>Cluster size statistic confidence level</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cluster_map</strong> : ndarray</p>
+<blockquote class="last">
+<p>binary map which is non-negative at significant clusters</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMResults.p_score_from_maximal_statistics">
+<tt class="descname">p_score_from_maximal_statistics</tt><big>(</big><em>tail</em>, <em>t=None</em>, <em>pooled_dims=()</em>, <em>corrected_dims=()</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMResults.p_score_from_maximal_statistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns family-wise corrected p values for the requested tail
+based on the distribution of the most extreme statistics from
+each permuted test. Optionally pool the distributions across
+dimensions, or further correct for multiple comparisons across
+dimensions (IE, duplicate maximal stats across those dims)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>tail</strong> : str</p>
+<blockquote>
+<p>{&#8216;pos&#8217;, &#8216;neg&#8217;} &#8211; return p values for whether the test statistic
+if significantly large or small, respectively</p>
+</blockquote>
+<p><strong>t</strong> : ndarray, optional</p>
+<blockquote>
+<p>Optionally, score these statistics against (rather than this object&#8217;s
+statistics) against the maximal stat distribution.</p>
+</blockquote>
+<p><strong>pooled_dims</strong> : tuple, optional (can not intersect with corrected_dims)</p>
+<blockquote>
+<p>If not empty, pool the extreme statistics across the given dims
+to form a new maximal distribution.</p>
+</blockquote>
+<p><strong>corrected_dims</strong> : tuple, optional (can not intersect with pooled_dims)</p>
+<blockquote class="last">
+<p>If not empty, replace the distribution along this dimension with
+the single maximal value.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMResults.threshold">
+<tt class="descname">threshold</tt><big>(</big><em>alpha</em>, <em>tail</em>, <em>pooled_dims=()</em>, <em>corrected_dims=()</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMResults.threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a the statistic value threshold for the significance level
+alpha, either in the positive or negative tail of the maximal
+stats distributions. Optionally pool the distributions across
+dimensions, or further correct for multiple comparisons across
+dimensions (IE, duplicate maximal stats across those dims)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>alpha</strong> : float</p>
+<blockquote>
+<p>The significance threshold (as in p &lt; 0.05)</p>
+</blockquote>
+<p><strong>tail</strong> : str</p>
+<blockquote>
+<p>{&#8216;pos&#8217;, &#8216;neg&#8217;} &#8211; return p values for whether the test statistic
+if significantly large or small, respectively</p>
+</blockquote>
+<p><strong>pooled_dims</strong> : tuple, optional (can not intersect with corrected_dims)</p>
+<blockquote>
+<p>If not empty, pool the extreme statistics across the given dims
+to form a new maximal distribution.</p>
+</blockquote>
+<p><strong>corrected_dims</strong> : tuple, optional (can not intersect with pooled_dims)</p>
+<blockquote>
+<p>If not empty, replace the distribution along this dimension with
+the single maximal value.</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>(threshold(t,f), exact_alpha)</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMResults.uncorrected_p_score">
+<tt class="descname">uncorrected_p_score</tt><big>(</big><em>tail</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMResults.uncorrected_p_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>The t_rank represent how much of the mass of the SnPM
+distribution (at each voxel) is less than the true test value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>tail</strong> : str</p>
+<blockquote>
+<p>{&#8216;pos&#8217;, &#8216;neg&#8217;} &#8211; return p values for whether the test statistic
+if significantly large or small, respectively</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>p</strong> : ndarray</p>
+<blockquote class="last">
+<p>a map of P values for the chosen tail</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nutmeg.stats.tfstats_results.adapt_mlab_tf_snpm_stats">
+<tt class="descclassname">nutmeg.stats.tfstats_results.</tt><tt class="descname">adapt_mlab_tf_snpm_stats</tt><big>(</big><em>combo_beam</em>, <em>avg_beam=None</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.adapt_mlab_tf_snpm_stats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.stats.tfstats_results.load_tf_snpm_stats">
+<tt class="descclassname">nutmeg.stats.tfstats_results.</tt><tt class="descname">load_tf_snpm_stats</tt><big>(</big><em>snpm_arrays</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.load_tf_snpm_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a TimeFreqSnPMResults</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>snpm_arrays</strong> : a path or ndarray of SnPM data</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 </div>
 
@@ -148,7 +402,7 @@
         <li class="right" >
           <a href="nutmeg.stats.stats_utils.html" title="stats.stats_utils"
              >previous</a> |</li>
-  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
   <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
 
           <li><a href="../index.html" >API</a> &raquo;</li> 

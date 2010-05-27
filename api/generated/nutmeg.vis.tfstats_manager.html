@@ -52,7 +52,7 @@
         <li class="right" >
           <a href="nutmeg.vis.tfbeam_manager.html" title="vis.tfbeam_manager"
              accesskey="P">previous</a> |</li>
-  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
   <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
 
           <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
@@ -64,7 +64,7 @@
             <h3><a href="../../contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="">vis.tfstats_manager</a><ul>
-<li><a class="reference external" href="#module-vis-tfstats-manager">Module: <tt class="docutils literal"><span class="pre">vis.tfstats_manager</span></tt></a></li>
+<li><a class="reference external" href="#module-nutmeg.vis.tfstats_manager">Module: <tt class="docutils literal"><span class="pre">vis.tfstats_manager</span></tt></a></li>
 <li><a class="reference external" href="#classes">Classes</a><ul>
 <li><a class="reference external" href="#simplethresholdmask"><tt class="docutils literal"><span class="pre">SimpleThresholdMask</span></tt></a></li>
 <li><a class="reference external" href="#statsthresholdmask"><tt class="docutils literal"><span class="pre">StatsThresholdMask</span></tt></a></li>
@@ -110,23 +110,115 @@
             
   <div class="section" id="vis-tfstats-manager">
 <h1>vis.tfstats_manager<a class="headerlink" href="#vis-tfstats-manager" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-vis-tfstats-manager">
-<h2>Module: <tt class="xref docutils literal"><span class="pre">vis.tfstats_manager</span></tt><a class="headerlink" href="#module-vis-tfstats-manager" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-nutmeg.vis.tfstats_manager">
+<h2>Module: <tt class="xref docutils literal"><span class="pre">vis.tfstats_manager</span></tt><a class="headerlink" href="#module-nutmeg.vis.tfstats_manager" title="Permalink to this headline">¶</a></h2>
 <p>Inheritance diagram for <tt class="docutils literal"><span class="pre">nutmeg.vis.tfstats_manager</span></tt>:</p>
 </div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="simplethresholdmask">
-<h3><tt class="xref docutils literal"><span class="pre">SimpleThresholdMask</span></tt><a class="headerlink" href="#simplethresholdmask" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.vis.tfstats_manager.SimpleThresholdMask" class="reference internal" href="#nutmeg.vis.tfstats_manager.SimpleThresholdMask"><tt class="xref docutils literal"><span class="pre">SimpleThresholdMask</span></tt></a><a class="headerlink" href="#simplethresholdmask" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.vis.tfstats_manager.SimpleThresholdMask">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.vis.tfstats_manager.</tt><tt class="descname">SimpleThresholdMask</tt><a class="headerlink" href="#nutmeg.vis.tfstats_manager.SimpleThresholdMask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.vis.tfstats_manager.TimeFreqThresholdMap" class="reference internal" href="#nutmeg.vis.tfstats_manager.TimeFreqThresholdMap"><tt class="xref docutils literal"><span class="pre">nutmeg.vis.tfstats_manager.TimeFreqThresholdMap</span></tt></a></p>
+<p>A SimpleThresholdMask creates masking parameters based on a function
+level comparison. It can only threshold on the MEG activation signal
+and the stats test score.</p>
+<dl class="method">
+<dt id="nutmeg.vis.tfstats_manager.SimpleThresholdMask.__init__">
+<tt class="descname">__init__</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfstats_manager.SimpleThresholdMask.__init__" title="Permalink to this definition">¶</a></dt>
+<dd>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="statsthresholdmask">
-<h3><tt class="xref docutils literal"><span class="pre">StatsThresholdMask</span></tt><a class="headerlink" href="#statsthresholdmask" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.vis.tfstats_manager.StatsThresholdMask" class="reference internal" href="#nutmeg.vis.tfstats_manager.StatsThresholdMask"><tt class="xref docutils literal"><span class="pre">StatsThresholdMask</span></tt></a><a class="headerlink" href="#statsthresholdmask" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.vis.tfstats_manager.StatsThresholdMask">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.vis.tfstats_manager.</tt><tt class="descname">StatsThresholdMask</tt><a class="headerlink" href="#nutmeg.vis.tfstats_manager.StatsThresholdMask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.vis.tfstats_manager.TimeFreqThresholdMap" class="reference internal" href="#nutmeg.vis.tfstats_manager.TimeFreqThresholdMap"><tt class="xref docutils literal"><span class="pre">nutmeg.vis.tfstats_manager.TimeFreqThresholdMap</span></tt></a></p>
+<p>A StatsThresholdMask creates masking parameters based on an
+analysis of significance of a certain test statistic</p>
+<dl class="method">
+<dt id="nutmeg.vis.tfstats_manager.StatsThresholdMask.__init__">
+<tt class="descname">__init__</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfstats_manager.StatsThresholdMask.__init__" title="Permalink to this definition">¶</a></dt>
+<dd>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="timefreqsnpmaps">
-<h3><tt class="xref docutils literal"><span class="pre">TimeFreqSnPMaps</span></tt><a class="headerlink" href="#timefreqsnpmaps" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.vis.tfstats_manager.TimeFreqSnPMaps" class="reference internal" href="#nutmeg.vis.tfstats_manager.TimeFreqSnPMaps"><tt class="xref docutils literal"><span class="pre">TimeFreqSnPMaps</span></tt></a><a class="headerlink" href="#timefreqsnpmaps" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.vis.tfstats_manager.TimeFreqSnPMaps">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.vis.tfstats_manager.</tt><tt class="descname">TimeFreqSnPMaps</tt><big>(</big><em>**traits</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfstats_manager.TimeFreqSnPMaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">enthought.traits.has_traits.HasTraits</span></tt></p>
+<p>This class interfaces with a TimeFreqSnPMResults object in
+order to provide different maps and thresholds for time-frequency
+MEG data.</p>
+<p>It also allows the user to create custom simple thresholds based
+on either the test statistic level, or the level of the MEG
+signal itself.</p>
+<dl class="method">
+<dt id="nutmeg.vis.tfstats_manager.TimeFreqSnPMaps.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>**traits</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfstats_manager.TimeFreqSnPMaps.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfstats_manager.TimeFreqSnPMaps.foo">
+<tt class="descname">foo</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfstats_manager.TimeFreqSnPMaps.foo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfstats_manager.TimeFreqSnPMaps.get_map_by_name">
+<tt class="descname">get_map_by_name</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfstats_manager.TimeFreqSnPMaps.get_map_by_name" title="Permalink to this definition">¶</a></dt>
+<dd>Given a threshold name, look up the threshold object in
+the user_thresholds list, and return the map</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="timefreqthresholdmap">
-<h3><tt class="xref docutils literal"><span class="pre">TimeFreqThresholdMap</span></tt><a class="headerlink" href="#timefreqthresholdmap" title="Permalink to this headline">¶</a></h3>
+<h3><a title="nutmeg.vis.tfstats_manager.TimeFreqThresholdMap" class="reference internal" href="#nutmeg.vis.tfstats_manager.TimeFreqThresholdMap"><tt class="xref docutils literal"><span class="pre">TimeFreqThresholdMap</span></tt></a><a class="headerlink" href="#timefreqthresholdmap" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.vis.tfstats_manager.TimeFreqThresholdMap">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.vis.tfstats_manager.</tt><tt class="descname">TimeFreqThresholdMap</tt><a class="headerlink" href="#nutmeg.vis.tfstats_manager.TimeFreqThresholdMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">xipy.overlay.ThresholdMap</span></tt></p>
+<p>This class offers adaptation from Time x Freq x Spatial maps
+to simple spatial maps (controlled by a (time, freq) index)</p>
+<dl class="method">
+<dt id="nutmeg.vis.tfstats_manager.TimeFreqThresholdMap.__init__">
+<tt class="descname">__init__</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfstats_manager.TimeFreqThresholdMap.__init__" title="Permalink to this definition">¶</a></dt>
+<dd>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.vis.tfstats_manager.TimeFreqThresholdMap.create_tf_binary_mask">
+<tt class="descname">create_tf_binary_mask</tt><big>(</big><em>type='negative'</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfstats_manager.TimeFreqThresholdMap.create_tf_binary_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a binary mask in the shape of _tf_map_scalars for the
+current threshold conditions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>type</strong> : str, optional</p>
+<blockquote class="last">
+<p>By default, make a MaskedArray convention mask (&#8216;negative&#8217;).
+Otherwise, set mask to True where values are unmasked (&#8216;positive&#8217;)</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 </div>
@@ -152,7 +244,7 @@
         <li class="right" >
           <a href="nutmeg.vis.tfbeam_manager.html" title="vis.tfbeam_manager"
              >previous</a> |</li>
-  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
   <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
 
           <li><a href="../index.html" >API</a> &raquo;</li> 

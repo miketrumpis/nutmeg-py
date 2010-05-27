@@ -52,7 +52,7 @@
         <li class="right" >
           <a href="nutmeg.stats.snpm_testing.html" title="stats.snpm_testing"
              accesskey="P">previous</a> |</li>
-  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
   <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
 
           <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
@@ -64,7 +64,7 @@
             <h3><a href="../../contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="">stats.stats_utils</a><ul>
-<li><a class="reference external" href="#module-stats-stats-utils">Module: <tt class="docutils literal"><span class="pre">stats.stats_utils</span></tt></a></li>
+<li><a class="reference external" href="#module-nutmeg.stats.stats_utils">Module: <tt class="docutils literal"><span class="pre">stats.stats_utils</span></tt></a></li>
 <li><a class="reference external" href="#functions">Functions</a></li>
 </ul>
 </li>
@@ -104,11 +104,32 @@
             
   <div class="section" id="stats-stats-utils">
 <h1>stats.stats_utils<a class="headerlink" href="#stats-stats-utils" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-stats-stats-utils">
-<h2>Module: <tt class="xref docutils literal"><span class="pre">stats.stats_utils</span></tt><a class="headerlink" href="#module-stats-stats-utils" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-nutmeg.stats.stats_utils">
+<h2>Module: <tt class="xref docutils literal"><span class="pre">stats.stats_utils</span></tt><a class="headerlink" href="#module-nutmeg.stats.stats_utils" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nutmeg.stats.stats_utils.map_t_py">
+<tt class="descclassname">nutmeg.stats.stats_utils.</tt><tt class="descname">map_t_py</tt><big>(</big><em>t</em>, <em>pvals</em>, <em>dp</em><big>)</big><a class="headerlink" href="#nutmeg.stats.stats_utils.map_t_py" title="Permalink to this definition">¶</a></dt>
+<dd><p>In a set M of maximal statistic values, we can define a cumulative
+distribution function as follows:</p>
+<p>CDF[t] &#8211;&gt; n*(dp) := order{ tm | (tm in M) and tm &lt; t } / order{M}</p>
+<p>Given quantized p values in the set { n*(dp) } for some n in [0,1/dp)
+and corresponding test values, his method attempts to roughly invert
+the relationship of the CDF.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.stats.stats_utils.split_combo_tfstats_file">
+<tt class="descclassname">nutmeg.stats.stats_utils.</tt><tt class="descname">split_combo_tfstats_file</tt><big>(</big><em>fname</em><big>)</big><a class="headerlink" href="#nutmeg.stats.stats_utils.split_combo_tfstats_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.stats.stats_utils.split_combo_tfstats_matfile">
+<tt class="descclassname">nutmeg.stats.stats_utils.</tt><tt class="descname">split_combo_tfstats_matfile</tt><big>(</big><em>fname</em><big>)</big><a class="headerlink" href="#nutmeg.stats.stats_utils.split_combo_tfstats_matfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
@@ -133,7 +154,7 @@
         <li class="right" >
           <a href="nutmeg.stats.snpm_testing.html" title="stats.snpm_testing"
              >previous</a> |</li>
-  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
   <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
 
           <li><a href="../index.html" >API</a> &raquo;</li> 
