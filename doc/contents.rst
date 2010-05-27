@@ -1,5 +1,5 @@
 =======================================
- Welcome to nutmeg-py's documentation!
+ Welcome to Nutmeg-Py's documentation!
 =======================================
 
 .. htmlonly::
