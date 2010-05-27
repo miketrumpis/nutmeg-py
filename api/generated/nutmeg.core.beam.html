@@ -1,0 +1,309 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>core.beam &mdash; Nutmeg-Py Documentation</title>
+    <link rel="stylesheet" href="../../_static/nm.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0-devel',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Nutmeg-Py Documentation" href="../../index.html" />
+    <link rel="up" title="API" href="../index.html" />
+    <link rel="next" title="core.tfbeam" href="nutmeg.core.tfbeam.html" />
+    <link rel="prev" title="core" href="nutmeg.core.html" />
+  <meta name="keywords" content="nutmeg, meg, magnetic source imaging,
+  python, neuroscience">
+
+  </head>
+  <body>
+  <div id="header">
+  <table width="100%">
+  <tr>
+   <td style="text-align:right;vertical-align:bottom">Nutmeg in Python
+    </td>
+  </tr>
+  </table>
+  </div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.core.tfbeam.html" title="core.tfbeam"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.core.html" title="core"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">core.beam</a><ul>
+<li><a class="reference external" href="#module-nutmeg.core.beam">Module: <tt class="docutils literal"><span class="pre">core.beam</span></tt></a></li>
+<li><a class="reference external" href="#classes">Classes</a><ul>
+<li><a class="reference external" href="#beam"><tt class="docutils literal"><span class="pre">Beam</span></tt></a></li>
+<li><a class="reference external" href="#meg-coreg"><tt class="docutils literal"><span class="pre">MEG_coreg</span></tt></a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#function">Function</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="nutmeg.core.html"
+                                  title="previous chapter">core</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="nutmeg.core.tfbeam.html"
+                                  title="next chapter">core.tfbeam</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/api/generated/nutmeg.core.beam.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="core-beam">
+<h1>core.beam<a class="headerlink" href="#core-beam" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-nutmeg.core.beam">
+<h2>Module: <tt class="xref docutils literal"><span class="pre">core.beam</span></tt><a class="headerlink" href="#module-nutmeg.core.beam" title="Permalink to this headline">¶</a></h2>
+<p>Inheritance diagram for <tt class="docutils literal"><span class="pre">nutmeg.core.beam</span></tt>:</p>
+</div>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="beam">
+<h3><a title="nutmeg.core.beam.Beam" class="reference internal" href="#nutmeg.core.beam.Beam"><tt class="xref docutils literal"><span class="pre">Beam</span></tt></a><a class="headerlink" href="#beam" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.core.beam.Beam">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.core.beam.</tt><tt class="descname">Beam</tt><big>(</big><em>voxelsize</em>, <em>voxels</em>, <em>srate</em>, <em>timepts</em>, <em>sig</em>, <em>coreg</em>, <em>coordmap=None</em><big>)</big><a class="headerlink" href="#nutmeg.core.beam.Beam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.utils.array_pickler_mixin" class="reference external" href="nutmeg.utils.html#nutmeg.utils.array_pickler_mixin"><tt class="xref docutils literal"><span class="pre">nutmeg.utils.array_pickler_mixin</span></tt></a></p>
+<p>The basic MEG Beam object for Nutmeg.</p>
+<dl class="method">
+<dt id="nutmeg.core.beam.Beam.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>voxelsize</em>, <em>voxels</em>, <em>srate</em>, <em>timepts</em>, <em>sig</em>, <em>coreg</em>, <em>coordmap=None</em><big>)</big><a class="headerlink" href="#nutmeg.core.beam.Beam.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>voxelsize</strong> : len-3 iterable</p>
+<blockquote>
+<p>the voxel edge lengths</p>
+</blockquote>
+<p><strong>voxels</strong> : ndarray shaped (nvox, 3)</p>
+<blockquote>
+<p>the voxel coordinates, in this Beam&#8217;s target coordinate space</p>
+</blockquote>
+<p><strong>srate</strong> : float</p>
+<blockquote>
+<p>the sampling rate of the MEG time series</p>
+</blockquote>
+<p><strong>timepts</strong> : ndarray</p>
+<blockquote>
+<p>the sample times</p>
+</blockquote>
+<p><strong>sig</strong> : ndarray</p>
+<blockquote>
+<p>the MEG signal data</p>
+</blockquote>
+<p><strong>coreg</strong> : MEG_coreg object</p>
+<blockquote>
+<p>the MEG-to-MRI coregistration info</p>
+</blockquote>
+<p><strong>coordmap</strong> : NIPY AffineTransform object</p>
+<blockquote class="last">
+<p>the MEG voxel index coordinate to voxel location coordinate mapping</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.core.beam.Beam.vox_lookup_from_mr">
+<tt class="descname">vox_lookup_from_mr</tt><big>(</big><em>vox</em><big>)</big><a class="headerlink" href="#nutmeg.core.beam.Beam.vox_lookup_from_mr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a location in the coregistered MRI space, return
+the index into this Beam&#8217;s voxels list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vox</strong> : len-3 iterable</p>
+<blockquote class="last">
+<p>the MRI space location coordinate</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.core.beam.Beam.voxel_indices">
+<em class="property">
+static </em><tt class="descname">voxel_indices</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.core.beam.Beam.voxel_indices" title="Permalink to this definition">¶</a></dt>
+<dd>Return the indices of this object&#8217;s voxel locations on the 3D
+localization grid.</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="meg-coreg">
+<h3><a title="nutmeg.core.beam.MEG_coreg" class="reference internal" href="#nutmeg.core.beam.MEG_coreg"><tt class="xref docutils literal"><span class="pre">MEG_coreg</span></tt></a><a class="headerlink" href="#meg-coreg" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.core.beam.MEG_coreg">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.core.beam.</tt><tt class="descname">MEG_coreg</tt><big>(</big><em>mrpath</em>, <em>norm_mrpath</em>, <em>affine</em>, <em>fiducials</em><big>)</big><a class="headerlink" href="#nutmeg.core.beam.MEG_coreg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.utils.array_pickler_mixin" class="reference external" href="nutmeg.utils.html#nutmeg.utils.array_pickler_mixin"><tt class="xref docutils literal"><span class="pre">nutmeg.utils.array_pickler_mixin</span></tt></a></p>
+<p>A light class to keep track of MEG-to-MRI coregistration information</p>
+<dl class="method">
+<dt id="nutmeg.core.beam.MEG_coreg.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>mrpath</em>, <em>norm_mrpath</em>, <em>affine</em>, <em>fiducials</em><big>)</big><a class="headerlink" href="#nutmeg.core.beam.MEG_coreg.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mrpath</strong> : str</p>
+<blockquote>
+<p>Path to coregistered MRI file</p>
+</blockquote>
+<p><strong>norm_mrpath</strong> : str</p>
+<blockquote>
+<p>Path to coregistered normalized MRI file (???)</p>
+</blockquote>
+<p><strong>affine</strong> : ndarray</p>
+<blockquote>
+<p>4x4 affine transformation matrix from MEG coords to MRI coords</p>
+</blockquote>
+<p><strong>fiducials</strong> : ndarray</p>
+<blockquote class="last">
+<p>3 3-vectors of fiducial locations (???)</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.core.beam.MEG_coreg.from_mat_struct">
+<em class="property">
+static </em><tt class="descname">from_mat_struct</tt><big>(</big><em>m</em><big>)</big><a class="headerlink" href="#nutmeg.core.beam.MEG_coreg.from_mat_struct" title="Permalink to this definition">¶</a></dt>
+<dd>Create a MEG_coreg object from the coreg record array created
+by scipy.io when reading in a beam file</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="function">
+<h2>Function<a class="headerlink" href="#function" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nutmeg.core.beam.search_any_pybeam">
+<tt class="descclassname">nutmeg.core.beam.</tt><tt class="descname">search_any_pybeam</tt><big>(</big><em>recarr</em>, <em>name</em><big>)</big><a class="headerlink" href="#nutmeg.core.beam.search_any_pybeam" title="Permalink to this definition">¶</a></dt>
+<dd><p>This searches a beam record array file for a given field name. For
+the purpose of backwards compatibility, a list of legacy names is also
+consulted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>recarr</strong> : ndarray (record array)</p>
+<blockquote>
+<p>the unpickled beam</p>
+</blockquote>
+<p><strong>name</strong> : str</p>
+<blockquote>
+<p>the name of the field being queried</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>the field value, or None</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.core.tfbeam.html" title="core.tfbeam"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.core.html" title="core"
+             >previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" >API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
+      Last updated on May 27, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

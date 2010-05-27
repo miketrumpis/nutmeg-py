@@ -1,0 +1,13 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+nutmeg
+======
+
+:mod:`nutmeg`
+-------------
+.. automodule:: nutmeg
+
+.. currentmodule:: nutmeg
+
+.. autofunction:: nutmeg.register_xipy_tools
+

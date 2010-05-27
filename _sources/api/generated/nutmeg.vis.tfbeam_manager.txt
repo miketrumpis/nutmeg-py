@@ -1,0 +1,40 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+vis.tfbeam_manager
+==================
+
+Module: :mod:`vis.tfbeam_manager`
+---------------------------------
+Inheritance diagram for ``nutmeg.vis.tfbeam_manager``:
+
+.. inheritance-diagram:: nutmeg.vis.tfbeam_manager 
+   :parts: 3
+
+.. automodule:: nutmeg.vis.tfbeam_manager
+
+.. currentmodule:: nutmeg.vis.tfbeam_manager
+
+Classes
+-------
+
+:class:`NmTimeFreqWindow`
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: NmTimeFreqWindow
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`TFBeamManager`
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: TFBeamManager
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__

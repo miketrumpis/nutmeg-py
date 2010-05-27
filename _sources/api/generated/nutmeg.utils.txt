@@ -1,0 +1,45 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+utils
+=====
+
+Module: :mod:`utils`
+--------------------
+Inheritance diagram for ``nutmeg.utils``:
+
+.. inheritance-diagram:: nutmeg.utils 
+   :parts: 3
+
+.. automodule:: nutmeg.utils
+
+.. currentmodule:: nutmeg.utils
+
+Class
+-----
+
+:class:`array_pickler_mixin`
+----------------------------
+
+
+.. autoclass:: array_pickler_mixin
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+Functions
+---------
+
+
+.. autofunction:: nutmeg.utils.cmap_from_array
+
+
+.. autofunction:: nutmeg.utils.coord_list_to_mgrid
+
+
+.. autofunction:: nutmeg.utils.parameterize_cmap
+
+
+.. autofunction:: nutmeg.utils.voxel_index_list
+

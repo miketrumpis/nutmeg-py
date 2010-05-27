@@ -1,0 +1,62 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+vis.tfstats_manager
+===================
+
+Module: :mod:`vis.tfstats_manager`
+----------------------------------
+Inheritance diagram for ``nutmeg.vis.tfstats_manager``:
+
+.. inheritance-diagram:: nutmeg.vis.tfstats_manager 
+   :parts: 3
+
+.. automodule:: nutmeg.vis.tfstats_manager
+
+.. currentmodule:: nutmeg.vis.tfstats_manager
+
+Classes
+-------
+
+:class:`SimpleThresholdMask`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: SimpleThresholdMask
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`StatsThresholdMask`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: StatsThresholdMask
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`TimeFreqSnPMaps`
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: TimeFreqSnPMaps
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`TimeFreqThresholdMap`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: TimeFreqThresholdMap
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__

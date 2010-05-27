@@ -1,0 +1,21 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+.. toctree::
+
+   generated/nutmeg
+   generated/nutmeg.core
+   generated/nutmeg.core.beam
+   generated/nutmeg.core.tfbeam
+   generated/nutmeg.fftmod
+   generated/nutmeg.numutils
+   generated/nutmeg.stats.beam_stats
+   generated/nutmeg.stats.parametric_stats
+   generated/nutmeg.stats.snpm_testing
+   generated/nutmeg.stats.stats_utils
+   generated/nutmeg.stats.tfstats_results
+   generated/nutmeg.stats.ui.stats_ui
+   generated/nutmeg.utils
+   generated/nutmeg.vis
+   generated/nutmeg.vis.mpl_tf_plane
+   generated/nutmeg.vis.tfbeam_manager
+   generated/nutmeg.vis.tfstats_manager

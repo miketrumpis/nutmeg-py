@@ -1,0 +1,351 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>utils &mdash; Nutmeg-Py Documentation</title>
+    <link rel="stylesheet" href="../../_static/nm.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0-devel',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Nutmeg-Py Documentation" href="../../index.html" />
+    <link rel="up" title="API" href="../index.html" />
+    <link rel="next" title="vis" href="nutmeg.vis.html" />
+    <link rel="prev" title="stats.ui.stats_ui" href="nutmeg.stats.ui.stats_ui.html" />
+  <meta name="keywords" content="nutmeg, meg, magnetic source imaging,
+  python, neuroscience">
+
+  </head>
+  <body>
+  <div id="header">
+  <table width="100%">
+  <tr>
+   <td style="text-align:right;vertical-align:bottom">Nutmeg in Python
+    </td>
+  </tr>
+  </table>
+  </div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.vis.html" title="vis"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.stats.ui.stats_ui.html" title="stats.ui.stats_ui"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">utils</a><ul>
+<li><a class="reference external" href="#module-nutmeg.utils">Module: <tt class="docutils literal"><span class="pre">utils</span></tt></a></li>
+<li><a class="reference external" href="#class">Class</a></li>
+<li><a class="reference external" href="#array-pickler-mixin"><tt class="docutils literal"><span class="pre">array_pickler_mixin</span></tt></a></li>
+<li><a class="reference external" href="#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="nutmeg.stats.ui.stats_ui.html"
+                                  title="previous chapter">stats.ui.stats_ui</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="nutmeg.vis.html"
+                                  title="next chapter">vis</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/api/generated/nutmeg.utils.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="utils">
+<h1>utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-nutmeg.utils">
+<h2>Module: <tt class="xref docutils literal"><span class="pre">utils</span></tt><a class="headerlink" href="#module-nutmeg.utils" title="Permalink to this headline">¶</a></h2>
+<p>Inheritance diagram for <tt class="docutils literal"><span class="pre">nutmeg.utils</span></tt>:</p>
+</div>
+<div class="section" id="class">
+<h2>Class<a class="headerlink" href="#class" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="array-pickler-mixin">
+<h2><a title="nutmeg.utils.array_pickler_mixin" class="reference internal" href="#nutmeg.utils.array_pickler_mixin"><tt class="xref docutils literal"><span class="pre">array_pickler_mixin</span></tt></a><a class="headerlink" href="#array-pickler-mixin" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nutmeg.utils.array_pickler_mixin">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.utils.</tt><tt class="descname">array_pickler_mixin</tt><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">object</span></tt></p>
+<p>Can save-itself-as/load-itself-from a funky structured array.</p>
+<p>The structure is VERY brittle.</p>
+<p>This is accomplished by requiring each class that inherits this
+functionality to conform to the following rules:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>define two class-level fields:</dt>
+<dd><dl class="first last docutils">
+<dt>_argnames &#8211; the list of names of positional arguments</dt>
+<dd><p class="first last">in the constructor</p>
+</dd>
+<dt>_kwnames  &#8211; the list of names of keyword arguments in</dt>
+<dd><p class="first last">the constructor</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><p class="first">The positional arguments must be listed in the correct order.</p>
+</li>
+<li><p class="first">The names in both lists must be attributes of the class objects.</p>
+</li>
+<li><p class="first">Each name in the kwnames list must be identical to both the
+corresponding class object attribute AND the keyword argument
+name in the class constructor.</p>
+</li>
+<li><p class="first">All attributes named in the lists must be of type:
+* ndarray
+* array_pickler_mixin subclass
+* any type that can be reconstructed such that</p>
+<blockquote>
+<p>a == type(a) (asarray(a) )
+(satisfied by most built-in types)</p>
+</blockquote>
+</li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">A</span><span class="p">(</span><span class="n">array_pickler_mixin</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">_argnames</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;str&#39;</span><span class="p">,</span> <span class="s">&#39;arr&#39;</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a_string</span><span class="p">,</span> <span class="n">an_array</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">str</span> <span class="o">=</span> <span class="n">a_string</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">arr</span> <span class="o">=</span> <span class="n">an_array</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">B</span><span class="p">(</span><span class="n">array_pickler_mixin</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">_argnames</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;arr&#39;</span><span class="p">,</span> <span class="s">&#39;atype&#39;</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="c"># these need to also be identical to the name keyword args</span>
+<span class="gp">... </span>    <span class="n">_kwnames</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;opt1&#39;</span><span class="p">,</span> <span class="s">&#39;opt2&#39;</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">an_array</span><span class="p">,</span> <span class="n">typeA</span><span class="p">,</span> <span class="n">opt1</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">opt2</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">arr</span> <span class="o">=</span> <span class="n">an_array</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">atype</span> <span class="o">=</span> <span class="n">typeA</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">opt1</span> <span class="o">=</span> <span class="n">opt1</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">opt2</span> <span class="o">=</span> <span class="n">opt2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="p">(</span><span class="s">&#39;asdf&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mf">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">B</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">20</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&#39;bsave&#39;</span><span class="p">)</span> <span class="c"># actually, this don&#39;t work on the command-line</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b2</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&#39;bsave.npy&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="nutmeg.utils.array_pickler_mixin.__init__">
+<tt class="descname">__init__</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin.__init__" title="Permalink to this definition">¶</a></dt>
+<dd>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</dd></dl>
+
+<dl class="classmethod">
+<dt id="nutmeg.utils.array_pickler_mixin.from_array">
+<em class="property">
+classmethod </em><tt class="descname">from_array</tt><big>(</big><em>klass</em>, <em>a</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin.from_array" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="nutmeg.utils.array_pickler_mixin.load">
+<em class="property">
+classmethod </em><tt class="descname">load</tt><big>(</big><em>klass</em>, <em>f</em><big>)</big><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.utils.array_pickler_mixin.save">
+<tt class="descname">save</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nutmeg.utils.cmap_from_array">
+<tt class="descclassname">nutmeg.utils.</tt><tt class="descname">cmap_from_array</tt><big>(</big><em>arr</em><big>)</big><a class="headerlink" href="#nutmeg.utils.cmap_from_array" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.utils.coord_list_to_mgrid">
+<tt class="descclassname">nutmeg.utils.</tt><tt class="descname">coord_list_to_mgrid</tt><big>(</big><em>coords</em>, <em>shape</em>, <em>order='ijk'</em><big>)</big><a class="headerlink" href="#nutmeg.utils.coord_list_to_mgrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>From a voxel coordinates list, make a meshgrid array</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>coords</strong> : np.product(shape) x ndim ndarray</p>
+<blockquote>
+<p>the voxel coordinate list &#8211; MUST have coordinates for every
+point in the volume specified by shape</p>
+</blockquote>
+<p><strong>shape</strong> : tuple</p>
+<blockquote>
+<p>the volume&#8217;s shape</p>
+</blockquote>
+<p><strong>order</strong> : str, optional</p>
+<blockquote>
+<p>Indicates whether the coordinate ordering is &#8216;ijk&#8217;, or &#8216;kji&#8217;.
+In either case, the i coordinate varies fasted,
+followed by [j, [k, [ ... ]]]</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>a meshgrid representation of the coordinates, shaped (ndim, ni, nj, nk, ...)</strong> :</p>
+<p class="last"><strong>or (ndim, [...], nk, nj, ni)</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">coords_list</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">voxel_index_list</span><span class="p">((</span><span class="mf">2</span><span class="p">,</span><span class="mf">3</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s">&#39;ijk&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coords_list</span>
+<span class="go">array([[0, 0],</span>
+<span class="go">       [1, 0],</span>
+<span class="go">       [0, 1],</span>
+<span class="go">       [1, 1],</span>
+<span class="go">       [0, 2],</span>
+<span class="go">       [1, 2]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mgrid</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">coord_list_to_mgrid</span><span class="p">(</span><span class="n">coords_list</span><span class="p">,</span> <span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="mf">3</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s">&#39;ijk&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mgrid</span>
+<span class="go">array([[[0, 0, 0],</span>
+<span class="go">        [1, 1, 1]],</span>
+</pre></div>
+</div>
+<blockquote>
+<dl class="docutils">
+<dt>[[0, 1, 2],</dt>
+<dd>[0, 1, 2]]])</dd>
+</dl>
+</blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.utils.parameterize_cmap">
+<tt class="descclassname">nutmeg.utils.</tt><tt class="descname">parameterize_cmap</tt><big>(</big><em>coordmap</em><big>)</big><a class="headerlink" href="#nutmeg.utils.parameterize_cmap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.utils.voxel_index_list">
+<tt class="descclassname">nutmeg.utils.</tt><tt class="descname">voxel_index_list</tt><big>(</big><em>shape</em>, <em>order='ijk'</em><big>)</big><a class="headerlink" href="#nutmeg.utils.voxel_index_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>From an array shape, return a list of voxel index-coordinates</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>shape</strong> : tuple</p>
+<blockquote>
+<p>the array shape</p>
+</blockquote>
+<p><strong>order</strong> : str, optional</p>
+<blockquote>
+<p>Indicates whether the coordinate ordering should go &#8216;ijk&#8217;, or &#8216;kji&#8217;.
+In either case, the i coordinate varies fasted,
+followed by [j, [k, [ ... ]]]</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>an ( nvox x len(shape) ) array of voxel index coordinates</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">utils</span><span class="o">.</span><span class="n">voxel_index_list</span><span class="p">((</span><span class="mf">2</span><span class="p">,</span><span class="mf">3</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s">&#39;ijk&#39;</span><span class="p">)</span>
+<span class="go">array([[0, 0],</span>
+<span class="go">       [1, 0],</span>
+<span class="go">       [0, 1],</span>
+<span class="go">       [1, 1],</span>
+<span class="go">       [0, 2],</span>
+<span class="go">       [1, 2]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils</span><span class="o">.</span><span class="n">voxel_index_list</span><span class="p">((</span><span class="mf">2</span><span class="p">,</span><span class="mf">3</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s">&#39;kji&#39;</span><span class="p">)</span>
+<span class="go">array([[0, 0],</span>
+<span class="go">       [0, 1],</span>
+<span class="go">       [0, 2],</span>
+<span class="go">       [1, 0],</span>
+<span class="go">       [1, 1],</span>
+<span class="go">       [1, 2]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.vis.html" title="vis"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.stats.ui.stats_ui.html" title="stats.ui.stats_ui"
+             >previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" >API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
+      Last updated on May 27, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

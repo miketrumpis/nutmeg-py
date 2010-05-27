@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>core.tfbeam &mdash; Nutmeg-Py Documentation</title>
+    <link rel="stylesheet" href="../../_static/nm.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0-devel',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Nutmeg-Py Documentation" href="../../index.html" />
+    <link rel="up" title="API" href="../index.html" />
+    <link rel="next" title="fftmod" href="nutmeg.fftmod.html" />
+    <link rel="prev" title="core.beam" href="nutmeg.core.beam.html" />
+  <meta name="keywords" content="nutmeg, meg, magnetic source imaging,
+  python, neuroscience">
+
+  </head>
+  <body>
+  <div id="header">
+  <table width="100%">
+  <tr>
+   <td style="text-align:right;vertical-align:bottom">Nutmeg in Python
+    </td>
+  </tr>
+  </table>
+  </div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.fftmod.html" title="fftmod"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.core.beam.html" title="core.beam"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">core.tfbeam</a><ul>
+<li><a class="reference external" href="#module-nutmeg.core.tfbeam">Module: <tt class="docutils literal"><span class="pre">core.tfbeam</span></tt></a></li>
+<li><a class="reference external" href="#class">Class</a></li>
+<li><a class="reference external" href="#tfbeam"><tt class="docutils literal"><span class="pre">TFBeam</span></tt></a></li>
+<li><a class="reference external" href="#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="nutmeg.core.beam.html"
+                                  title="previous chapter">core.beam</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="nutmeg.fftmod.html"
+                                  title="next chapter">fftmod</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/api/generated/nutmeg.core.tfbeam.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="core-tfbeam">
+<h1>core.tfbeam<a class="headerlink" href="#core-tfbeam" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-nutmeg.core.tfbeam">
+<h2>Module: <tt class="xref docutils literal"><span class="pre">core.tfbeam</span></tt><a class="headerlink" href="#module-nutmeg.core.tfbeam" title="Permalink to this headline">¶</a></h2>
+<p>Inheritance diagram for <tt class="docutils literal"><span class="pre">nutmeg.core.tfbeam</span></tt>:</p>
+</div>
+<div class="section" id="class">
+<h2>Class<a class="headerlink" href="#class" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="tfbeam">
+<h2><a title="nutmeg.core.tfbeam.TFBeam" class="reference internal" href="#nutmeg.core.tfbeam.TFBeam"><tt class="xref docutils literal"><span class="pre">TFBeam</span></tt></a><a class="headerlink" href="#tfbeam" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nutmeg.core.tfbeam.TFBeam">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.core.tfbeam.</tt><tt class="descname">TFBeam</tt><big>(</big><em>voxelsize</em>, <em>voxels</em>, <em>srate</em>, <em>timepts</em>, <em>sig</em>, <em>coreg</em>, <em>bands</em>, <em>timewindow</em>, <em>coordmap=None</em>, <em>fixed_comparison=None</em>, <em>uses='F dB'</em><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.core.beam.Beam" class="reference external" href="nutmeg.core.beam.html#nutmeg.core.beam.Beam"><tt class="xref docutils literal"><span class="pre">nutmeg.core.beam.Beam</span></tt></a></p>
+<dl class="method">
+<dt id="nutmeg.core.tfbeam.TFBeam.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>voxelsize</em>, <em>voxels</em>, <em>srate</em>, <em>timepts</em>, <em>sig</em>, <em>coreg</em>, <em>bands</em>, <em>timewindow</em>, <em>coordmap=None</em>, <em>fixed_comparison=None</em>, <em>uses='F dB'</em><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>voxelsize</strong> : len-3 iterable</p>
+<blockquote>
+<p>the voxel edge lengths</p>
+</blockquote>
+<p><strong>voxels</strong> : ndarray shaped (nvox, 3)</p>
+<blockquote>
+<p>the voxel coordinates, in this Beam&#8217;s target coordinate space</p>
+</blockquote>
+<p><strong>srate</strong> : float</p>
+<blockquote>
+<p>the sampling rate of the MEG time series</p>
+</blockquote>
+<p><strong>timepts</strong> : ndarray</p>
+<blockquote>
+<p>the sample times</p>
+</blockquote>
+<p><strong>sig</strong> : ndarray</p>
+<blockquote>
+<p>the MEG signal data</p>
+</blockquote>
+<p><strong>coreg</strong> : MEG_coreg object</p>
+<blockquote>
+<p>the MEG-to-MRI coregistration info</p>
+</blockquote>
+<p><strong>coordmap</strong> : NIPY AffineTransform object</p>
+<blockquote class="last">
+<p>the MEG voxel index coordinate to voxel location coordinate mapping</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.core.tfbeam.TFBeam.active_power">
+<em class="property">
+static </em><tt class="descname">active_power</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.active_power" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.core.tfbeam.TFBeam.control_power">
+<em class="property">
+static </em><tt class="descname">control_power</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.control_power" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.core.tfbeam.TFBeam.f_db">
+<em class="property">
+static </em><tt class="descname">f_db</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.f_db" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.core.tfbeam.TFBeam.f_raw">
+<em class="property">
+static </em><tt class="descname">f_raw</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.f_raw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="nutmeg.core.tfbeam.TFBeam.from_mat_file">
+<em class="property">
+classmethod </em><tt class="descname">from_mat_file</tt><big>(</big><em>class_type</em>, <em>matfile</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.from_mat_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.core.tfbeam.TFBeam.from_new_dataset">
+<tt class="descname">from_new_dataset</tt><big>(</big><em>new_s</em>, <em>new_vox=None</em>, <em>multi_subj=False</em>, <em>uses=None</em>, <em>fixed_comparison=None</em><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.from_new_dataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.core.tfbeam.TFBeam.get_array_by_name">
+<tt class="descname">get_array_by_name</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.get_array_by_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.core.tfbeam.TFBeam.noise_power">
+<em class="property">
+static </em><tt class="descname">noise_power</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.noise_power" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.core.tfbeam.TFBeam.pseudo_f">
+<em class="property">
+static </em><tt class="descname">pseudo_f</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.pseudo_f" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.core.tfbeam.TFBeam.reinterpret_signal_as">
+<tt class="descname">reinterpret_signal_as</tt><big>(</big><em>fixed_comparison</em><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.reinterpret_signal_as" title="Permalink to this definition">¶</a></dt>
+<dd>Change the name of the active-to-control comparison. If this
+TFBeam is already fixed to a comparison, simply change the name of it.
+If this TFBeam has separate active and control components, then this
+method will fix the comparison as the requested one, and delete the
+old component signal data.</dd></dl>
+
+<dl class="attribute">
+<dt id="nutmeg.core.tfbeam.TFBeam.s">
+<tt class="descname">s</tt><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.s" title="Permalink to this definition">¶</a></dt>
+<dd>exposed active-to-control signal ratio</dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.core.tfbeam.TFBeam.signal_transform_names">
+<em class="property">
+static </em><tt class="descname">signal_transform_names</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.signal_transform_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="nutmeg.core.tfbeam.TFBeam.signal_transforms">
+<tt class="descname">signal_transforms</tt><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.signal_transforms" title="Permalink to this definition">¶</a></dt>
+<dd>available transforms of the signal data</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.core.tfbeam.TFBeam.to_ni_image">
+<tt class="descname">to_ni_image</tt><big>(</big><em>t</em>, <em>f</em>, <em>grid_shape=None</em>, <em>prior_mask=None</em><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.to_ni_image" title="Permalink to this definition">¶</a></dt>
+<dd>Form a NIPY Image of the map of this object at (t,f). The new
+Image will have a CoordinateMap transforming the array indices into
+the target space of this Beam&#8217;s coregistered MRI.</dd></dl>
+
+<dl class="attribute">
+<dt id="nutmeg.core.tfbeam.TFBeam.uses">
+<tt class="descname">uses</tt><a class="headerlink" href="#nutmeg.core.tfbeam.TFBeam.uses" title="Permalink to this definition">¶</a></dt>
+<dd>what type of active-to-control ratio is exposed</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nutmeg.core.tfbeam.load_tfbeam">
+<tt class="descclassname">nutmeg.core.tfbeam.</tt><tt class="descname">load_tfbeam</tt><big>(</big><em>beam</em><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.load_tfbeam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a TFBeam from various descriptions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>beam</strong> : str, or TFBeam</p>
+<blockquote class="last">
+<p>Either an exiting TFBeam object, or the path to a valid TFBeam file</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.core.tfbeam.tfbeam_from_file">
+<tt class="descclassname">nutmeg.core.tfbeam.</tt><tt class="descname">tfbeam_from_file</tt><big>(</big><em>fname</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.core.tfbeam.tfbeam_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a TFBeam object from a valid TFBeam file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>fname</strong> : str</p>
+<blockquote class="last">
+<p>path to a numpy or MATLAB TFBeam file</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.fftmod.html" title="fftmod"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.core.beam.html" title="core.beam"
+             >previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" >API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
+      Last updated on May 27, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

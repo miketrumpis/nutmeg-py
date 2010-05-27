@@ -1,0 +1,29 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+vis.mpl_tf_plane
+================
+
+Module: :mod:`vis.mpl_tf_plane`
+-------------------------------
+Inheritance diagram for ``nutmeg.vis.mpl_tf_plane``:
+
+.. inheritance-diagram:: nutmeg.vis.mpl_tf_plane 
+   :parts: 3
+
+.. automodule:: nutmeg.vis.mpl_tf_plane
+
+.. currentmodule:: nutmeg.vis.mpl_tf_plane
+
+:class:`TimeFreqPlaneFigure`
+----------------------------
+
+
+.. autoclass:: TimeFreqPlaneFigure
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autofunction:: nutmeg.vis.mpl_tf_plane.try_or_pass
+

@@ -1,0 +1,39 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+core.tfbeam
+===========
+
+Module: :mod:`core.tfbeam`
+--------------------------
+Inheritance diagram for ``nutmeg.core.tfbeam``:
+
+.. inheritance-diagram:: nutmeg.core.tfbeam 
+   :parts: 3
+
+.. automodule:: nutmeg.core.tfbeam
+
+.. currentmodule:: nutmeg.core.tfbeam
+
+Class
+-----
+
+:class:`TFBeam`
+---------------
+
+
+.. autoclass:: TFBeam
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+Functions
+---------
+
+
+.. autofunction:: nutmeg.core.tfbeam.load_tfbeam
+
+
+.. autofunction:: nutmeg.core.tfbeam.tfbeam_from_file
+

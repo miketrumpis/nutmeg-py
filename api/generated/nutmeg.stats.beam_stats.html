@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>stats.beam_stats &mdash; Nutmeg-Py Documentation</title>
+    <link rel="stylesheet" href="../../_static/nm.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0-devel',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Nutmeg-Py Documentation" href="../../index.html" />
+    <link rel="up" title="API" href="../index.html" />
+    <link rel="next" title="stats.parametric_stats" href="nutmeg.stats.parametric_stats.html" />
+    <link rel="prev" title="numutils" href="nutmeg.numutils.html" />
+  <meta name="keywords" content="nutmeg, meg, magnetic source imaging,
+  python, neuroscience">
+
+  </head>
+  <body>
+  <div id="header">
+  <table width="100%">
+  <tr>
+   <td style="text-align:right;vertical-align:bottom">Nutmeg in Python
+    </td>
+  </tr>
+  </table>
+  </div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.stats.parametric_stats.html" title="stats.parametric_stats"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.numutils.html" title="numutils"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">stats.beam_stats</a><ul>
+<li><a class="reference external" href="#module-stats-beam-stats">Module: <tt class="docutils literal"><span class="pre">stats.beam_stats</span></tt></a></li>
+<li><a class="reference external" href="#classes">Classes</a><ul>
+<li><a class="reference external" href="#beamactivationaverager"><tt class="docutils literal"><span class="pre">BeamActivationAverager</span></tt></a></li>
+<li><a class="reference external" href="#beamcomparator"><tt class="docutils literal"><span class="pre">BeamComparator</span></tt></a></li>
+<li><a class="reference external" href="#beamcontrastaverager"><tt class="docutils literal"><span class="pre">BeamContrastAverager</span></tt></a></li>
+<li><a class="reference external" href="#snpmonesampt"><tt class="docutils literal"><span class="pre">SnPMOneSampT</span></tt></a></li>
+<li><a class="reference external" href="#snpmtester"><tt class="docutils literal"><span class="pre">SnPMTester</span></tt></a></li>
+<li><a class="reference external" href="#snpmunpairedt"><tt class="docutils literal"><span class="pre">SnPMUnpairedT</span></tt></a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#function">Function</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="nutmeg.numutils.html"
+                                  title="previous chapter">numutils</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="nutmeg.stats.parametric_stats.html"
+                                  title="next chapter">stats.parametric_stats</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/api/generated/nutmeg.stats.beam_stats.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="stats-beam-stats">
+<h1>stats.beam_stats<a class="headerlink" href="#stats-beam-stats" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-stats-beam-stats">
+<h2>Module: <tt class="xref docutils literal"><span class="pre">stats.beam_stats</span></tt><a class="headerlink" href="#module-stats-beam-stats" title="Permalink to this headline">¶</a></h2>
+<p>Inheritance diagram for <tt class="docutils literal"><span class="pre">nutmeg.stats.beam_stats</span></tt>:</p>
+</div>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="beamactivationaverager">
+<h3><tt class="xref docutils literal"><span class="pre">BeamActivationAverager</span></tt><a class="headerlink" href="#beamactivationaverager" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="beamcomparator">
+<h3><tt class="xref docutils literal"><span class="pre">BeamComparator</span></tt><a class="headerlink" href="#beamcomparator" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="beamcontrastaverager">
+<h3><tt class="xref docutils literal"><span class="pre">BeamContrastAverager</span></tt><a class="headerlink" href="#beamcontrastaverager" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="snpmonesampt">
+<h3><tt class="xref docutils literal"><span class="pre">SnPMOneSampT</span></tt><a class="headerlink" href="#snpmonesampt" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="snpmtester">
+<h3><tt class="xref docutils literal"><span class="pre">SnPMTester</span></tt><a class="headerlink" href="#snpmtester" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="snpmunpairedt">
+<h3><tt class="xref docutils literal"><span class="pre">SnPMUnpairedT</span></tt><a class="headerlink" href="#snpmunpairedt" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="function">
+<h2>Function<a class="headerlink" href="#function" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.stats.parametric_stats.html" title="stats.parametric_stats"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.numutils.html" title="numutils"
+             >previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" >API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
+      Last updated on May 27, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

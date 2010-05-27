@@ -1,0 +1,381 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>stats.snpm_testing &mdash; Nutmeg-Py Documentation</title>
+    <link rel="stylesheet" href="../../_static/nm.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0-devel',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Nutmeg-Py Documentation" href="../../index.html" />
+    <link rel="up" title="API" href="../index.html" />
+    <link rel="next" title="stats.stats_utils" href="nutmeg.stats.stats_utils.html" />
+    <link rel="prev" title="stats.parametric_stats" href="nutmeg.stats.parametric_stats.html" />
+  <meta name="keywords" content="nutmeg, meg, magnetic source imaging,
+  python, neuroscience">
+
+  </head>
+  <body>
+  <div id="header">
+  <table width="100%">
+  <tr>
+   <td style="text-align:right;vertical-align:bottom">Nutmeg in Python
+    </td>
+  </tr>
+  </table>
+  </div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.stats.stats_utils.html" title="stats.stats_utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.stats.parametric_stats.html" title="stats.parametric_stats"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">stats.snpm_testing</a><ul>
+<li><a class="reference external" href="#module-nutmeg.stats.snpm_testing">Module: <tt class="docutils literal"><span class="pre">stats.snpm_testing</span></tt></a></li>
+<li><a class="reference external" href="#classes">Classes</a><ul>
+<li><a class="reference external" href="#regenerator"><tt class="docutils literal"><span class="pre">ReGenerator</span></tt></a></li>
+<li><a class="reference external" href="#anova-design-generator"><tt class="docutils literal"><span class="pre">anova_design_generator</span></tt></a></li>
+<li><a class="reference external" href="#one-sample-ttest-design-generator"><tt class="docutils literal"><span class="pre">one_sample_ttest_design_generator</span></tt></a></li>
+<li><a class="reference external" href="#unpaired-ttest-design-generator"><tt class="docutils literal"><span class="pre">unpaired_ttest_design_generator</span></tt></a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="nutmeg.stats.parametric_stats.html"
+                                  title="previous chapter">stats.parametric_stats</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="nutmeg.stats.stats_utils.html"
+                                  title="next chapter">stats.stats_utils</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/api/generated/nutmeg.stats.snpm_testing.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="stats-snpm-testing">
+<h1>stats.snpm_testing<a class="headerlink" href="#stats-snpm-testing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-nutmeg.stats.snpm_testing">
+<h2>Module: <tt class="xref docutils literal"><span class="pre">stats.snpm_testing</span></tt><a class="headerlink" href="#module-nutmeg.stats.snpm_testing" title="Permalink to this headline">¶</a></h2>
+<p>Inheritance diagram for <tt class="docutils literal"><span class="pre">nutmeg.stats.snpm_testing</span></tt>:</p>
+</div>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="regenerator">
+<h3><a title="nutmeg.stats.snpm_testing.ReGenerator" class="reference internal" href="#nutmeg.stats.snpm_testing.ReGenerator"><tt class="xref docutils literal"><span class="pre">ReGenerator</span></tt></a><a class="headerlink" href="#regenerator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.snpm_testing.ReGenerator">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">ReGenerator</tt><a class="headerlink" href="#nutmeg.stats.snpm_testing.ReGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">object</span></tt></p>
+<p>Acts like a generator, but can be reset to the initial state</p>
+<dl class="method">
+<dt id="nutmeg.stats.snpm_testing.ReGenerator.__init__">
+<tt class="descname">__init__</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.ReGenerator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.snpm_testing.ReGenerator.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.ReGenerator.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.snpm_testing.ReGenerator.next">
+<tt class="descname">next</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.ReGenerator.next" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.snpm_testing.ReGenerator.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.ReGenerator.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.snpm_testing.ReGenerator.send">
+<tt class="descname">send</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.ReGenerator.send" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="anova-design-generator">
+<h3><a title="nutmeg.stats.snpm_testing.anova_design_generator" class="reference internal" href="#nutmeg.stats.snpm_testing.anova_design_generator"><tt class="xref docutils literal"><span class="pre">anova_design_generator</span></tt></a><a class="headerlink" href="#anova-design-generator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.snpm_testing.anova_design_generator">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">anova_design_generator</tt><big>(</big><em>n_subj</em>, <em>n_cond</em>, <em>random_order=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.anova_design_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.stats.snpm_testing.ReGenerator" class="reference internal" href="#nutmeg.stats.snpm_testing.ReGenerator"><tt class="xref docutils literal"><span class="pre">nutmeg.stats.snpm_testing.ReGenerator</span></tt></a></p>
+<p>An ANOVA design matrix is H*[a,b]^T = X,
+where X is [ [tser(i=0,j=0)],</p>
+<blockquote>
+[tser(i=0,j=1)],
+[...], ...] for subjects{i}, conditions{j}</blockquote>
+<p>and H is [ eye(n_conditions) ] * n_subjects</p>
+<p>Each permutation of H will toggle the labels for a subset of subjects
+based on a binary counter patterned selection
+(counting from 0 to 2**(n_subjects-1))</p>
+<dl class="method">
+<dt id="nutmeg.stats.snpm_testing.anova_design_generator.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>n_subj</em>, <em>n_cond</em>, <em>random_order=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.anova_design_generator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.snpm_testing.anova_design_generator.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.anova_design_generator.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="one-sample-ttest-design-generator">
+<h3><a title="nutmeg.stats.snpm_testing.one_sample_ttest_design_generator" class="reference internal" href="#nutmeg.stats.snpm_testing.one_sample_ttest_design_generator"><tt class="xref docutils literal"><span class="pre">one_sample_ttest_design_generator</span></tt></a><a class="headerlink" href="#one-sample-ttest-design-generator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.snpm_testing.one_sample_ttest_design_generator">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">one_sample_ttest_design_generator</tt><big>(</big><em>n_obs</em>, <em>half=True</em>, <em>random_order=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.one_sample_ttest_design_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.stats.snpm_testing.ReGenerator" class="reference internal" href="#nutmeg.stats.snpm_testing.ReGenerator"><tt class="xref docutils literal"><span class="pre">nutmeg.stats.snpm_testing.ReGenerator</span></tt></a></p>
+<p>The 1-sample T test design matrix for N observations is simply</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]</span> <span class="o">*</span> <span class="n">N</span> <span class="p">])</span><span class="o">.</span><span class="n">T</span>
+</pre></div>
+</div>
+<p>such that H*[a] = X
+where X is [ [vox_samples(subj=0)],</p>
+<blockquote>
+[vox_samples(subj=1)],
+[...] ] for all subjects</blockquote>
+<p>This generator yields all combinations of matrices that are re-weighted
+such that the polarity of rows are flipped. The number of toggled
+versions of H is 2**N</p>
+<dl class="method">
+<dt id="nutmeg.stats.snpm_testing.one_sample_ttest_design_generator.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>n_obs</em>, <em>half=True</em>, <em>random_order=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.one_sample_ttest_design_generator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>n_obs</strong> : int</p>
+<blockquote>
+<p>Order of the sample</p>
+</blockquote>
+<p><strong>half</strong> : bool, optional</p>
+<blockquote>
+<p>Only compute half of the polarity flips (by symmetry, 1/2 of
+the matrices have the inverse polarity of the other half)</p>
+</blockquote>
+<p><strong>random_order: bool, optional</strong> :</p>
+<blockquote class="last">
+<p>After the first (&#8220;true&#8221;) design matrix, yield reweighted
+matrices in random order</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.snpm_testing.one_sample_ttest_design_generator.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.one_sample_ttest_design_generator.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="unpaired-ttest-design-generator">
+<h3><a title="nutmeg.stats.snpm_testing.unpaired_ttest_design_generator" class="reference internal" href="#nutmeg.stats.snpm_testing.unpaired_ttest_design_generator"><tt class="xref docutils literal"><span class="pre">unpaired_ttest_design_generator</span></tt></a><a class="headerlink" href="#unpaired-ttest-design-generator" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.snpm_testing.unpaired_ttest_design_generator">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">unpaired_ttest_design_generator</tt><big>(</big><em>n_obs_a</em>, <em>n_obs_b</em>, <em>half=True</em>, <em>random_order=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.unpaired_ttest_design_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.stats.snpm_testing.ReGenerator" class="reference internal" href="#nutmeg.stats.snpm_testing.ReGenerator"><tt class="xref docutils literal"><span class="pre">nutmeg.stats.snpm_testing.ReGenerator</span></tt></a></p>
+<p>An unpaired T-test design matrix operates as H*[alpha,beta]^T = X,
+where X is [ [vox_samples(subj=0,cond=0)],</p>
+<blockquote>
+[vox_samples(subj=1,cond=0)],
+[...],
+[vox_samples(subj=0,cond=1)],
+[vox_samples(subj=1,cond=1)],
+[...] ] for subjects, and conditions 0 and 1</blockquote>
+<p>and H is
+&gt;&gt;&gt; H = np.vstack( [ np.repeat([[1.0, 0.0]], n_obs_a, axis=0),</p>
+<blockquote>
+np.repeat([[0.0, 1.0]], n_obs_b, axis=0) ] )</blockquote>
+<p>Each permutation of H will toggle the labels for a subset of subjects
+based on a binary counter patterned selection
+(counting from 0 to 2**(n_subjects-1))</p>
+<dl class="method">
+<dt id="nutmeg.stats.snpm_testing.unpaired_ttest_design_generator.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>n_obs_a</em>, <em>n_obs_b</em>, <em>half=True</em>, <em>random_order=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.unpaired_ttest_design_generator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.snpm_testing.unpaired_ttest_design_generator.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.unpaired_ttest_design_generator.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nutmeg.stats.snpm_testing.rank">
+<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">rank</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.rank" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.stats.snpm_testing.run_snpm_tests">
+<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">run_snpm_tests</tt><big>(</big><em>samps</em>, <em>dgen</em>, <em>co</em>, <em>n_perm</em>, <em>grid_shape</em>, <em>flat_map</em>, <em>vox_size</em>, <em>smoothed_variance=True</em>, <em>out=None</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.run_snpm_tests" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>samps</strong> : ndarray</p>
+<blockquote>
+<p>(samples x voxels) array</p>
+</blockquote>
+<p><strong>dgen</strong> : design matrix generator</p>
+<p><strong>co</strong> : ndarray</p>
+<blockquote>
+<p>comparison weights for the solution to dgen(p)*b = samps</p>
+</blockquote>
+<p><strong>n_perm</strong> : int</p>
+<blockquote>
+<p>number of permutations to actual test</p>
+</blockquote>
+<p><strong>grid_shape</strong> : tuple</p>
+<blockquote>
+<p>volume shape in which to embed voxel data, for variance smoothing</p>
+</blockquote>
+<p><strong>flat_map</strong> : 1D list</p>
+<blockquote>
+<p>flat voxel index into the volume</p>
+</blockquote>
+<p><strong>vox_size</strong> : len-3 list</p>
+<blockquote>
+<p>edge lengths for the volume</p>
+</blockquote>
+<p><strong>smoothed_variance</strong> : bool, optional</p>
+<blockquote>
+<p>do spatial variance smoothing</p>
+</blockquote>
+<p><strong>out</strong> : ndarray, optional</p>
+<blockquote>
+<p>a (n_permutation x voxels) array to store the test distribution</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>test_distribution</strong> : ndarray</p>
+<blockquote class="last">
+<p>A (n_permutation x voxels) shaped array of the test distribution.
+The &#8220;true&#8221; value test is always in the 0th row.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.stats.snpm_testing.snpm_1samp_ttest">
+<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">snpm_1samp_ttest</tt><big>(</big><em>samps</em>, <em>pmat</em>, <em>grid_shape</em>, <em>flat_map</em>, <em>vox_size</em>, <em>out=None</em>, <em>smoothed_variance=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.snpm_1samp_ttest" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.stats.snpm_testing.snpm_test">
+<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">snpm_test</tt><big>(</big><em>meas_arr</em>, <em>dmat_generator</em>, <em>n_perm</em>, <em>good_vox</em>, <em>vox_size</em>, <em>test_type='T'</em>, <em>co=1</em>, <em>half_perms=False</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.snpm_test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.stats.stats_utils.html" title="stats.stats_utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.stats.parametric_stats.html" title="stats.parametric_stats"
+             >previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" >API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
+      Last updated on May 27, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+fftmod
+======
+
+Module: :mod:`fftmod`
+---------------------
+.. automodule:: nutmeg.fftmod
+
+.. currentmodule:: nutmeg.fftmod
+
+Functions
+---------
+
+
+.. autofunction:: nutmeg.fftmod.fft1
+
+
+.. autofunction:: nutmeg.fftmod.fft2
+
+
+.. autofunction:: nutmeg.fftmod.fftn
+
+
+.. autofunction:: nutmeg.fftmod.ifft1
+
+
+.. autofunction:: nutmeg.fftmod.ifft2
+
+
+.. autofunction:: nutmeg.fftmod.ifftn
+

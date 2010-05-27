@@ -1,0 +1,13 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+stats.parametric_stats
+======================
+
+Module: :mod:`stats.parametric_stats`
+-------------------------------------
+.. automodule:: nutmeg.stats.parametric_stats
+
+.. currentmodule:: nutmeg.stats.parametric_stats
+
+.. autofunction:: nutmeg.stats.parametric_stats.one_sample_ttest
+

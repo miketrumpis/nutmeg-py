@@ -1,0 +1,95 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+stats.ui.stats_ui
+=================
+
+Module: :mod:`stats.ui.stats_ui`
+--------------------------------
+Inheritance diagram for ``nutmeg.stats.ui.stats_ui``:
+
+.. inheritance-diagram:: nutmeg.stats.ui.stats_ui 
+   :parts: 3
+
+.. automodule:: nutmeg.stats.ui.stats_ui
+
+.. currentmodule:: nutmeg.stats.ui.stats_ui
+
+Classes
+-------
+
+:class:`ComparisonResult`
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: ComparisonResult
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`Condition`
+~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: Condition
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`ListOfConditions`
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: ListOfConditions
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`SnPMTesterUI`
+~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: SnPMTesterUI
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`StatsResult`
+~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: StatsResult
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`StringAdapter`
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: StringAdapter
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`Subject`
+~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: Subject
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__

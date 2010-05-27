@@ -1,0 +1,20 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+numutils
+========
+
+Module: :mod:`numutils`
+-----------------------
+.. automodule:: nutmeg.numutils
+
+.. currentmodule:: nutmeg.numutils
+
+Functions
+---------
+
+
+.. autofunction:: nutmeg.numutils.calc_fft_grid_and_map
+
+
+.. autofunction:: nutmeg.numutils.gaussian_smooth
+

@@ -1,0 +1,47 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+core.beam
+=========
+
+Module: :mod:`core.beam`
+------------------------
+Inheritance diagram for ``nutmeg.core.beam``:
+
+.. inheritance-diagram:: nutmeg.core.beam 
+   :parts: 3
+
+.. automodule:: nutmeg.core.beam
+
+.. currentmodule:: nutmeg.core.beam
+
+Classes
+-------
+
+:class:`Beam`
+~~~~~~~~~~~~~
+
+
+.. autoclass:: Beam
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`MEG_coreg`
+~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: MEG_coreg
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+Function
+--------
+
+
+.. autofunction:: nutmeg.core.beam.search_any_pybeam
+

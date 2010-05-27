@@ -1,0 +1,50 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+stats.tfstats_results
+=====================
+
+Module: :mod:`stats.tfstats_results`
+------------------------------------
+Inheritance diagram for ``nutmeg.stats.tfstats_results``:
+
+.. inheritance-diagram:: nutmeg.stats.tfstats_results 
+   :parts: 3
+
+.. automodule:: nutmeg.stats.tfstats_results
+
+.. currentmodule:: nutmeg.stats.tfstats_results
+
+Classes
+-------
+
+:class:`AdaptedTimeFreqSnPMResults`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: AdaptedTimeFreqSnPMResults
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`TimeFreqSnPMResults`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: TimeFreqSnPMResults
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+Functions
+---------
+
+
+.. autofunction:: nutmeg.stats.tfstats_results.adapt_mlab_tf_snpm_stats
+
+
+.. autofunction:: nutmeg.stats.tfstats_results.load_tf_snpm_stats
+

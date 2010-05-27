@@ -1,0 +1,23 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+vis
+===
+
+Module: :mod:`vis`
+------------------
+.. automodule:: nutmeg.vis
+
+.. currentmodule:: nutmeg.vis
+
+Functions
+---------
+
+
+.. autofunction:: nutmeg.vis.plot_tfbeam
+
+
+.. autofunction:: nutmeg.vis.plot_tfbeam_3d
+
+
+.. autofunction:: nutmeg.vis.with_attribute
+

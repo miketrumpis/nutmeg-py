@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>numutils &mdash; Nutmeg-Py Documentation</title>
+    <link rel="stylesheet" href="../../_static/nm.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0-devel',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Nutmeg-Py Documentation" href="../../index.html" />
+    <link rel="up" title="API" href="../index.html" />
+    <link rel="next" title="stats.beam_stats" href="nutmeg.stats.beam_stats.html" />
+    <link rel="prev" title="fftmod" href="nutmeg.fftmod.html" />
+  <meta name="keywords" content="nutmeg, meg, magnetic source imaging,
+  python, neuroscience">
+
+  </head>
+  <body>
+  <div id="header">
+  <table width="100%">
+  <tr>
+   <td style="text-align:right;vertical-align:bottom">Nutmeg in Python
+    </td>
+  </tr>
+  </table>
+  </div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.stats.beam_stats.html" title="stats.beam_stats"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.fftmod.html" title="fftmod"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">numutils</a><ul>
+<li><a class="reference external" href="#module-nutmeg.numutils">Module: <tt class="docutils literal"><span class="pre">numutils</span></tt></a></li>
+<li><a class="reference external" href="#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="nutmeg.fftmod.html"
+                                  title="previous chapter">fftmod</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="nutmeg.stats.beam_stats.html"
+                                  title="next chapter">stats.beam_stats</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../_sources/api/generated/nutmeg.numutils.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="numutils">
+<h1>numutils<a class="headerlink" href="#numutils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-nutmeg.numutils">
+<h2>Module: <tt class="xref docutils literal"><span class="pre">numutils</span></tt><a class="headerlink" href="#module-nutmeg.numutils" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nutmeg.numutils.calc_fft_grid_and_map">
+<tt class="descclassname">nutmeg.numutils.</tt><tt class="descname">calc_fft_grid_and_map</tt><big>(</big><em>beam</em><big>)</big><a class="headerlink" href="#nutmeg.numutils.calc_fft_grid_and_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the size of the volumetric grid in which to embed this
+beam&#8217;s voxel data when taking an FFT. For a spatial FFT from
+nutmeg.fftmod, the spatial/frequency origin of the input and output
+arrays should be at the center of the volume to avoid the index
+re-ordering incurred by the FFT algorithm.</p>
+<p>Also return a map into the flattened volume.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>beam</strong> : a Beam type</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>grid_shape</strong> : tuple</p>
+<blockquote>
+<p>a (2L, 2M, 2N) grid shape tuple</p>
+</blockquote>
+<p><strong>flat_map</strong> : ndarray</p>
+<blockquote class="last">
+<p>a list of indices into the flattened grid array, corresponding to
+the beam&#8217;s voxel locations</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.numutils.gaussian_smooth">
+<tt class="descclassname">nutmeg.numutils.</tt><tt class="descname">gaussian_smooth</tt><big>(</big><em>a</em>, <em>fwhm=5.0</em>, <em>axes=(-1</em>, <em>)</em>, <em>inplace=True</em><big>)</big><a class="headerlink" href="#nutmeg.numutils.gaussian_smooth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smooth an array by convolving with a Guassian kernel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>a</strong> : ndarray</p>
+<blockquote>
+<p>Array to smooth</p>
+</blockquote>
+<p><strong>fwhm</strong> : float or iterable (optional)</p>
+<blockquote>
+<p>The FWHM kernel size, or sizes for each dimension to smooth (pix units)</p>
+</blockquote>
+<p><strong>axes</strong> : iterable (optional)</p>
+<blockquote>
+<p>The axes over which to convolve</p>
+</blockquote>
+<p><strong>inplace</strong> : bool (optional)</p>
+<blockquote>
+<p>Modify the array inplace, or return a new, smoothed array</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>a smoothed array, if inplace==False</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.stats.beam_stats.html" title="stats.beam_stats"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="nutmeg.fftmod.html" title="fftmod"
+             >previous</a> |</li>
+  <li><a href="../../../../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="../index.html" >API</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
+      Last updated on May 27, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

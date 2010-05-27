@@ -1,0 +1,78 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+stats.snpm_testing
+==================
+
+Module: :mod:`stats.snpm_testing`
+---------------------------------
+Inheritance diagram for ``nutmeg.stats.snpm_testing``:
+
+.. inheritance-diagram:: nutmeg.stats.snpm_testing 
+   :parts: 3
+
+.. automodule:: nutmeg.stats.snpm_testing
+
+.. currentmodule:: nutmeg.stats.snpm_testing
+
+Classes
+-------
+
+:class:`ReGenerator`
+~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: ReGenerator
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`anova_design_generator`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: anova_design_generator
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`one_sample_ttest_design_generator`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: one_sample_ttest_design_generator
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`unpaired_ttest_design_generator`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: unpaired_ttest_design_generator
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+Functions
+---------
+
+
+.. autofunction:: nutmeg.stats.snpm_testing.rank
+
+
+.. autofunction:: nutmeg.stats.snpm_testing.run_snpm_tests
+
+
+.. autofunction:: nutmeg.stats.snpm_testing.snpm_1samp_ttest
+
+
+.. autofunction:: nutmeg.stats.snpm_testing.snpm_test
+
