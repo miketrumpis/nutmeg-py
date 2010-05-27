@@ -139,7 +139,8 @@ class TFBeamManager( OverlayInterface ):
                  props_signal=None,
                  beam_vox_signal=None,
                  **traits):
-        """ Create a TFBeamManager
+        """
+        Create a TFBeamManager
 
         Parameters
         ----------
@@ -744,7 +745,8 @@ class NmTimeFreqWindow(OverlayWindowInterface):
                  functional_manager=None,
                  external_loc=None, parent=None, main_ref=None,
                  tfbeam=None, **kwargs):
-        """Creates a new MplQT4TimeFreqWindow, which controls interaction
+        """
+        Creates a new MplQT4TimeFreqWindow, which controls interaction
         with Nutmeg TFBeam objects. This window is a QT4TopLevelAuxiliaryWindow,
         giving it top level status. It contains:
          *a 2D image of the time-frequency plane with selectable bins (emits a
@@ -788,7 +790,6 @@ class NmTimeFreqWindow(OverlayWindowInterface):
              A TFBeam with which to preload the beam manager.
          **kwargs:
              figsize, dpi for the time-frequency plane figure
-
          """
 
         

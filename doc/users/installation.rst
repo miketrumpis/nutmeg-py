@@ -31,6 +31,9 @@ Python Level Packages
   SciPy_ 0.7 or later
     Scipy is a collection of high-level, optimized scientific computing libraries, many of which are Python wrappers for widely used numerical libraries originally written in C and Fortran
 
+  `ETS <https://svn.enthought.com/enthought>`_
+    Enthought Tool Suite is a collection of tools intended for scientific computing. Nutmeg-py uses Traits, TraitsUI, and Mayavi/TVTK.
+
   NIPY_ (Neuroimaging in Python)
     Nutmeg-Py uses many image data types and spatial mapping tools from the
     NIPY project codebase.
@@ -92,11 +95,11 @@ You will need to build and install NIPY ... (don't have good recommendation yet)
 
 Also needed is XIPY
 
-`` git clone git://github.com/miketrumpis/xipy.git``
-`` cd xipy && make ext ``
+``git clone git://github.com/miketrumpis/xipy.git``
+``cd xipy && make ext``
 
 Finally check out the Nutmeg-Py code, and set it up
-`` git clone git://github.com/miketrumpis/nutmeg-py.git``
-`` cd nutmeg-py && make ext ``
+``git clone git://github.com/miketrumpis/nutmeg-py.git``
+``cd nutmeg-py && make ext``
 
 .. include:: ../links.txt
