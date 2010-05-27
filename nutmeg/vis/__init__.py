@@ -2,7 +2,7 @@ __docformat__ = 'restructuredtext'
 import os, sys
 from PyQt4 import QtGui
 
-# register the nutmeg plugin before launching the ortho viewer
+# register the nutmeg plugin before launching any xip viewers
 from xipy.overlay.plugins import register_overlay_plugin, \
      all_registered_plugins
 
@@ -13,15 +13,16 @@ register_overlay_plugin(NmTimeFreqWindow)
 from nutmeg.vis.tfstats_manager import TimeFreqSnPMaps
 
 import nipy.core.api as ni_api
-import nipy.io.api as nio_api
+
 import xipy.volume_utils as vu
+from xipy.io import load_image
 
 def plot_tfbeam_3d(beam):
     pass
 
 def plot_tfbeam(beam, stats=None, with3d=False):
     from xipy.vis.ortho_viewer import ortho_viewer
-    struct = nio_api.load_image(beam.coreg.mrpath)
+    struct = load_image(beam.coreg.mrpath)
     sman = TimeFreqSnPMaps(stats_results=stats)
     bbox = vu.world_limits(struct)
     bman = TFBeamManager(bbox, bstats_manager=sman)

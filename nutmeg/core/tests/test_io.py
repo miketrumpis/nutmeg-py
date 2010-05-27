@@ -9,11 +9,11 @@ from nutmeg.core.tfbeam import TFBeam
 def test_beam_io_runs():
     cr = MEG_coreg('asdf', 'fdsa', np.eye(4), np.eye(3))
     b = Beam(np.array([5.]*3),
-                  np.random.randn(1000,3),
-                  200.,
-                  np.arange(100),
-                  np.random.randn(1000),
-                  cr)
+             np.random.randn(1000,3),
+             200.,
+             np.arange(100),
+             np.random.randn(1000),
+             cr)
     f = tempfile.mktemp(suffix='.npy')
     try:
         b.save(f)
@@ -22,7 +22,7 @@ def test_beam_io_runs():
         assert True
     except:
         os.unlink(f)
-        assert False, 'simple I/O failed'
+        assert False, 'simple Beam I/O failed'
     
 def test_tfbeam_io_runs():
     cr = MEG_coreg('asdf', 'fdsa', np.eye(4), np.eye(3))
@@ -47,4 +47,4 @@ def test_tfbeam_io_runs():
         assert True
     except:
         os.unlink(f)
-        assert False, 'simple I/O failed'
+        assert False, 'simple TFBeam I/O failed'

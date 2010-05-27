@@ -48,13 +48,13 @@ def calc_fft_grid_and_map(beam):
 
     new_affine = cmap.affine.copy()
     new_affine[:3,-1] = np.array(sym_index_lims)[:,0] * vsize
-    new_cmap = ni_api.Affine.from_params(
-        cmap.input_coords.coord_names,
-        cmap.output_coords.coord_names,
+    new_cmap = ni_api.AffineTransform.from_params(
+        cmap.function_domain.coord_names,
+        cmap.function_range.coord_names,
         new_affine
         )
     grid_shape = tuple( [-mn*2 for mn, _ in sym_index_lims] )
-    new_idc = new_cmap.inverse(beam.voxels).astype('i')
+    new_idc = new_cmap.inverse()(beam.voxels).astype('i')
 
     # now find the flat map for these voxels
     ni, nj, nk = grid_shape

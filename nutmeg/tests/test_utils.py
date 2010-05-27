@@ -50,20 +50,28 @@ array([[[0, 0, 0],
 
 @decotest.parametric
 def test_cmap_to_array_roundtrip():
-    cmap = ni_api.Affine.from_params('ijk', 'xyz', np.random.randn(4,4))
+    aff = np.random.randn(4,4)
+    aff[3] = np.array([0,0,0,1])
+    cmap = ni_api.AffineTransform.from_params(
+        'ijk', 'xyz', aff
+        )
     cmap2 = cmap_from_array( parameterize_cmap( cmap ) )
 
-    input_coords_same = cmap.input_coords.dtype == cmap2.input_coords.dtype
-    input_coords_same&= cmap.input_coords.name == cmap2.input_coords.name
-    input_coords_same&= cmap.input_coords.coord_names == \
-                        cmap2.input_coords.coord_names
-    yield input_coords_same, 'input coords differ'
+    function_domain_same = cmap.function_domain.dtype == \
+                           cmap2.function_domain.dtype
+    function_domain_same&= cmap.function_domain.name == \
+                           cmap2.function_domain.name
+    function_domain_same&= cmap.function_domain.coord_names == \
+                        cmap2.function_domain.coord_names
+    yield function_domain_same, 'input coords differ'
     
-    output_coords_same = cmap.output_coords.dtype == cmap2.output_coords.dtype
-    output_coords_same&= cmap.output_coords.name == cmap2.output_coords.name
-    output_coords_same&= cmap.output_coords.coord_names == \
-                        cmap2.output_coords.coord_names
-    yield output_coords_same, 'output coords differ'
+    function_range_same = cmap.function_range.dtype == \
+                          cmap2.function_range.dtype
+    function_range_same&= cmap.function_range.name == \
+                          cmap2.function_range.name
+    function_range_same&= cmap.function_range.coord_names == \
+                        cmap2.function_range.coord_names
+    yield function_range_same, 'output coords differ'
 
     yield (cmap.affine==cmap2.affine).all(), 'affines differ'
 

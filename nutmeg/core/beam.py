@@ -63,7 +63,11 @@ class MEG_coreg(array_pickler_mixin):
             aff[:] = affine
             affine = aff
         self.affine = affine
-        self.meg2mri = ni_api.Affine.from_params('xyz', 'xyz', affine)
+        self.meg2mri = ni_api.AffineTransform.from_params(
+            ni_api.ras_output_coordnames,
+            ni_api.ras_output_coordnames,
+            affine
+            )
         self.fiducials = fiducials
 
     @staticmethod
@@ -110,7 +114,7 @@ class Beam(array_pickler_mixin):
           the MEG signal data
         coreg : MEG_coreg object
           the MEG-to-MRI coregistration info
-        coordmap : NIPY Affine object
+        coordmap : NIPY AffineTransform object
           the MEG voxel index coordinate to voxel location coordinate mapping
 
         """
@@ -126,9 +130,11 @@ class Beam(array_pickler_mixin):
         if coordmap is None:
             v_offset = np.array([BEAM_SPACE_LEFT, BEAM_SPACE_POST,
                                  BEAM_SPACE_INF], 'd')
-            coordmap = ni_api.Affine.from_start_step('ijk', 'xyz',
-                                                     v_offset,
-                                                     self.voxelsize.astype('d'))
+            coordmap = ni_api.AffineTransform.from_start_step(
+                'ijk', ni_api.ras_output_coordnames,
+                v_offset,
+                self.voxelsize.astype('d')
+                )
         self.coordmap = coordmap
 
     def vox_lookup_from_mr(self, vox):
@@ -140,8 +146,8 @@ class Beam(array_pickler_mixin):
         vox : len-3 iterable
           the MRI space location coordinate
         """
-        meg_vox = self.coreg.meg2mri.inverse(vox)
-        vol_idx = self.coordmap.inverse(meg_vox)
+        meg_vox = self.coreg.meg2mri.inverse()(vox)
+        vol_idx = self.coordmap.inverse()(meg_vox)
         all_idx = self.voxel_indices
         # want to find the floor(vol_idx) in all_idx
         dist = np.abs(( all_idx - np.floor(vol_idx) )).sum(axis=1)
@@ -155,7 +161,7 @@ class Beam(array_pickler_mixin):
         """Return the indices of this object's voxel locations on the 3D
         localization grid.
         """
-        return np.round(self.coordmap.inverse(self.voxels)).astype('i')
+        return np.round(self.coordmap.inverse()(self.voxels)).astype('i')
 ##         # Using the implicit floor operation on the array index coordinates
 ##         return self.coordmap.inverse(self.voxels).astype('i')
 

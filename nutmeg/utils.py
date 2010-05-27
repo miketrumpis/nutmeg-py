@@ -92,15 +92,17 @@ def coord_list_to_mgrid(coords, shape, order='ijk'):
 def parameterize_cmap(coordmap):
     dt = [('incoord', object), ('outcoord', object), ('affine', object)]
     a = np.zeros(1, dtype=dt)
-    a['incoord'][0] = coordmap.input_coords.coord_names
-    a['outcoord'][0] = coordmap.output_coords.coord_names
+    a['incoord'][0] = coordmap.function_domain.coord_names
+    a['outcoord'][0] = coordmap.function_range.coord_names
     a['affine'][0] = coordmap.affine
     return a
 
 def cmap_from_array(arr):
-    return ni_api.Affine.from_params(arr['incoord'][0],
-                                     arr['outcoord'][0],
-                                     arr['affine'][0].astype('f'))
+    aff = np.empty(arr['affine'][0].shape, 'd')
+    aff[:] = arr['affine'][0]
+    return ni_api.AffineTransform.from_params(arr['incoord'][0],
+                                              arr['outcoord'][0],
+                                              aff)
 
 class array_pickler_mixin(object):
     """

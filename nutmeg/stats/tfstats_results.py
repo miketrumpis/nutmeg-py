@@ -41,7 +41,6 @@ def adapt_mlab_tf_snpm_stats(combo_beam, avg_beam=None):
 
 class TimeFreqSnPMResults(array_pickler_mixin):
     threshold_types = [
-        'MEG activation',
         'Test score',
         'Test score (both tails)',
         'Test score (pos tail)',

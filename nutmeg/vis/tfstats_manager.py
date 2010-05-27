@@ -370,12 +370,12 @@ class SimpleThresholdMask(TimeFreqThresholdMap):
     @cached_property
     def _get__tf_map_scalars(self):
         if not self.thresh_map_name or \
-               not self.stats_manager or \
-               not self.stats_manager.stats_results:
+               not self.stats_manager:
             return np.zeros(1)
         if self.thresh_map_name == 'MEG map':
             return self.stats_manager.tfbeam_man.beam_sig
-        elif self.thresh_map_name == 'Test score':
+        if self.stats_manager.stats_results and \
+               self.thresh_map_name == 'Test score':
             return self.stats_manager.stats_results.t
     @cached_property
     def _get_max_t(self):

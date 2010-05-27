@@ -105,7 +105,7 @@ class TFBeam(Beam):
           the MEG signal data
         coreg : MEG_coreg object
           the MEG-to-MRI coregistration info
-        coordmap : NIPY Affine object
+        coordmap : NIPY AffineTransform object
           the MEG voxel index coordinate to voxel location coordinate mapping
 
         """
