@@ -11,3 +11,11 @@ Documentation
 Please see the Docs:
 
 :doc:`contents`
+
+===========
+Development
+===========
+
+Take a look at the development on Github:
+
+http://github.com/miketrumpis/nutmeg-py
