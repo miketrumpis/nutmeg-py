@@ -32,21 +32,18 @@ def main():
 
     # THIS MUST HAPPEN FIRST BEFORE IMPORTING ENTHOUGHT STUFF!!!
     app = QtGui.QApplication(sys.argv)
-
-##     from xipy.overlay.plugins import register_overlay_plugin, \
-##          all_registered_plugins
-##     from nutmeg.vis.tfbeam_manager import NmTimeFreqWindow, TFBeamManager
-##     register_overlay_plugin(NmTimeFreqWindow)
+    from nutmeg import register_xipy_tools
+    register_xipy_tools()
         
     from xipy.vis.ortho_viewer import ortho_viewer
     win = ortho_viewer(image=opts.image, fliplr=opts.fliplr,
                        mayavi_viewer=not opts.no_mayavi_viewer)
 
-    if opts.image:
-        if opts.beam and opts.overlay:
-            # silently choose opts.beam for now
-            opts.overlay = None
-        if opts.beam:
+##     if opts.image:
+##         if opts.beam and opts.overlay:
+##             # silently choose opts.beam for now
+##             opts.overlay = None
+##         if opts.beam:
             
             
 
