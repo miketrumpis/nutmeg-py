@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using The Stats UI Tools &mdash; Nutmeg-Py Documentation</title>
+    <link rel="stylesheet" href="../../static/nm.css" type="text/css" />
+    <link rel="stylesheet" href="../../static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0-devel',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../static/jquery.js"></script>
+    <script type="text/javascript" src="../../static/doctools.js"></script>
+    <link rel="top" title="Nutmeg-Py Documentation" href="../../index.html" />
+    <link rel="up" title="User Guide" href="../index.html" />
+    <link rel="next" title="FAQ" href="../../faq/index.html" />
+    <link rel="prev" title="Beam Stats Example" href="comps_tutorial.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="../../faq/index.html" title="FAQ"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="comps_tutorial.html" title="Beam Stats Example"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../contents.html">Nutmeg-Py Documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">User Guide</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="using-the-stats-ui-tools">
+<h1>Using The Stats UI Tools<a class="headerlink" href="#using-the-stats-ui-tools" title="Permalink to this headline">¶</a></h1>
+<p><strong>Note: when running GUIs, it is helpful to run ipython in a threaded mode</strong>:</p>
+<div class="highlight-python"><pre>(nutmeg-py)bash-3.2$ ipython -q4thread</pre>
+</div>
+<p>Now import the <a title="" class="reference external" href="../../api/generated/nutmeg.stats.ui.stats_ui.html#module-nutmeg.stats.ui.stats_ui"><tt class="xref docutils literal"><span class="pre">stats_ui</span></tt></a> tools:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nutmeg.stats.ui</span> <span class="kn">import</span> <span class="n">stats_ui</span>
+</pre></div>
+</div>
+<div class="section" id="list-of-conditions-app">
+<h2>List Of Conditions App<a class="headerlink" href="#list-of-conditions-app" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ui</span> <span class="o">=</span> <span class="n">stats_ui</span><span class="o">.</span><span class="n">ListOfConditions</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ui</span><span class="o">.</span><span class="n">edit_traits</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../../images/list_of_conds.png" src="../../images/list_of_conds.png" />
+<p>Now add conditions and subjects as needed using &#8220;Append Conditions&#8221; and by increasing the &#8220;Number of Subjects&#8221;. All the condition and subject labels are fully editable.</p>
+<p>To search for the path to the TFBeam (or s_beam) file, double click on the &#8220;File Path&#8221; entry for a subject.</p>
+<p>Once you have created the list of conditions, you can select one or more conditions to compare on the bottom left list of Available Conditions. Then you may create a <a title="nutmeg.stats.beam_stats.BeamComparator" class="reference external" href="../../api/generated/nutmeg.stats.beam_stats.html#nutmeg.stats.beam_stats.BeamComparator"><tt class="xref docutils literal"><span class="pre">BeamComparator</span></tt></a> using one of the two buttons at the bottom right.</p>
+<img alt="../../images/list_of_conds_complete.png" src="../../images/list_of_conds_complete.png" />
+</div>
+<div class="section" id="snpm-tester-app">
+<h2>SnPM Tester App<a class="headerlink" href="#snpm-tester-app" title="Permalink to this headline">¶</a></h2>
+<img alt="../../images/snpm_tester.png" src="../../images/snpm_tester.png" />
+<p>With this window, you may make comparisons, run the SnPM tests, and view the results. When defining contrasts, note that the selection of conditions is ordered.</p>
+<p>After the test or comparison is performed, then a new panel will show up in the tabbed area at the bottom of the window.</p>
+<img alt="../../images/snpm_tester_ran.png" src="../../images/snpm_tester_ran.png" />
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../../contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">Using The Stats UI Tools</a><ul>
+<li><a class="reference external" href="#list-of-conditions-app">List Of Conditions App</a></li>
+<li><a class="reference external" href="#snpm-tester-app">SnPM Tester App</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="comps_tutorial.html"
+                                  title="previous chapter">Beam Stats Example</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="../../faq/index.html"
+                                  title="next chapter">FAQ</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../../sources/users/beam_stats_tutorial/stats_ui.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../faq/index.html" title="FAQ"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="comps_tutorial.html" title="Beam Stats Example"
+             >previous</a> |</li>
+        <li><a href="../../contents.html">Nutmeg-Py Documentation</a> &raquo;</li>
+          <li><a href="../index.html" >User Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
+      Last updated on Jun 01, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

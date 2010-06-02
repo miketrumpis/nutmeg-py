@@ -16,7 +16,9 @@
 
    introduction
    installation
-   tutorial.rst
+   tutorial
+   beam_stats_tutorial/comps_tutorial
+   beam_stats_tutorial/stats_ui
 
 .. htmlonly::
 
