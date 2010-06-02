@@ -192,10 +192,6 @@ class BeamComparator(object):
         sample_beams : list
             a len(conditions) length list of n_subj length lists of
             comparison beams
-        mni_maps : list
-            a len(conditions) length list of maps to MNI voxels
-        inter_vox :
-            a len(conditions) length list
         avg_beams : list
             a len(conditions) length list of average comparisons
         """
@@ -226,16 +222,21 @@ class BeamComparator(object):
         """        
         mat_path = os.path.abspath(mfile)
         bpath, mpath = os.path.split(mat_path)
-        voi = sp.io.matlab.loadmat(mat_path,
-                                   struct_as_record=True)['voi'][0,0]
+        voi = sp.io.matlab.loadmat(mat_path, struct_as_record=True)['voi'][0,0]
         # this will need to be fixed for the RAID environment
-        pnames = [os.path.join(bpath, str(p[0])) for p in voi['pathnames'][0]]
-        subj_labels = voi['subjnr'][0]
-        cond_labels = voi['condnr'][0]
+        pnames = [os.path.join(bpath, str(p[0]))
+                  for p in voi['pathnames'][0]]
+        subj_labels = voi['subjnr'][0].astype('i')
+        cond_labels = voi['condnr'][0].astype('i')
         beam_list = []
         for p in pnames:
-            pn = os.path.splitext(p)[0] + '_spatnorm.mat'
-            beam_list.append(tfb.tfbeam_from_file(pn, **kwargs))
+            if p.find('spatnorm') < 0:
+                beam_list.append(os.path.splitext(p)[0] + '_spatnorm.mat')
+            else:
+                beam_list.append(p)
+        
+##             pn = os.path.splitext(p)[0] + '_spatnorm.mat'
+##             beam_list.append(tfb.tfbeam_from_file(pn, **kwargs))
         return class_type(beam_list, subj_labels, cond_labels)
 
 
@@ -261,12 +262,13 @@ class BeamComparator(object):
         beam = self.beam(cond, subj)
         c_map = self.c_labels == cond
         s_map = self.s_labels[c_map]
-        beam_idx = np.argwhere(s_map==subj)
-        if beam_idx.sum() < 1:
+        beam_where = s_map==subj
+        if beam_where.sum() < 1:
             err = 'Subject '+str(subj)+' has no map for condition '+str(cond)
             raise ValueError(err)
-        if beam_idx.sum() > 1:
+        if beam_where.sum() > 1:
             raise ValueError('Beams not uniquely specified: ambiguously labeled BeamComparator')
+        beam_idx = np.argwhere(beam_where)
         m = self.beam_voxel_maps[cond][beam_idx]
         return beam.s[m]
 
@@ -364,8 +366,8 @@ class BeamContrastAverager(BeamComparator):
             avg_contrast = np.zeros_like(self.beam_sig(self.conds[0],
                                                        self.subjs[0]))
             cond_contrasts = []
+            b1 = self.beam(c1,self.subjs[0])
             for i in self.subjs:
-                b1 = self.beam(c1,i)
                 s = self.beam_sig(c1,i) - self.beam_sig(c2,i)
                 # XYZ: INCONVENIENT SYNTAX FOR FINDING THE CORRECT INTER_VOX
                 cond_contrasts.append(
@@ -374,14 +376,14 @@ class BeamContrastAverager(BeamComparator):
                                         fixed_comparison=b1.uses)
                     )
                 avg_contrast += s
-                contrast_beams.append(cond_contrasts)
-                avg_contrast /= self.n_subj
-                avg_beams.append(
-                    b1.from_new_dataset(avg_contrast,
-                                        new_vox=self.inter_vox[pair[0]],
-                                        multi_subj=True,
-                                        fixed_comparison=b1.uses)
-                    )
+            contrast_beams.append(cond_contrasts)
+            avg_contrast /= self.n_subj
+            avg_beams.append(
+                b1.from_new_dataset(avg_contrast,
+                                    new_vox=self.inter_vox[pair[0]],
+                                    multi_subj=True,
+                                    fixed_comparison=b1.uses)
+                )
                 
 ##         self._compare_cache[tuple(conditions)] = (tuple(act_beams),
 ##                                                   tuple(avg_beams))
@@ -510,13 +512,32 @@ class SnPMOneSampT(SnPMTester):
             
     @staticmethod
     def num_possible_permutations(condition, c_labels, s_labels):
+        """
+        Find the number of re-weighted means in a One Sample SnPM
+        T-test set up, for given specs
+
+        Parameters
+        ----------
+        condition : str or iterable
+            a condition or contrast label
+        c_labels : iterable
+            all condition labels in the comparison (IE, BeamComparator.c_labels)
+        s_labels : iterable
+            all subject labels in the comparison (IE, BeamComparator.s_labels)
+
+        Returns
+        -------
+        the maximum number of re-weighted means
+        """
+
         return 2**SnPMOneSampT.num_observations(condition, c_labels, s_labels)
 
     def __init__(self, beam_comp, condition, n_perm,
                  force_half_perms=False,
                  init=True):
         """
-        Sets up an SnPMTester for a 1-sample T test.
+        Sets up an SnPMTester for a 1-sample T test. This test is
+        performed on the condition, or conditions contrast specified.
 
         Parameters
         ----------
@@ -635,6 +656,23 @@ class SnPMUnpairedT(SnPMTester):
 
     @staticmethod
     def num_possible_permutations(cpair, c_labels, s_labels):
+        """
+        Find the number of re-weighted means in a One Sample SnPM
+        T-test set up, for given specs
+
+        Parameters
+        ----------
+        condition : str or iterable
+            a condition or contrast label
+        c_labels : iterable
+            all condition labels in the comparison (IE, BeamComparator.c_labels)
+        s_labels : iterable
+            all subject labels in the comparison (IE, BeamComparator.s_labels)
+
+        Returns
+        -------
+        the maximum number of re-weighted means
+        """        
         n_obs_a, n_obs_b = SnPMUnpairedT.num_observations(
             cpair, c_labels, s_labels
             )

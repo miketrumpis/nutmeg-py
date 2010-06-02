@@ -28,7 +28,7 @@ def index(np.ndarray[np.npy_double, ndim=1] t,
     cdef Py_ssize_t i, nt, nd
     nt = t.shape[0]
     nd = dist.shape[0]
-    cdef np.ndarray[np.npy_uint32, ndim=1] ti = np.empty((nt,), dtype=np.uint32)
+    cdef np.ndarray[np.npy_int32, ndim=1] ti = np.empty((nt,), dtype=np.int32)
     i = 0
     j = 0
     # create a map from t -> i

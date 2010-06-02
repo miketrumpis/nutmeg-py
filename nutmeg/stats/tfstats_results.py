@@ -220,21 +220,24 @@ class TimeFreqSnPMResults(array_pickler_mixin):
 
         dist = self._fix_dist(tail, corrected_dims, pooled_dims)
         p_table = np.linspace(0,1,dist.shape[0]+1,endpoint=True)
+        if tail=='pos':
+            dist = dist[::-1]
+            p_table = p_table[::-1]
 
         # XYZ: maybe this can be smarter
         nt, nf = t.shape[1:]
         p_vals = np.empty_like(t)
-        for t in xrange(nt):
-            for f in xrange(nf):
-                dt = 0 if dist.shape[1]==1 else t
-                df = 0 if dist.shape[2]==1 else f
-                t_indexed = su.index(t[:,t,f], dist[:,dt,df])
-                np.take(p_table, t_indexed, out=p_vals[:,t,f])
+        for tp in xrange(nt):
+            for fp in xrange(nf):
+                dt = 0 if dist.shape[1]==1 else tp
+                df = 0 if dist.shape[2]==1 else fp
+                t_indexed = su.index(t[:,tp,fp], dist[:,dt,df])
+                np.take(p_table, t_indexed, out=p_vals[:,tp,fp])
                         
         
         return p_vals
         
-    def map_of_significant_clusters(self, tail, alpha=.05, gamma=0.05):
+    def map_of_significant_clusters(self, tail, alpha=0.05, gamma=0.05):
         """Make a map based on cluster-size significance.
         First find all the clusters of voxels exceeding the
         individual-statistic p value of alpha. Then, from a distribution

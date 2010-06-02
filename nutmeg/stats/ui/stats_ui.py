@@ -236,8 +236,6 @@ class SnPMTesterUI(HasTraits):
     n_perm = Range(low='_one', high='_max_perm', value=1)
     _max_perm = Property(Int, depends_on='snpm_test, active_conditions')
     sym_perms = Bool(True)
-    correct_time = Bool(True)
-    correct_freq = Bool(True)
     minimum_pval = Property(Str, depends_on='n_perm')
 
     run_stats = Button('Run Stats Test')
@@ -350,16 +348,18 @@ class SnPMTesterUI(HasTraits):
         
         if self.snpm_test == 'One sample T test':
             test_class = bstats.SnPMOneSampT
-            step_sz = 1
         elif self.snpm_test == 'Unpaired T test':
             test_class = bstats.SnPMUnpairedT
-            step_sz = 2
-
+            conditions = [[a] + [b] for a, b in zip(conditions[0::2],
+                                                    conditions[1::2])]
+            cond_titles = [[a]+[b] for a, b in zip(cond_titles[0::2],
+                                                   cond_titles[1::2])]
+            
         kws = dict(fixed_comparison=self.beam_transform)
         comp = self._comp_class(*self._comp_args, **kws)
-        for n in xrange(len(conditions)/step_sz):
-            condition = conditions[n*step_sz:(n+1)*step_sz]
-            c_title = cond_titles[n*step_sz:(n+1)*step_sz]
+        for n in xrange(len(conditions)):
+            condition = conditions[n]
+            c_title = cond_titles[n]
 
             test = test_class(comp, condition, self.n_perm,
                               force_half_perms=self.sym_perms,
@@ -419,12 +419,6 @@ class SnPMTesterUI(HasTraits):
                         Item('minimum_pval', label='Minimum uncorrected P val',
                              help='This is the minimum p score that can be achieved with the current settings',
                              style='readonly'),
-                        ),
-                    HGroup(
-                        Item('correct_time',
-                             label='Multiple comparison correction in time'),
-                        Item('correct_freq',
-                             label='Multiple comparison correction in freq')
                         ),
                     HGroup(
                         Item('run_comp', show_label=False),
