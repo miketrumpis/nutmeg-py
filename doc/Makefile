@@ -120,9 +120,6 @@ doctest:
 	@echo "The overview file is in build/doctest."
 
 gitpages: html
-	cd build/html
-	sphinxtogithub .
-	tar cvf ../../../html.tar *
-	cd ../../..
+	sphinxtogithub build/html
+	tar cvf ../html.tar build/html/*
 	git checkout gh-pages
-	tar xvf html.tar
