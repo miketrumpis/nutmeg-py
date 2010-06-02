@@ -44,11 +44,12 @@ fill_values = {
 
 
 class TFBeamManager( OverlayInterface ):
-    """ Manages the GUI manipulation of a TFBeam object, including:
-        * Extrema localization in partitioned or all dimensions
-        * Active to control ratio transforms
-        * Reinterpreting data as various other useful types (NIPY Image,
-          (MaskedArray, VolumeSlicer type)
+    """
+    Manages the GUI manipulation of a TFBeam object, including:
+      * Extrema localization in partitioned or all dimensions
+      * Active to control ratio transforms
+      * Reinterpreting data as various other useful types (NIPY Image,
+        (MaskedArray, VolumeSlicer type)
     """
     # Signal manipulation--------------------
     _beam_transforms = List
@@ -749,11 +750,11 @@ class NmTimeFreqWindow(OverlayWindowInterface):
         Creates a new MplQT4TimeFreqWindow, which controls interaction
         with Nutmeg TFBeam objects. This window is a QT4TopLevelAuxiliaryWindow,
         giving it top level status. It contains:
-         *a 2D image of the time-frequency plane with selectable bins (emits a
-          functional image update event and a tf event, described below)
-         *a TFBeam management panel, with data management and feature
-          localizations (events described below)
-         *a threshold management panel, to create different mask criteria
+          * a 2D image of the time-frequency plane with selectable bins (emits a
+            functional image update event and a tf event, described below)
+          * a TFBeam management panel, with data management and feature
+            localizations (events described below)
+          * a threshold management panel, to create different mask criteria
 
          Time-frequency point updates cause emission of the tf_point signal.
          To cause methods to be connected to this signal, include them in the
@@ -765,8 +766,8 @@ class NmTimeFreqWindow(OverlayWindowInterface):
          connected, include them in the image_connections iterable argument.
          Methods will have this signature pattern:
          meth(obj)
-          * obj will give access to obj.overlay, obj.alpha,
-          * obj.norm, obj.fill_value
+           * obj will give access to obj.overlay, obj.alpha,
+           * obj.norm, obj.fill_value
 
          Spatial location updates cause emission of the xyz_point signal. To
          cause methods to be connected to this signal, include them in the
