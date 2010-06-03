@@ -11,9 +11,7 @@ def configuration(parent_package='', top_path=None):
     config.add_subpackage('stats')
     config.add_subpackage('vis')
 
-##     rsrc_dir = path.join(path.dirname(path.abspath(__file__)), 'resources')
-##     rsrc_files = glob(path.join(rsrc_dir, '*'))
-##     print rsrc_dir, rsrc_files
+    config.add_data_dir('tests')
     config.add_data_dir('resources')
     
     return config

@@ -5,7 +5,7 @@ def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('vis', parent_package, top_path)
 
-    # should add tests directory when there is one!
+    config.add_data_dir('tests')
     return config
 
 if __name__ == '__main__':

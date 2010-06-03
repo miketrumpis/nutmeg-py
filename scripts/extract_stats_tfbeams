@@ -10,7 +10,7 @@ for matfile in sys.argv[1:]:
     pyfile = os.path.splitext(matfile)[0]
     matbeam = sp.io.matlab.loadmat(matfile, struct_as_record=True)['beam']
     print 'saving base beam as', pyfile
-    base_beam._to_recarray(pyfile)
+    base_beam.save(pyfile)
     if 'snpm' in matbeam.dtype.names:
         snpm_beam = matbeam[0,0]['snpm'][0,0]
         for arr_name in ('T', 'p_uncorr_pos', 'p_uncorr_neg',
@@ -18,5 +18,5 @@ for matfile in sys.argv[1:]:
             print 'saving', arr_name, 'beam as', pyfile+'_'+arr_name
             beam = base_beam.from_new_dataset(snpm_beam[arr_name],
                                               fixed_comparison=arr_name)
-            beam._to_recarray(pyfile+'_'+arr_name)
+            beam.save(pyfile+'_'+arr_name)
         

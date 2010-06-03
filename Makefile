@@ -1,4 +1,4 @@
-# Nabbed from DIPY, adapted for Nutmeg-py--thanks!
+# --yoinked from DIPY, thanks!--
 
 # Simple makefile to quickly access handy build commands for Cython extension
 # code generation.  Note that the actual code to produce the extension lives in
@@ -6,7 +6,7 @@
 # convenience/reminder while doing development.
 
 PKGDIR=nutmeg
-DOCDIR=${PKGDIR}/doc
+DOCDIR=${PWD}/doc
 TESTDIR=${PKGDIR}/tests
 
 
@@ -19,14 +19,14 @@ help:
 
 all: ext html test
 
-ext: _sutils.so
+ext: _blend_pix.so
 
 test:   ext
 	nosetests .
 
-html:  ${PKGDIR}/stats/_sutils.html
+html:  ${PKGDIR}/vis/_blend_pix.html
 
-_sutils.so: ${PKGDIR}/stats/_sutils.c
+_blend_pix.so: ${PKGDIR}/vis/_blend_pix.c
 	python setup.py build_ext --inplace
 
 # Phony targets for cleanup and similar uses
@@ -37,6 +37,8 @@ clean:
 	- find ${PKGDIR} -name "*.so" -print0 | xargs -0 rm
 	- find ${PKGDIR} -name "*.c" -print0 | xargs -0 rm
 	- find ${PKGDIR} -name "*.html" -print0 | xargs -0 rm
+	- find . -name "*.pyc" -print0 | xargs -0 rm
+	- cd doc && make clean
 	rm -rf build
 
 # Suffix rules

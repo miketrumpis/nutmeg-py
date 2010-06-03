@@ -294,8 +294,8 @@ class BeamActivationAverager(BeamComparator):
         Returns a list of activations, and an average activation for
         each condition specified
         """
-        if type(conditions) is not list:
-            conditions = list(conditions)
+        if not hasattr(conditions, '__iter__'):
+            conditions = [conditions]
         if not conditions:
             conditions = self.conds
         if not self.aligned:

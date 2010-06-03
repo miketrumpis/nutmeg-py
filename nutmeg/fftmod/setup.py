@@ -86,7 +86,8 @@ if fftw_info and sys.platform != 'win32':
 def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('fftmod', parent_package, top_path)
-    config.add_subpackage('tests')
+
+    config.add_data_dir('tests')
 
     if 'export_extension' in globals():
         fft_ext = export_extension(build=False)
