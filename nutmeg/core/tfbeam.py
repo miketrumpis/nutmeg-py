@@ -239,6 +239,7 @@ corresponding to (active, control, [noise]).
         method will fix the comparison as the requested one, and delete the
         old component signal data. In this case, the fixed comparison must
         be a legal transforms
+        
         """
         # Through property magic, make self.s synonymous with
         # self.sig (through association with the keyword fixed_comp),

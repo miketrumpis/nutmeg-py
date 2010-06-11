@@ -227,10 +227,10 @@ class ApiDocWriter(object):
             title = ':mod:`' + uri_short + '`'
         ad += title + '\n' + self.rst_section_levels[2] * len(title)
 
-        if len(classes):
-            ad += '\nInheritance diagram for ``%s``:\n\n' % uri
-            ad += '.. inheritance-diagram:: %s \n' % uri
-            ad += '   :parts: 3\n'
+##         if len(classes):
+##             ad += '\nInheritance diagram for ``%s``:\n\n' % uri
+##             ad += '.. inheritance-diagram:: %s \n' % uri
+##             ad += '   :parts: 3\n'
 
         ad += '\n.. automodule:: ' + uri + '\n'
         ad += '\n.. currentmodule:: ' + uri + '\n'
@@ -422,5 +422,6 @@ class ApiDocWriter(object):
         w('.. AUTO-GENERATED FILE -- DO NOT EDIT!\n\n')
         w('.. toctree::\n\n')
         for f in self.written_modules:
+            print relpath, f, os.path.join(relpath, f)
             w('   %s\n' % os.path.join(relpath,f))
         idx.close()
