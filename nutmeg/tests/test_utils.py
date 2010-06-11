@@ -7,47 +7,6 @@ from nutmeg.external import decotest
 # import all from the module to test
 from nutmeg.utils import *
 
-@decotest.ipdoctest
-def test_voxel_index_list():
-    """
->>> voxel_index_list((2,3), order='ijk')
-array([[0, 0],
-       [1, 0],
-       [0, 1],
-       [1, 1],
-       [0, 2],
-       [1, 2]])
->>> voxel_index_list((2,3), order='kji')
-array([[0, 0],
-       [0, 1],
-       [0, 2],
-       [1, 0],
-       [1, 1],
-       [1, 2]])
-    """
-
-@decotest.ipdoctest
-def test_coord_list_to_mgrid():
-    """
->>> coords_list = voxel_index_list((2,3), order='ijk')
->>> mgrid = coord_list_to_mgrid(coords_list, (2,3), order='ijk')
->>> mgrid
-array([[[0, 0, 0],
-        [1, 1, 1]],
-<BLANKLINE>
-       [[0, 1, 2],
-        [0, 1, 2]]])
->>> coords_list = voxel_index_list((2,3), order='kji')
->>> mgrid = coord_list_to_mgrid(coords_list, (2,3), order='kji')
->>> mgrid
-array([[[0, 0, 0],
-        [1, 1, 1]],
-<BLANKLINE>
-       [[0, 1, 2],
-        [0, 1, 2]]])
-
-    """
-
 @decotest.parametric
 def test_cmap_to_array_roundtrip():
     aff = np.random.randn(4,4)

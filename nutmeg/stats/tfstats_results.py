@@ -87,24 +87,35 @@ class TimeFreqSnPMResults(array_pickler_mixin):
         """Return the requested distribution, sorted (in the sense of
         low p value to high p value) along axis 0. Perform any correction
         or pooling across requested dimensions.
+
+        Parameters
+        ----------
+        tail : str in {'pos', 'neg'}
+        corrected_dims : sequence
+          which dims (other than 0) to be reduced to maximal values
+        pooled_dims : sequence
+          which dims (other than 0) to be pooled together with the
+          maximal distribution axis, in order to produce a richer distribution
         """
-        i = set(pooled_dims).union(set(corrected_dims)).difference(set((0,1,2)))
+        i = set(pooled_dims).union(set(corrected_dims)).difference(set((1,2)))
         if i:
             dims = [d for d in i]
             raise ValueError('Dimensions out of range: '+str(dims))
         i = set(pooled_dims).intersection(set(corrected_dims))
         if i:
-            d = {0: 'voxel', 1: 'time', 2: 'frequency'}
+            d = {0: 'max_stat', 1: 'time', 2: 'frequency'}
             dims = [d[n] for n in i]
-            raise ValueError('Impossible to pool and correct dims: '+str(dims))
+            raise ValueError('Cannot to pool and/or correct dims: '+str(dims))
 
         ext_t = -self._max_t if tail.lower()=='pos' else self._min_t
-
+        # if correcting dims, simply reduce that dimension with its
+        # minimal value, and replace the dimension size with 1
         for d in corrected_dims:
             s = list(ext_t.shape)
             s[d] = 1
             ext_t = ext_t.min(axis=d)
             ext_t.shape = tuple(s)
+        
         # if pooling dims, roll them all to the front, and then
         # reshape to have len(pooled_dims) as the 1st dimension
         s = list(ext_t.shape)
@@ -119,8 +130,8 @@ class TimeFreqSnPMResults(array_pickler_mixin):
             # restore original shape at these dimensions
             new_shape[d] = s[d]
         # set shape of 1st dimension as the product of the pooled dims
-        new_shape[0] = np.prod(np.take(np.array(s), pooled_dims))
-        ext_t = ext_t.reshape(tuple(s))
+        new_shape[0] *= np.prod(np.take(np.array(s), pooled_dims))
+        ext_t = ext_t.reshape(tuple(new_shape))
         # want to return the negative tail distribution running from
         # neg-to-pos values, and the positive tail distribution running
         # from pos-to-neg values

@@ -35,8 +35,8 @@ def split_combo_tfstats_matfile(fname):
     for stat in all_tfstats_maps:
         arr_name = tfstats_names_to_mat_fields[stat]
         if arr_name in snpm.dtype.names:
-            new_beam = base_beam.from_new_dataset(snpm[arr_name],
-                                                  fixed_comparison=stat)
+            new_beam = base_beam.from_new_data(snpm[arr_name],
+                                               fixed_comparison=stat)
             stats_dict[stat] = new_beam
 
     settings = snpm['settings'][0,0]

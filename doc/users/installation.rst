@@ -71,6 +71,6 @@ With the exception of `FFTW <http://www.fftw.org/>`_, the install and run-time r
 Finally check out the Nutmeg-Py code, and set it up::
 
   git clone git://github.com/miketrumpis/nutmeg-py.git
-  cd nutmeg-py && make ext
+  cd nutmeg-py && python setup.py install
 
 .. include:: ../links.txt

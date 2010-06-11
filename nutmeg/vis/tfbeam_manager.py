@@ -380,7 +380,7 @@ class TFBeamManager( OverlayInterface ):
             self.bstats_manager.stats_results = sres
 
     def _rbutton_fired(self):        
-        self.beam.reinterpret_signal_as(self.alt_names)
+        self.beam.fix_comparison(self.alt_names)
         self.update_beam(self.beam)
 
     def _pextrabutton_fired(self):

@@ -44,16 +44,16 @@ def synthetic_gaussian_activity_like(beam, tf_pts=((0,0),),
                 s_active[active_vox,t,f] += activity
 ##                 s_active[active_vox,t,f] = activity
         if mode=='contrast':
-            beams = beams + [beam.from_new_dataset(s_active,
-                                                   fixed_comparison='F dB'),
-                             beam.from_new_dataset(s_baseline,
-                                                   fixed_comparison='F dB')]
+            beams = beams + [beam.from_new_data(s_active,
+                                                fixed_comparison='F dB'),
+                             beam.from_new_data(s_baseline,
+                                                fixed_comparison='F dB')]
         else:
             # convert gaussian samples to 10 ** (sig/10) -- ??
             s_baseline /= 10.0
             s_active /= 10.0
             sig = np.array( (10 ** s_active, 10 ** s_baseline) )
-            beams.append( beam.from_new_dataset(sig, uses='F dB') )
+            beams.append( beam.from_new_data(sig, uses='F dB') )
     if n_beams==1:
         return beams[0]
     if return_labels:
@@ -98,11 +98,11 @@ def synthetic_activation_like(beam, tf_pts=((0,0),), locs=((-10,-10,-10),),
                                             size=n_active)
                 s_active[active_vox,t,f] += activity
         if mode=='contrast':
-            beams.append( ( beam.from_new_dataset(s_baseline),
-                            beam.from_new_dataset(s_active) ) )
+            beams.append( ( beam.from_new_data(s_baseline),
+                            beam.from_new_data(s_active) ) )
         else:
             sig = np.array( (s_active, s_baseline) )
-            beams.append( beam.from_new_dataset(sig) )
+            beams.append( beam.from_new_data(sig) )
     if n_beams==1:
         return beams[0]
     return beams

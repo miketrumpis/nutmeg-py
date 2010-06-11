@@ -19,14 +19,14 @@ help:
 
 all: ext html test
 
-ext: _blend_pix.so
+ext: _sutils.so
 
 test:   ext
 	nosetests .
 
 html:  ${PKGDIR}/vis/_blend_pix.html
 
-_blend_pix.so: ${PKGDIR}/vis/_blend_pix.c
+_sutils.so: ${PKGDIR}/stats/_sutils.c
 	python setup.py build_ext --inplace
 
 # Phony targets for cleanup and similar uses

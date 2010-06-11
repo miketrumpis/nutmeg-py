@@ -23,15 +23,15 @@ def one_sample_ttest(beam_comp): #, conditions):
         # prob of score <= t if contrasting same distributions
         pneg = sp.stats.distributions.t.sf(-t, df)
         inter_vox = beam_comp.inter_vox[clabel]
-        t_beam = beam.from_new_dataset(
+        t_beam = beam.from_new_data(
             t, new_vox=inter_vox, multi_subj=True,
             fixed_comparison='parametric T score'
             )
-        ppos_beam = beam.from_new_dataset(
+        ppos_beam = beam.from_new_data(
             ppos, new_vox=inter_vox, multi_subj=True,
             fixed_comparison='parametric pval pos tail'
             )
-        pneg_beam = beam.from_new_dataset(
+        pneg_beam = beam.from_new_data(
             pneg, new_vox=inter_vox, multi_subj=True,
             fixed_comparison='parametric pval neg tail'
             )

@@ -4,6 +4,7 @@ import numpy as np
 import os
 import scipy.io as sio
 import warnings as w
+from copy import copy
 
 from xipy.volume_utils import signal_array_to_masked_vol
 
@@ -11,12 +12,29 @@ from nutmeg.core.beam import Beam, search_any_pybeam, MEG_coreg
 from nutmeg.external import descriptors as desc
 from nutmeg.core import TEMPLATE_MRI_PATH
 
+
+def _excluded_by_list(meth):
+    "A decorator to be used exclusively with TFBeams"
+    m_name = meth.func_name
+    def runs_if_available(obj):
+        if m_name not in obj.signal_methods:
+            raise RuntimeError(
+                'This signal transform no longer available '\
+                'on this object: %s'%m_name
+                )
+        return meth(obj)
+    # important! put the original func name into the
+    # class/instance attribute dictionary
+    runs_if_available.func_name = m_name
+    return runs_if_available
+
 class TFBeam(Beam):
 
     # XYZ These "one time properties" still need to be disabled if they
     # are not in the signal transforms list
     
     @desc.auto_attr
+    @_excluded_by_list
     def f_raw(self):
         sa = self.sig['active']
         sc = self.sig['control']
@@ -26,6 +44,7 @@ class TFBeam(Beam):
         return sa/sc
         
     @desc.auto_attr
+    @_excluded_by_list
     def f_db(self):
         # if I recompute all this now (as opposed to calling f = self.f_raw()),
         # there's one less array in memory after f_db is requested
@@ -40,6 +59,7 @@ class TFBeam(Beam):
         return fdb
 
     @desc.auto_attr
+    @_excluded_by_list
     def pseudo_f(self):
         f = self.f_raw
         pos_idc = (f>=1).nonzero()[0]
@@ -50,14 +70,17 @@ class TFBeam(Beam):
         return fp
 
     @desc.auto_attr
+    @_excluded_by_list
     def active_power(self):
         return self.sig['active']
 
     @desc.auto_attr
+    @_excluded_by_list
     def control_power(self):
         return self.sig['control']
 
     @desc.auto_attr
+    @_excluded_by_list
     def noise_power(self):
         return self.sig['noise']
     
@@ -76,10 +99,16 @@ class TFBeam(Beam):
         'Control Power' : 'control_power',
         'Noise Power' : 'noise_power'
         }
+
+    # these properties defined on the instance
     signal_transforms = property(lambda x: x.__signal_transforms.keys(),
                                  None, None,
                                  'available transforms of the signal data')
+    signal_methods = property(lambda x: x.__signal_transforms.values(),
+                              None, None,
+                              'available methods')
 
+    # this is a method defined statically on the class
     @staticmethod
     def signal_transform_names():
         return TFBeam.__signal_transforms.keys()
@@ -102,11 +131,26 @@ class TFBeam(Beam):
         timepts : ndarray
           the sample times
         sig : ndarray
-          the MEG signal data
+          the MEG signal data -- see NOTE
         coreg : MEG_coreg object
           the MEG-to-MRI coregistration info
         coordmap : NIPY AffineTransform object
           the MEG voxel index coordinate to voxel location coordinate mapping
+
+        Notes
+        -----
+        The signal argument can take on the following forms:
+        * a record/structured ndarray with 'active', 'control', ['noise']
+          components
+        * a list/tuple of ndarrays (taken to mean 'active', 'control',
+          ['noise'] components)
+        * a normal ndarray with no separate components (literally, a
+          fixed comparison). In this case, the `fixed_comparison` keyword
+          argument is REQUIRED so that the TFBeam understands what the
+          data means
+        * adapted from MATLAB s_beam*.mat files, for `internal` use --
+          This format has dtype('object'), and may be a simple list of
+          components
 
         """
         sig, voxels = self._init_signal(sig, voxels, fixed_comparison)
@@ -119,15 +163,22 @@ class TFBeam(Beam):
             self.fixed_comparison = fixed_comparison
             self.uses = uses
         else:
-            self.reinterpret_signal_as(fixed_comparison)
+            self.fix_comparison(fixed_comparison)
             
     def _init_signal(self, sig, voxels, fcomp):
         """Try to parse out the signal components and valid voxels in
         data coming from a variety of sources.
         """
         
-        # In this case  there are no separable active/control components.
-        if len(sig) not in (2,3) and len(sig.dtype) not in (2,3):
+        # Check the case where there are no separable active/control components.
+        # * if sig is from MATLAB, the len(sig) may be in {2,3}
+        # * if sig is from a NPY/NPZ, then sig will have the right shape,
+        #   but the len(dtype) might be in {2,3}
+        # * if sig is a tuple or list, then its length is in {2,3}
+        
+        # If none of these cases is true, then it's not multicomponent
+        if len(sig) not in (2,3) and \
+           (hasattr(sig, 'dtype') and len(sig.dtype) not in (2,3)):
             if fcomp:
                 return sig, voxels
             else:
@@ -165,12 +216,89 @@ corresponding to (active, control, [noise]).
             nomatch = sig_fields.difference(beam_fields)
             if len(nomatch):
                 new_sig = np.empty(sig.shape, dtype=beam_dtype)
+                # fill in the matching fields
                 for f in matching:
                     new_sig[f] = sig[f]
+                # fudge the non-matching fields ..
+                # XYZ: SHOULD IT BE ONES OR ZEROS?
                 for f in nomatch:
                     new_sig[f] = np.zeros(sig.shape)
                 sig = new_sig                
         return sig, voxels
+
+    def fix_comparison(self, fixed_comparison):
+        """
+        Fix the active-to-control ratio for this TFBeam. After this
+        fixation, all method-attributes will become unavailable.
+
+        If this TFBeam is already fixed to a comparison, simply change
+        the name of it (nb: this means the new comparison name can be
+        used-defined)
+
+        If this TFBeam has separate active and control components, then this
+        method will fix the comparison as the requested one, and delete the
+        old component signal data. In this case, the fixed comparison must
+        be a legal transforms
+        """
+        # Through property magic, make self.s synonymous with
+        # self.sig (through association with the keyword fixed_comp),
+        # and also make it the only available trasform/signal.
+        if len(self.sig.dtype) not in (2,3):
+            try:
+                # try to look up this name for the benefit of case insensitivity
+                self.uses = fixed_comparison
+                self.__signal_transforms = dict(( (self.uses, 'sig'), ))
+            except RuntimeError:                
+                # if that failed, then make the name user-defined
+                self.__signal_transforms = dict(( (fixed_comparison, 'sig'), ))
+                self.uses = fixed_comparison
+                
+        else:
+            # In this case a fixed comparison is being used in order
+            # to reduce the data (and also the memory footprint).
+            # Calculate the fixed comparison once, and then throw away the
+            # signal components.
+            self.uses = fixed_comparison
+            self.sig = self.s
+            for attr in self.__signal_transforms.values():
+                try:
+                    delattr(self, attr)
+                except:
+                    pass
+            self.__signal_transforms = dict( ((self.uses, 'sig'),) )
+
+        self.fixed_comparison = fixed_comparison
+            
+    def get_array_by_name(self, name):
+        return getattr(self, self.__signal_transforms[name])
+
+    #### A little property magic for run-time control of behavior ####
+    
+    # The "uses" attribute
+    def _get_ratio_type(self):
+        return self._ratio_type
+    def _set_ratio_type(self, name):
+        un = name.upper()
+        ul = [n.upper() for n in self.signal_transforms]
+        try:
+            i = ul.index(un)
+            self._ratio_type = self.signal_transforms[i]
+        except:
+            raise RuntimeError(
+                'ratio type %s not available, '\
+                'see TFBeam.signal_transforms'%name
+                )
+    
+    uses = property(_get_ratio_type, _set_ratio_type, None,
+                    'what type of active-to-control ratio is exposed')
+
+    # The "s" attribute
+    def _get_ratio_signal(self):
+        return self.get_array_by_name(self.uses)
+    s = property(_get_ratio_signal, None, None,
+                 'exposed active-to-control signal ratio')
+
+    #### Some utilities ####
 
     @classmethod
     def from_mat_file(class_type, matfile, **kwargs):
@@ -180,7 +308,6 @@ corresponding to (active, control, [noise]).
         else:
             try:
                 beam = sio.matlab.loadmat(matfile,
-                                          squeeze_me=False,
                                           struct_as_record=True)['beam']
             except KeyError:
                 print "there was no 'beam' element in this mat file"
@@ -205,64 +332,6 @@ corresponding to (active, control, [noise]).
                           argdict['bands'], argdict['timewindow'],
                           **kwargs)
 
-
-    def reinterpret_signal_as(self, fixed_comparison):
-        """Change the name of the active-to-control comparison. If this
-        TFBeam is already fixed to a comparison, simply change the name of it.
-        If this TFBeam has separate active and control components, then this
-        method will fix the comparison as the requested one, and delete the
-        old component signal data.
-        """
-        # Through property magic, make self.s synonymous with
-        # self.sig (through association with the keyword fixed_comp),
-        # and also make it the only available trasform/signal.
-        # NOTE: written this way, fixed_comp can be "user defined",
-        # and doesn't need to be one of the predefined options
-        if len(self.sig.dtype) not in (2,3):
-            self.__signal_transforms = dict(( (fixed_comparison, 'sig'), ))
-            self.uses = fixed_comparison
-        else:
-            # In this case a fixed comparison is being used in order
-            # to reduce the data (and also the memory footprint).
-            # Calculate the fixed comparison once, and then throw away the
-            # signal components.
-            prev_attrs = self.__signal_transforms.values()
-            self.uses = fixed_comparison
-            self.sig = self.s
-            self.__signal_transforms = dict( ((self.uses, 'sig'),) )
-            for attr in prev_attrs:
-                try:
-                    delattr(self, attr)
-                except:
-                    pass
-        self.fixed_comparison = fixed_comparison
-            
-    def get_array_by_name(self, name):
-        return getattr(self, self.__signal_transforms[name])
-
-    #### A little property magic for run-time control of behavior ####
-    # The "uses" attribute
-    def _get_ratio_type(self):
-        return self._ratio_type
-    def _set_ratio_type(self, name):
-        un = name.upper()
-        ul = [n.upper() for n in self.signal_transforms]
-        try:
-            i = ul.index(un)
-            self._ratio_type = self.signal_transforms[i]
-        except:
-            w.warn('ratio type %s not available, see TFBeam.signal_transforms'%name)
-    uses = property(_get_ratio_type, _set_ratio_type, None,
-                    'what type of active-to-control ratio is exposed')
-
-    # The "s" attribute
-    def _get_ratio_signal(self):
-        return self.get_array_by_name(self.uses)
-    s = property(_get_ratio_signal, None, None,
-                 'exposed active-to-control signal ratio')
-    ##################################################################
-
-
     def to_ni_image(self, t, f, grid_shape=None, prior_mask=None):
         """Form a NIPY Image of the map of this object at (t,f). The new
         Image will have a CoordinateMap transforming the array indices into
@@ -277,8 +346,8 @@ corresponding to (active, control, [noise]).
         meg2mri = self.coreg.meg2mri
         return ni_api.Image(m_arr, compose(meg2mri, self.coordmap))
 
-    def from_new_dataset(self, new_s, new_vox=None,
-                         multi_subj=False, uses=None, fixed_comparison=None):
+    def from_new_data(self, new_s, new_vox=None,
+                      multi_subj=False, uses=None, fixed_comparison=None):
         if new_vox is None:
             new_vox = self.voxels
         if multi_subj:

@@ -3,6 +3,8 @@ import os
 import numpy as np
 from nipy.core import api as ni_api
 
+from xipy.utils import closest_voxel
+
 from nutmeg.utils import array_pickler_mixin, parameterize_cmap, cmap_from_array
 from nutmeg.external import descriptors as desc
 from nutmeg.core import BEAM_SPACE_LEFT, BEAM_SPACE_POST, BEAM_SPACE_INF
@@ -118,15 +120,15 @@ class Beam(array_pickler_mixin):
           the MEG voxel index coordinate to voxel location coordinate mapping
 
         """
-        self.voxelsize = voxelsize.astype('d')
+        self.voxelsize = np.asarray(voxelsize).astype('d')
         self.voxels = voxels.astype('d')
-        self.vox_lookup = dict(((tuple(vx), n) for n, vx in enumerate(voxels)))
+        self._vox_lookup = dict(((tuple(vx), n) for n, vx in enumerate(voxels)))
         msg = 'the number of signal points does not match the numner of voxels'
         assert sig.shape[0]==voxels.shape[0], msg
         self.sig = sig # so far ignorant of semantics of "sig"
         self.srate = srate
         self.timepts = timepts
-        self.coreg = coreg # still just a bucket!
+        self.coreg = coreg
         if coordmap is None:
             v_offset = np.array([BEAM_SPACE_LEFT, BEAM_SPACE_POST,
                                  BEAM_SPACE_INF], 'd')
@@ -145,16 +147,19 @@ class Beam(array_pickler_mixin):
         ----------
         vox : len-3 iterable
           the MRI space location coordinate
+
+        Returns
+        -------
+        voxel list index
         """
+        # get the MEG coordinates from the MRI space
         meg_vox = self.coreg.meg2mri.inverse()(vox)
-        vol_idx = self.coordmap.inverse()(meg_vox)
+        # get the corresponding data volume index coordinates
+        vol_idx = np.round(self.coordmap.inverse()(meg_vox)).astype('i')
         all_idx = self.voxel_indices
         # want to find the floor(vol_idx) in all_idx
-        dist = np.abs(( all_idx - np.floor(vol_idx) )).sum(axis=1)
-        a = np.argwhere(dist==0)
-        if a.any():
-            return a[0,0]
-        return -1
+        a, dist = closest_voxel(all_idx, vol_idx)
+        return -1 if dist > 0 else a
 
     @desc.auto_attr
     def voxel_indices(self):

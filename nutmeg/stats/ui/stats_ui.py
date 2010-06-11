@@ -2,6 +2,7 @@ import os
 from xipy.vis.qt4_widgets import browse_files, browse_multiple_files
 ## from nutmeg.vis import ortho_plot_window_qt4 as plotter
 from nutmeg.stats import beam_stats as bstats
+from nutmeg.stats import tfbeam_stats as tfbstats
 from nutmeg.core import tfbeam
 from nutmeg.vis import plot_tfbeam
 
@@ -279,11 +280,11 @@ class SnPMTesterUI(HasTraits):
             return 1
         s_labels, c_labels = self._comp_args[1:]
         if self.snpm_test=='One sample T test':
-            return bstats.SnPMOneSampT.num_possible_permutations(
+            return tfbstats.SnPMOneSampT.num_possible_permutations(
                 conds, c_labels, s_labels
                 )
         if self.snpm_test=='Unpaired T test':
-            return bstats.SnPMUnpairedT.num_possible_permutations(
+            return tfbstats.SnPMUnpairedT.num_possible_permutations(
                 conds, c_labels, s_labels
                 )
 
@@ -347,9 +348,9 @@ class SnPMTesterUI(HasTraits):
                         if cond_titles[n] not in existing_comps]
         
         if self.snpm_test == 'One sample T test':
-            test_class = bstats.SnPMOneSampT
+            test_class = tfbstats.SnPMOneSampT
         elif self.snpm_test == 'Unpaired T test':
-            test_class = bstats.SnPMUnpairedT
+            test_class = tfbstats.SnPMUnpairedT
             conditions = [[a] + [b] for a, b in zip(conditions[0::2],
                                                     conditions[1::2])]
             cond_titles = [[a]+[b] for a, b in zip(cond_titles[0::2],
