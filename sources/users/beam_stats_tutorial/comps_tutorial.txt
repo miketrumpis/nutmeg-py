@@ -57,25 +57,26 @@ It is also possible to construct comparators from "pointers" created in Matlab-N
 SnPM Stats Analysis
 ^^^^^^^^^^^^^^^^^^^
 
-The :mod:`~nutmeg.stats.beam_stats` module also includes a number of objects of the general type :class:`~nutmeg.stats.beam_stats.SnPMTester`. These objects are created using a BeamComparator and perform a test on the condition, or conditions pair specified.
+The :mod:`~nutmeg.stats.tfbeam_stats` module also includes a number of objects of the general type :class:`~nutmeg.stats.tfbeam_stats.SnPMTester`. These objects are created using a BeamComparator and perform a test on the condition, or conditions pair specified.
 
 **Note: the currently implementation of these tests requires that the null distribution is mean zero and symmetrical! The "F dB" comparison satisfies this assumption**
 
 There are two subclasses of SnPMTester implemented: 
 
-:class:`~nutmeg.stats.beam_stats.SnPMOneSampT`
+:class:`~nutmeg.stats.tfbeam_stats.SnPMOneSampT`
 
 * Compare group activity or group contrast to the null distribution
 * The condition argument must be a single condition label (when using a BeamActivationAverager), or a conditions contrast pair (when using a BeamContrastAverager)
 
-:class:`~nutmeg.stats.beam_stats.SnPMUnpairedT`
+:class:`~nutmeg.stats.tfbeam_stats.SnPMUnpairedT`
 
 * Compare two groups of activity or contrast to each other
 * The condition argument must be two condition labels (when using a BeamActivationAverager), or two conditions contrast pairs (when using a BeamContrastAverager)
 
 Using the BeamContrastAverager "comp" from above, I will set up a SnPMOneSampT tester. When setting the number of permutations, there are a few options. To find out how many permutations are possible, you can use this method (defined on both classes)::
 
-    >>> bstats.SnPMOneSampT.num_possible_permutations(comp.conds, comp.c_labels, comp.s_labels)
+    >>> from nutmeg.stats import tfbeam_stats as tfbstats
+    >>> tfbstats.SnPMOneSampT.num_possible_permutations(comp.conds, comp.c_labels, comp.s_labels)
     64
 
 This number effectively determines the courseness of the estimation of the null distribution, and more permutations provide greater significance. Of course, the testing is slower for more permutations. 
@@ -84,13 +85,13 @@ There is a possible savings of a factor of 2 when testing all possible permutati
 
     >>> comp.conds
     array([1, 2])
-    >>> tester = bstats.SnPMOneSampT(comp, [1,2], 1234, force_half_perms=True)
+    >>> tester = tfbstats.SnPMOneSampT(comp, [1,2], 1234, force_half_perms=True)
     >>> tester.n_perm
     64
 
 If truncating the number of permutations, then the statistical test reweightings will be presented in random order::
 
-    >>> tester = bstats.SnPMOneSampT(comp, [1,2], 20)
+    >>> tester = tfbstats.SnPMOneSampT(comp, [1,2], 20)
     >>> tester.n_perm
     20
 

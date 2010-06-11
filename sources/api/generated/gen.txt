@@ -12,6 +12,7 @@
    generated/nutmeg.stats.parametric_stats
    generated/nutmeg.stats.snpm_testing
    generated/nutmeg.stats.stats_utils
+   generated/nutmeg.stats.tfbeam_stats
    generated/nutmeg.stats.tfstats_results
    generated/nutmeg.stats.ui.stats_ui
    generated/nutmeg.utils

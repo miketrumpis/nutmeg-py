@@ -22,9 +22,21 @@
     <link rel="top" title="Nutmeg-Py Documentation" href="../../index.html" />
     <link rel="up" title="API" href="../index.html" />
     <link rel="next" title="stats.stats_utils" href="nutmeg.stats.stats_utils.html" />
-    <link rel="prev" title="stats.parametric_stats" href="nutmeg.stats.parametric_stats.html" /> 
+    <link rel="prev" title="stats.parametric_stats" href="nutmeg.stats.parametric_stats.html" />
+  <meta name="keywords" content="nutmeg, meg, magnetic source imaging,
+  python, neuroscience">
+
   </head>
   <body>
+  <div id="header">
+  <table width="100%">
+  <tr>
+   <td style="text-align:right;vertical-align:bottom">Nutmeg in Python
+    </td>
+  </tr>
+  </table>
+  </div>
+
     <div class="related">
       <h3>Navigation</h3>
       <ul>
@@ -40,10 +52,13 @@
         <li class="right" >
           <a href="nutmeg.stats.parametric_stats.html" title="stats.parametric_stats"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../contents.html">Nutmeg-Py Documentation</a> &raquo;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
           <li><a href="../index.html" accesskey="U">API</a> &raquo;</li> 
       </ul>
     </div>
+
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
             <h3><a href="../../contents.html">Table Of Contents</a></h3>
@@ -98,7 +113,6 @@
 <h1>stats.snpm_testing<a class="headerlink" href="#stats-snpm-testing" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-nutmeg.stats.snpm_testing">
 <h2>Module: <tt class="xref docutils literal"><span class="pre">stats.snpm_testing</span></tt><a class="headerlink" href="#module-nutmeg.stats.snpm_testing" title="Permalink to this headline">¶</a></h2>
-<p>Inheritance diagram for <tt class="docutils literal"><span class="pre">nutmeg.stats.snpm_testing</span></tt>:</p>
 </div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
@@ -242,7 +256,12 @@ where X is [ [vox_samples(subj=0,cond=0)],</p>
 np.repeat([[0.0, 1.0]], n_obs_b, axis=0) ] )</blockquote>
 <p>Each permutation of H will toggle the labels for a subset of subjects
 based on a binary counter patterned selection
-(counting from 0 to 2**(n_subjects-1))</p>
+(counting from 0 to 2**(n_subjects-1)).</p>
+<p>The final set of permutations will then be those bit strings where the
+number of 0s is equal to n_obs_a, and the number of 1s is equal to n_obs_b.</p>
+<p>Furthermore, if the n_obs_a == n_obs_b, then half of the final set is
+a bit-flipped mirror of the other half. One half of the set can be
+excluded by further contraining the bit strings to begin with 1</p>
 <dl class="method">
 <dt id="nutmeg.stats.snpm_testing.unpaired_ttest_design_generator.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>n_obs_a</em>, <em>n_obs_b</em>, <em>half=True</em>, <em>random_order=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.unpaired_ttest_design_generator.__init__" title="Permalink to this definition">¶</a></dt>
@@ -259,6 +278,11 @@ based on a binary counter patterned selection
 </div>
 <div class="section" id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nutmeg.stats.snpm_testing.binary_pattern">
+<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">binary_pattern</tt><big>(</big><em>n</em>, <em>ncol=None</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.binary_pattern" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the first 2**n rows of a binary counting pattern</dd></dl>
+
 <dl class="function">
 <dt id="nutmeg.stats.snpm_testing.rank">
 <tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">rank</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.rank" title="Permalink to this definition">¶</a></dt>
@@ -317,16 +341,6 @@ The &#8220;true&#8221; value test is always in the 0th row.</p>
 </table>
 </dd></dl>
 
-<dl class="function">
-<dt id="nutmeg.stats.snpm_testing.snpm_1samp_ttest">
-<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">snpm_1samp_ttest</tt><big>(</big><em>samps</em>, <em>pmat</em>, <em>grid_shape</em>, <em>flat_map</em>, <em>vox_size</em>, <em>out=None</em>, <em>smoothed_variance=True</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.snpm_1samp_ttest" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="nutmeg.stats.snpm_testing.snpm_test">
-<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">snpm_test</tt><big>(</big><em>meas_arr</em>, <em>dmat_generator</em>, <em>n_perm</em>, <em>good_vox</em>, <em>vox_size</em>, <em>test_type='T'</em>, <em>co=1</em>, <em>half_perms=False</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.snpm_test" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </div>
 </div>
 
@@ -351,13 +365,15 @@ The &#8220;true&#8221; value test is always in the 0th row.</p>
         <li class="right" >
           <a href="nutmeg.stats.parametric_stats.html" title="stats.parametric_stats"
              >previous</a> |</li>
-        <li><a href="../../contents.html">Nutmeg-Py Documentation</a> &raquo;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
           <li><a href="../index.html" >API</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
-      Last updated on Jun 01, 2010.
+      Last updated on Jun 10, 2010.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
     </div>
   </body>

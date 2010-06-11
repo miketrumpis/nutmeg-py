@@ -5,11 +5,6 @@ stats.tfstats_results
 
 Module: :mod:`stats.tfstats_results`
 ------------------------------------
-Inheritance diagram for ``nutmeg.stats.tfstats_results``:
-
-.. inheritance-diagram:: nutmeg.stats.tfstats_results 
-   :parts: 3
-
 .. automodule:: nutmeg.stats.tfstats_results
 
 .. currentmodule:: nutmeg.stats.tfstats_results

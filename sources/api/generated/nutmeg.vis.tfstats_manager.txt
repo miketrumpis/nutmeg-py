@@ -5,11 +5,6 @@ vis.tfstats_manager
 
 Module: :mod:`vis.tfstats_manager`
 ----------------------------------
-Inheritance diagram for ``nutmeg.vis.tfstats_manager``:
-
-.. inheritance-diagram:: nutmeg.vis.tfstats_manager 
-   :parts: 3
-
 .. automodule:: nutmeg.vis.tfstats_manager
 
 .. currentmodule:: nutmeg.vis.tfstats_manager

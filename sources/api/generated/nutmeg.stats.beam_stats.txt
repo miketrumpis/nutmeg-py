@@ -5,11 +5,6 @@ stats.beam_stats
 
 Module: :mod:`stats.beam_stats`
 -------------------------------
-Inheritance diagram for ``nutmeg.stats.beam_stats``:
-
-.. inheritance-diagram:: nutmeg.stats.beam_stats 
-   :parts: 3
-
 .. automodule:: nutmeg.stats.beam_stats
 
 .. currentmodule:: nutmeg.stats.beam_stats
@@ -44,39 +39,6 @@ Classes
 
 
 .. autoclass:: BeamContrastAverager
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
-  .. automethod:: __init__
-
-:class:`SnPMOneSampT`
-~~~~~~~~~~~~~~~~~~~~~
-
-
-.. autoclass:: SnPMOneSampT
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
-  .. automethod:: __init__
-
-:class:`SnPMTester`
-~~~~~~~~~~~~~~~~~~~
-
-
-.. autoclass:: SnPMTester
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
-  .. automethod:: __init__
-
-:class:`SnPMUnpairedT`
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-.. autoclass:: SnPMUnpairedT
   :members:
   :undoc-members:
   :show-inheritance:

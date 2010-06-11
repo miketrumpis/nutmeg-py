@@ -5,11 +5,6 @@ stats.snpm_testing
 
 Module: :mod:`stats.snpm_testing`
 ---------------------------------
-Inheritance diagram for ``nutmeg.stats.snpm_testing``:
-
-.. inheritance-diagram:: nutmeg.stats.snpm_testing 
-   :parts: 3
-
 .. automodule:: nutmeg.stats.snpm_testing
 
 .. currentmodule:: nutmeg.stats.snpm_testing
@@ -65,14 +60,11 @@ Functions
 ---------
 
 
+.. autofunction:: nutmeg.stats.snpm_testing.binary_pattern
+
+
 .. autofunction:: nutmeg.stats.snpm_testing.rank
 
 
 .. autofunction:: nutmeg.stats.snpm_testing.run_snpm_tests
-
-
-.. autofunction:: nutmeg.stats.snpm_testing.snpm_1samp_ttest
-
-
-.. autofunction:: nutmeg.stats.snpm_testing.snpm_test
 

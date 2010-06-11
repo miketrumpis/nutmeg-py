@@ -5,11 +5,6 @@ core.beam
 
 Module: :mod:`core.beam`
 ------------------------
-Inheritance diagram for ``nutmeg.core.beam``:
-
-.. inheritance-diagram:: nutmeg.core.beam 
-   :parts: 3
-
 .. automodule:: nutmeg.core.beam
 
 .. currentmodule:: nutmeg.core.beam

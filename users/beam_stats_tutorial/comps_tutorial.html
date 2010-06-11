@@ -22,9 +22,21 @@
     <link rel="top" title="Nutmeg-Py Documentation" href="../../index.html" />
     <link rel="up" title="User Guide" href="../index.html" />
     <link rel="next" title="Using The Stats UI Tools" href="stats_ui.html" />
-    <link rel="prev" title="Tutorials" href="../tutorial.html" /> 
+    <link rel="prev" title="Tutorials" href="../tutorial.html" />
+  <meta name="keywords" content="nutmeg, meg, magnetic source imaging,
+  python, neuroscience">
+
   </head>
   <body>
+  <div id="header">
+  <table width="100%">
+  <tr>
+   <td style="text-align:right;vertical-align:bottom">Nutmeg in Python
+    </td>
+  </tr>
+  </table>
+  </div>
+
     <div class="related">
       <h3>Navigation</h3>
       <ul>
@@ -40,10 +52,13 @@
         <li class="right" >
           <a href="../tutorial.html" title="Tutorials"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../contents.html">Nutmeg-Py Documentation</a> &raquo;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
           <li><a href="../index.html" accesskey="U">User Guide</a> &raquo;</li> 
       </ul>
     </div>
+
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
             <h3><a href="../../contents.html">Table Of Contents</a></h3>
@@ -148,21 +163,22 @@
 </div>
 <div class="section" id="snpm-stats-analysis">
 <h2>SnPM Stats Analysis<a class="headerlink" href="#snpm-stats-analysis" title="Permalink to this headline">¶</a></h2>
-<p>The <a title="" class="reference external" href="../../api/generated/nutmeg.stats.beam_stats.html#module-nutmeg.stats.beam_stats"><tt class="xref docutils literal"><span class="pre">beam_stats</span></tt></a> module also includes a number of objects of the general type <a title="nutmeg.stats.beam_stats.SnPMTester" class="reference external" href="../../api/generated/nutmeg.stats.beam_stats.html#nutmeg.stats.beam_stats.SnPMTester"><tt class="xref docutils literal"><span class="pre">SnPMTester</span></tt></a>. These objects are created using a BeamComparator and perform a test on the condition, or conditions pair specified.</p>
+<p>The <a title="" class="reference external" href="../../api/generated/nutmeg.stats.tfbeam_stats.html#module-nutmeg.stats.tfbeam_stats"><tt class="xref docutils literal"><span class="pre">tfbeam_stats</span></tt></a> module also includes a number of objects of the general type <a title="nutmeg.stats.tfbeam_stats.SnPMTester" class="reference external" href="../../api/generated/nutmeg.stats.tfbeam_stats.html#nutmeg.stats.tfbeam_stats.SnPMTester"><tt class="xref docutils literal"><span class="pre">SnPMTester</span></tt></a>. These objects are created using a BeamComparator and perform a test on the condition, or conditions pair specified.</p>
 <p><strong>Note: the currently implementation of these tests requires that the null distribution is mean zero and symmetrical! The &#8220;F dB&#8221; comparison satisfies this assumption</strong></p>
 <p>There are two subclasses of SnPMTester implemented:</p>
-<p><a title="nutmeg.stats.beam_stats.SnPMOneSampT" class="reference external" href="../../api/generated/nutmeg.stats.beam_stats.html#nutmeg.stats.beam_stats.SnPMOneSampT"><tt class="xref docutils literal"><span class="pre">SnPMOneSampT</span></tt></a></p>
+<p><a title="nutmeg.stats.tfbeam_stats.SnPMOneSampT" class="reference external" href="../../api/generated/nutmeg.stats.tfbeam_stats.html#nutmeg.stats.tfbeam_stats.SnPMOneSampT"><tt class="xref docutils literal"><span class="pre">SnPMOneSampT</span></tt></a></p>
 <ul class="simple">
 <li>Compare group activity or group contrast to the null distribution</li>
 <li>The condition argument must be a single condition label (when using a BeamActivationAverager), or a conditions contrast pair (when using a BeamContrastAverager)</li>
 </ul>
-<p><a title="nutmeg.stats.beam_stats.SnPMUnpairedT" class="reference external" href="../../api/generated/nutmeg.stats.beam_stats.html#nutmeg.stats.beam_stats.SnPMUnpairedT"><tt class="xref docutils literal"><span class="pre">SnPMUnpairedT</span></tt></a></p>
+<p><a title="nutmeg.stats.tfbeam_stats.SnPMUnpairedT" class="reference external" href="../../api/generated/nutmeg.stats.tfbeam_stats.html#nutmeg.stats.tfbeam_stats.SnPMUnpairedT"><tt class="xref docutils literal"><span class="pre">SnPMUnpairedT</span></tt></a></p>
 <ul class="simple">
 <li>Compare two groups of activity or contrast to each other</li>
 <li>The condition argument must be two condition labels (when using a BeamActivationAverager), or two conditions contrast pairs (when using a BeamContrastAverager)</li>
 </ul>
 <p>Using the BeamContrastAverager &#8220;comp&#8221; from above, I will set up a SnPMOneSampT tester. When setting the number of permutations, there are a few options. To find out how many permutations are possible, you can use this method (defined on both classes):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">bstats</span><span class="o">.</span><span class="n">SnPMOneSampT</span><span class="o">.</span><span class="n">num_possible_permutations</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">conds</span><span class="p">,</span> <span class="n">comp</span><span class="o">.</span><span class="n">c_labels</span><span class="p">,</span> <span class="n">comp</span><span class="o">.</span><span class="n">s_labels</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nutmeg.stats</span> <span class="kn">import</span> <span class="n">tfbeam_stats</span> <span class="k">as</span> <span class="n">tfbstats</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfbstats</span><span class="o">.</span><span class="n">SnPMOneSampT</span><span class="o">.</span><span class="n">num_possible_permutations</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">conds</span><span class="p">,</span> <span class="n">comp</span><span class="o">.</span><span class="n">c_labels</span><span class="p">,</span> <span class="n">comp</span><span class="o">.</span><span class="n">s_labels</span><span class="p">)</span>
 <span class="go">64</span>
 </pre></div>
 </div>
@@ -170,13 +186,13 @@
 <p>There is a possible savings of a factor of 2 when testing all possible permutations, since half of the re-weightings are mirrors of the other half. To enforce testing in this mode, you can set the flag &#8220;force_half_perms&#8221; in the tester constructor, like this (in this case, the n_perm argument is ignored):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span><span class="o">.</span><span class="n">conds</span>
 <span class="go">array([1, 2])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tester</span> <span class="o">=</span> <span class="n">bstats</span><span class="o">.</span><span class="n">SnPMOneSampT</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="mf">2</span><span class="p">],</span> <span class="mf">1234</span><span class="p">,</span> <span class="n">force_half_perms</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tester</span> <span class="o">=</span> <span class="n">tfbstats</span><span class="o">.</span><span class="n">SnPMOneSampT</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="mf">2</span><span class="p">],</span> <span class="mf">1234</span><span class="p">,</span> <span class="n">force_half_perms</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tester</span><span class="o">.</span><span class="n">n_perm</span>
 <span class="go">64</span>
 </pre></div>
 </div>
 <p>If truncating the number of permutations, then the statistical test reweightings will be presented in random order:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tester</span> <span class="o">=</span> <span class="n">bstats</span><span class="o">.</span><span class="n">SnPMOneSampT</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="mf">2</span><span class="p">],</span> <span class="mf">20</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tester</span> <span class="o">=</span> <span class="n">tfbstats</span><span class="o">.</span><span class="n">SnPMOneSampT</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="mf">2</span><span class="p">],</span> <span class="mf">20</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tester</span><span class="o">.</span><span class="n">n_perm</span>
 <span class="go">20</span>
 </pre></div>
@@ -284,13 +300,15 @@
         <li class="right" >
           <a href="../tutorial.html" title="Tutorials"
              >previous</a> |</li>
-        <li><a href="../../contents.html">Nutmeg-Py Documentation</a> &raquo;</li>
+  <li><a href="../../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../../contents.html">Documentation</a> |&nbsp;</li>
+
           <li><a href="../index.html" >User Guide</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
-      Last updated on Jun 01, 2010.
+      Last updated on Jun 10, 2010.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
     </div>
   </body>

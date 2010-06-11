@@ -39,7 +39,7 @@ Python Level Packages
     NIPY project codebase.
 
   XIPY_ (Cross-modality Imaging in Python)
-    Nutmeg-Py relies on XIPY for visualization.
+    Nutmeg-Py relies on XIPY for visualization. (XIPY `installation <http://miketrumpis.github.com/xipy/users/installation.html>`_ instructions).
 
   Matplotlib_
     2D python plotting library.
@@ -61,45 +61,16 @@ Strong Recommendations
 
 Building from Mac OS X >= 10.4
 ------------------------------
-  
-Binary Installs
-```````````````
-  * Apple Xcode Dev Tools (on OS X DVD)
-  * Qt4 (LGPL version) 
-    http://qt.nokia.com/downloads
-  * Enthought Python Distribution (EPD, Academic version)
-    http://enthought.com/products/getepd.php
-  * Git distributed version control
-    http://git-scm.com/download
 
-Source Installs
-```````````````
-Unfortunately the two following libraries do not have pre-compiled builds for various systems, so they must be compiled from source (sequentially)
-  * SIP http://www.riverbankcomputing.co.uk/software/sip/download
-  * PyQt4 http://www.riverbankcomputing.co.uk/software/pyqt/download
+With the exception of `FFTW <http://www.fftw.org/>`_, the install and run-time requirements of XIPY_ are a superset of those for Nutmeg-Py. **Please see first the installation** `instructions <http://miketrumpis.github.com/xipy/users/installation.html#building-from-mac-os-x-10-4>`_ **for XIPY!**
 
-For each tar.gz file, you can build and install them with the following commands:
-::
-  tar zxvf <xyz>.tar.gz
-  cd <xyz>
-  python configure.py
-  make && make install
+  **FFTW3**
 
-Now is a good point to get the NIPY code and install it. Make a directory for code (eg "~/trunks"), and do:
+  *Threaded FFTs may become a deprecated feature, and FFTW is a complicated requirement to satisfy.. no instructions yet*
 
-``git clone git://github.com/nipy/nipy.git``
+Finally check out the Nutmeg-Py code, and set it up::
 
-You will need to build and install NIPY ... (don't have good recommendation yet)
-
-``cd nipy && make dev``
-
-Also needed is XIPY
-
-``git clone git://github.com/miketrumpis/xipy.git``
-``cd xipy && make ext``
-
-Finally check out the Nutmeg-Py code, and set it up
-``git clone git://github.com/miketrumpis/nutmeg-py.git``
-``cd nutmeg-py && make ext``
+  git clone git://github.com/miketrumpis/nutmeg-py.git
+  cd nutmeg-py && python setup.py install
 
 .. include:: ../links.txt

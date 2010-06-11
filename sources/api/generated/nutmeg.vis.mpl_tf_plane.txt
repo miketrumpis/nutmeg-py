@@ -5,11 +5,6 @@ vis.mpl_tf_plane
 
 Module: :mod:`vis.mpl_tf_plane`
 -------------------------------
-Inheritance diagram for ``nutmeg.vis.mpl_tf_plane``:
-
-.. inheritance-diagram:: nutmeg.vis.mpl_tf_plane 
-   :parts: 3
-
 .. automodule:: nutmeg.vis.mpl_tf_plane
 
 .. currentmodule:: nutmeg.vis.mpl_tf_plane

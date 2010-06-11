@@ -5,11 +5,6 @@ stats.ui.stats_ui
 
 Module: :mod:`stats.ui.stats_ui`
 --------------------------------
-Inheritance diagram for ``nutmeg.stats.ui.stats_ui``:
-
-.. inheritance-diagram:: nutmeg.stats.ui.stats_ui 
-   :parts: 3
-
 .. automodule:: nutmeg.stats.ui.stats_ui
 
 .. currentmodule:: nutmeg.stats.ui.stats_ui

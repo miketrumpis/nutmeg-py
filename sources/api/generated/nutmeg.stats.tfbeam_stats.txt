@@ -1,0 +1,46 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+stats.tfbeam_stats
+==================
+
+Module: :mod:`stats.tfbeam_stats`
+---------------------------------
+.. automodule:: nutmeg.stats.tfbeam_stats
+
+.. currentmodule:: nutmeg.stats.tfbeam_stats
+
+Classes
+-------
+
+:class:`SnPMOneSampT`
+~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: SnPMOneSampT
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`SnPMTester`
+~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: SnPMTester
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`SnPMUnpairedT`
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: SnPMUnpairedT
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
