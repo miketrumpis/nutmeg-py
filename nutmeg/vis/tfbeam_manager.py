@@ -468,13 +468,14 @@ class TFBeamManager( OverlayInterface ):
 ##         half_alpha_db = 0.5
 ##         pc = np.polyfit([-half_alpha_db, 0, half_alpha_db],
 ##                         [192., 64., 192.], 2)
-
+        if not self.beam:
+            return 1.0
         sig_range = np.linspace(self.norm[0], self.norm[1], 256)
         sig_range[np.argmin(sig_range)] = 0
         sig_range *= (scale * 2*np.pi/max(abs(self.norm[0]), abs(self.norm[1])))
 
         signal_type = self.stats_map if self._using_extra_map \
-                      else self.transforms
+                      else (self.transforms or '')
         print signal_type, self.fill_value
         if signal_type in ('F dB' 'T test'):
             # de-emphasize 0, emphasize neg and pos
@@ -569,43 +570,43 @@ class TFBeamManager( OverlayInterface ):
     #-------------------------------------------------------------------------
     ### DATA EXPORT FUNCTIONS
     
-    def map_stats_like_overlay(self, map_mask=False, mask_type='negative'):
-        """Return a VolumeSlicer type for the current threshold scalar map.
-        It is assumed that the map has the same voxel to world mapping
-        as the current overlay.
+##     def map_stats_like_overlay(self, map_mask=False, mask_type='negative'):
+##         """Return a VolumeSlicer type for the current threshold scalar map.
+##         It is assumed that the map has the same voxel to world mapping
+##         as the current overlay.
 
-        Returns
-        -------
-        a VolumeSlicerInterface subclass (of the same type as the
-        current overlay)
-        """
-        if self.overlay is None:
-            print 'Overlay not yet loaded'
-            return None
-        if self.threshold.thresh_map_name == '':
-            print 'No active threshold'
-            return None
-        oclass = type(self.overlay)
-        t, f = self.tf_idx
-        if map_mask:
-            if mask_type=='positive':
-                vdata = np.logical_not(self.threshold.binary_mask).astype('d')
-##                 vdata = np.logical_not(self.beam_mask[:,t,f]).astype('d')
-            else:
-                vdata = self.threshold.binary_mask.astype('d')
-##                 vdata = self.beam_mask[:,t,f].astype('d')
-        else:
-            vdata = self.threshold.map_scalars #[:,t,f]
-        vox = self.beam.voxel_indices
-        arr = signal_array_to_masked_vol(
-            vdata, vox,
-            fill_value=np.nan
-            ).filled()
-        cmap = self.overlay.coordmap
-        bbox = self.overlay.bbox # ???
-        grid_spacing = self.overlay.grid_spacing
-        return oclass(ni_api.Image(arr, cmap),
-                      bbox=bbox, grid_spacing=grid_spacing)
+##         Returns
+##         -------
+##         a VolumeSlicerInterface subclass (of the same type as the
+##         current overlay)
+##         """
+##         if self.overlay is None:
+##             print 'Overlay not yet loaded'
+##             return None
+##         if self.threshold.thresh_map_name == '':
+##             print 'No active threshold'
+##             return None
+##         oclass = type(self.overlay)
+##         t, f = self.tf_idx
+##         if map_mask:
+##             if mask_type=='positive':
+##                 vdata = np.logical_not(self.threshold.binary_mask).astype('d')
+## ##                 vdata = np.logical_not(self.beam_mask[:,t,f]).astype('d')
+##             else:
+##                 vdata = self.threshold.binary_mask.astype('d')
+## ##                 vdata = self.beam_mask[:,t,f].astype('d')
+##         else:
+##             vdata = self.threshold.map_scalars #[:,t,f]
+##         vox = self.beam.voxel_indices
+##         arr = signal_array_to_masked_vol(
+##             vdata, vox,
+##             fill_value=np.nan
+##             ).filled()
+##         cmap = self.overlay.coordmap
+##         bbox = self.overlay.bbox # ???
+##         grid_spacing = self.overlay.grid_spacing
+##         return oclass(ni_api.Image(arr, cmap),
+##                       bbox=bbox, grid_spacing=grid_spacing)
     
     def to_masked_array(self, t_idx, f_idx, grid_shape=None):
         sig = self.beam_sig[:,t_idx,f_idx]
@@ -635,6 +636,7 @@ class TFBeamManager( OverlayInterface ):
 ##                            compose(meg2mri, self.beam.coordmap))
         img = ni_api.Image(m_arr,
                            compose(meg2mri, self.beam.coordmap))
+        return img
 ##         overlay = ResampledVolumeSlicer(img, bbox=self.bbox,
 ##                                         grid_spacing=grid_spacing)
 ##         overlay = SampledVolumeSlicer(img, bbox=self.bbox,
@@ -643,10 +645,10 @@ class TFBeamManager( OverlayInterface ):
 ##         overlay = ResampledVolumeSlicer(img, bbox=self.bbox,
 ##                                         mask=np.logical_not(m_arr.mask),
 ##                                         grid_spacing=grid_spacing)
-        overlay = ResampledIndexVolumeSlicer(img, norm=self.norm,
-                                             bbox=self.bbox,
-                                             grid_spacing=grid_spacing)
-        return overlay
+##         overlay = ResampledIndexVolumeSlicer(img, norm=self.norm,
+##                                              bbox=self.bbox,
+##                                              grid_spacing=grid_spacing)
+##         return overlay
         
     #-------------------------------------------------------------------------
     ### DATA REFRESH
