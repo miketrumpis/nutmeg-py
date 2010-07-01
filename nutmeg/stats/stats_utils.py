@@ -1,8 +1,15 @@
 import os
 import numpy as np
 import scipy.io as sio
+from nutmeg.utils import array_pickler_mixin
 from nutmeg.core import tfbeam
 from _sutils import *
+
+# a simple class for representing clusters
+class StatCluster(array_pickler_mixin):
+    "A simple 'bunch' and array pickler"
+    _argnames = ['size', 'peak', 'mass', 'voxels']
+
 
 all_tfstats_maps = [
     'T test',
@@ -43,52 +50,6 @@ def split_combo_tfstats_matfile(fname):
     subj = settings['subj'][0,0]
     dof = subj['number'][0,0]
     return stats_dict, base_beam, dof
-
-def map_t_py(t, pvals, dp):
-    """
-    In a set M of maximal statistic values, we can define a cumulative
-    distribution function as follows:
-    
-    CDF[t] --> n*(dp) := order{ tm | (tm in M) and tm < t } / order{M}
-
-    Given quantized p values in the set { n*(dp) } for some n in [0,1/dp)
-    and corresponding test values, his method attempts to roughly invert
-    the relationship of the CDF.
-
-    """
-    nbins = int(1.0/dp)
-    pbins = np.arange(nbins)*dp
-    ranks = (pvals * nbins).astype('i').flatten()        
-    si = np.argsort(ranks)
-    s_ranks = np.take(ranks, si)
-    # short circuit here if s_ranks are all the same
-    if (s_ranks[1:]==s_ranks[0]).all():
-        mn_t = t.min()
-        edges = np.ones((nbins,)) * (mn_t-1)
-        return edges, pbins
-
-    ts = np.take(t, si)
-    
-    edges = np.empty((nbins,))
-    ia = ib = 0
-    ra = 0
-    rb = s_ranks[0]
-    if rb > 0:
-        mn_t = ts.min()
-        edges[:rb] = mn_t - 1    
-    while rb < nbins:
-        ra = s_ranks[ia]
-        b = (s_ranks[ia:] > s_ranks[ia])
-        if not b.any():
-            break
-        ib = ia + b.nonzero()[0][0]
-        rb = s_ranks[ib]
-        edges[ra:rb] = ts[ia:ib].max()
-        ia = ib
-    if rb < nbins:
-        # this seems like an odd choice
-        edges[ra:] = edges[ra-1] + 1
-    return edges, pbins
         
 
 

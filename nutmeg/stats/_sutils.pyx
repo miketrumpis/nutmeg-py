@@ -21,7 +21,7 @@ def index(np.ndarray[np.npy_double, ndim=1] t,
     Returns
     -------
     ti : ndarray
-      the indices mapping t[i] <= dist[ti[i]],
+      the indices mapping t[i] < dist[ti[i]],
       ti's range is [ 0, len(dist) )   
     """
     cdef np.ndarray si = np.argsort(t)
@@ -35,7 +35,7 @@ def index(np.ndarray[np.npy_double, ndim=1] t,
     while i < nd:
         # index into t
         k = si[j]
-        while t[k] <= dist[i]:
+        while t[k] < dist[i]:
             ti[k] = i
             j += 1
             if j >= nt:

@@ -18,7 +18,7 @@ def gen_beam():
     idx2meg_aff[-1,-1] = 1
     idx2meg_aff[:3,-1] = -10,-10,-10
     cmap = ni_api.AffineTransform.from_params('ijk',
-                                              ni_api.ras_output_coordnames,
+                                              beam.xipy_ras,
                                               idx2meg_aff)
 
     vx = cmap(voxel_index_list((10,10,10)))

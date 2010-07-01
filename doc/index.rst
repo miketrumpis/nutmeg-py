@@ -4,6 +4,12 @@ Welcome
 
 Welcome to the beginnings of the Nutmeg-Py project.
 
+====
+Demo
+====
+
+:doc:`demo`
+
 =============
 Documentation
 =============

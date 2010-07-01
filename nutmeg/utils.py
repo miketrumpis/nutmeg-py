@@ -2,6 +2,7 @@ import numpy as np
 import nipy.core.api as ni_api
 
 from xipy.utils import voxel_index_list, coord_list_to_mgrid
+from xipy.volume_utils import calc_grid_and_map
 
 def parameterize_cmap(coordmap):
     dt = [('incoord', object), ('outcoord', object), ('affine', object)]
@@ -37,12 +38,16 @@ class array_pickler_mixin(object):
     * Each name in the kwnames list must be identical to both the
       corresponding class object attribute AND the keyword argument
       name in the class constructor.
-    * All attributes named in the lists must be of type:
+    * All attributes named in the lists must be one of:
       * ndarray
       * array_pickler_mixin subclass
       * any type that can be reconstructed such that
-        a == type(a) (asarray(a) )
-        (satisfied by most built-in types)
+        a == type(a)(asarray(a) )
+        (satisfied by many built-in types)
+      * any type that has special staticmethods '_array_from_{attr}'
+        and '_reconstruct_{attr}' defined on the class. The first
+        method creates an ndarray from an object of this type, and the
+        second one reconstructs an object in a round-trip sense.
 
     Examples
     --------
@@ -75,6 +80,19 @@ class array_pickler_mixin(object):
         type_list.append( ('conversion_lookup', object) )
         return np.dtype(type_list)
 
+
+    def __init__(self, *args, **kwargs):
+        if len(args) != len(self._argnames):
+            raise ValueError('Not enough construtor arguments')
+        self.__dict__.update( dict(zip(self._argnames, args)) )
+        for nm in kwargs:
+            if nm not in self._kwnames:
+                raise ValueError('Unexpected keyword argument %s'%nm)
+        for nm in self._kwnames:
+            if nm not in kwargs:
+                kwargs[nm] = None
+        self.__dict__.update(kwargs)
+
     def save(self, f):
         np.save(f, np.asarray(self))
 
@@ -100,8 +118,12 @@ class array_pickler_mixin(object):
                 conversion_lookup[n] = None
             else:
                 conversion_lookup[n] = type(attr)
+
+            if isinstance(attr, (list, tuple)):
+                attr = np.array(attr, dtype=object)
+            
             # this reads weird.. basically avoid doing asarray(None) here
-            a[n][0] = np.asarray(attr) if attr is not None else None
+            a[n][0] = np.asanyarray(attr) if attr is not None else None
         a['conversion_lookup'][0] = conversion_lookup
         return a
 
@@ -132,6 +154,7 @@ class array_pickler_mixin(object):
 ##                 print 'converting to array_pickler_mixin', arr_obj
                 return tp.from_array(arr_obj)
 ##             print 'converting to some type:', tp, arr_obj
+##             if issubclass(tp, (list, tuple)):
             return tp(arr_obj)
 
         args = (convert(converters[n], a[n][0]) for n in klass._argnames)
