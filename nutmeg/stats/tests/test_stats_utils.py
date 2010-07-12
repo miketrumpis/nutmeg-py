@@ -34,18 +34,14 @@ def test_map_t():
 def test_index():
     quants = np.arange(1, 20).astype('d')
     # make values in range [0, 20)
-    rvs = np.random.rand(10) * 20
-    i = su.index(rvs, quants)
-    yield (np.testing.assert_array_equal, i, np.floor(rvs))
-    yield assert_true, i.min() >= 0, 'negative index calculated'
-    yield assert_true, i.max() <= len(quants), 'too high index calculated'
     rvs = np.random.rand(100) * 20
     i = su.index(rvs, quants)
     yield (np.testing.assert_array_equal, i, np.floor(rvs))
     yield assert_true, i.min() >= 0, 'negative index calculated'
     yield assert_true, i.max() <= len(quants), 'too high index calculated'
 
-    
+    i2 = quants.searchsorted(rvs)
+    yield assert_true, (i==i2).all()
 
 def test_map_t_real_data():
     import os

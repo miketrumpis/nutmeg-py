@@ -16,12 +16,6 @@ def main():
     op.add_option('-b', '--beam-file', dest='beam',
                   help='Nutmeg beam file to use for overlays', type='string',
                   default=None)
-    op.add_option('-o', '--overlay-file', dest='overlay',
-                  help='Nifti file to use for overlays', type='string',
-                  default=None)
-    op.add_option('-f', '--fliplr', dest='fliplr',
-                  help='If MR files are known to be described by an flipped affine transformation',
-                  action='store_true', default=False)
     op.add_option('-2', '--2donly', dest='no_mayavi_viewer',
                   action='store_true',
                   help='Do not launch the 3D viewer',

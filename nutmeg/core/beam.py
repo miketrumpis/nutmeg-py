@@ -4,6 +4,7 @@ import numpy as np
 from nipy.core import api as ni_api
 
 from xipy.utils import closest_voxel
+from xipy.slicing import xipy_ras
 
 from nutmeg.utils import array_pickler_mixin, parameterize_cmap, cmap_from_array
 from nutmeg.external import descriptors as desc
@@ -66,8 +67,8 @@ class MEG_coreg(array_pickler_mixin):
             affine = aff
         self.affine = affine
         self.meg2mri = ni_api.AffineTransform.from_params(
-            ni_api.ras_output_coordnames,
-            ni_api.ras_output_coordnames,
+            xipy_ras,
+            xipy_ras,
             affine
             )
         self.fiducials = fiducials
@@ -133,7 +134,7 @@ class Beam(array_pickler_mixin):
             v_offset = np.array([BEAM_SPACE_LEFT, BEAM_SPACE_POST,
                                  BEAM_SPACE_INF], 'd')
             coordmap = ni_api.AffineTransform.from_start_step(
-                'ijk', ni_api.ras_output_coordnames,
+                'ijk', xipy_ras,
                 v_offset,
                 self.voxelsize.astype('d')
                 )

@@ -5,6 +5,7 @@ from nipy.core import api
 
 from nutmeg.numutils import gaussian_smooth
 from nutmeg.core import full_beam_volume_shape
+from nutmeg.stats.stats_utils import StatCluster
 
 def rank(a):
     svals = la.svdvals(a)
@@ -83,14 +84,16 @@ class one_sample_ttest_design_generator(ReGenerator):
             randomized_rows = np.arange(1,n_rows)
             np.random.shuffle(randomized_rows)
             randomized_rows = np.insert(randomized_rows, 0, 0)
-            self.p = p[randomized_rows]
+            self._p = p[randomized_rows]
         else:
-            self.p = p
+            self._p = p
         self.n_obs = n_obs
+        self.dof = n_obs - 1
+        self.n_tests = self._p.shape[0]
         self.reset()
 
     def reset(self):
-        self._generator = (r.reshape(self.n_obs, 1) for r in self.p)
+        self._generator = (r.reshape(self.n_obs, 1) for r in self._p)
 
 class unpaired_ttest_design_generator(ReGenerator):
     """
@@ -134,14 +137,16 @@ class unpaired_ttest_design_generator(ReGenerator):
             randomized_rows = np.arange(1,p.shape[0])
             np.random.shuffle(randomized_rows)
             randomized_rows = np.insert(randomized_rows, 0, 0)
-            self.p = p[randomized_rows]
+            self._p = p[randomized_rows]
         else:
-            self.p = p
+            self._p = p
         self.n_obs = n_obs
+        self.dof = n_obs - 2
+        self.n_tests = self._p.shape[0]
         self.reset()
 
     def reset(self):
-        self._generator = (self._design_mat(r) for r in self.p)
+        self._generator = (self._design_mat(r) for r in self._p)
         
     def _design_mat(self, pattern):
         m = np.zeros((2, self.n_obs))
@@ -183,87 +188,324 @@ class anova_design_generator(ReGenerator):
             randomized_rows = np.arange(1,n_perm)
             np.random.shuffle(randomized_rows)
             randomized_rows = np.insert(randomized_rows, 0, 0)
-            self.p = ps[randomized_rows]
+            self._p = ps[randomized_rows]
         else:
-            self.p = ps
+            self._p = ps
         self.reset()
 
     def reset(self):
-        self._generator = ( r[:,np.newaxis] * self.H for r in self.p )
+        self._generator = ( r[:,np.newaxis] * self.H for r in self._p )
     
 
-def run_snpm_tests(samps, dgen, co, n_perm, grid_shape, flat_map, vox_size,
-                   smoothed_variance=True, out=None):
+def run_snpm_tests(samps, dgen, beta_comp, n_tests,
+                   symmetry=False,
+                   smooth_variance=True,
+                   analyze_clusters=False,
+                   # image embedding -- for clusters OR variance smoothing
+                   grid_shape=None,
+                   vox_map=None,
+                   # variance smoothing info
+                   fwhm_pix=None,
+                   # cluster analysis info
+                   t_crit=None,
+                   fill_value=0,
+                   out=None):
     """
     Parameters
     ----------
     samps : ndarray
-      (samples x voxels) array
+      (samples x nvoxels) array
     dgen : design matrix generator
-    co : ndarray
-      comparison weights for the solution to dgen(p)*b = samps
-    n_perm : int
-      number of permutations to actual test
-    grid_shape : tuple
-      volume shape in which to embed voxel data, for variance smoothing
-    flat_map : 1D list
-      flat voxel index into the volume
-    vox_size : len-3 list
-      edge lengths for the volume
+    beta_comp : ndarray
+      comparison weight(s) for the solution b, in dgen(p)*b = samps
+    n_tests : int
+      number of reweighted designs to test
+    symmetric : {True/False}, optional
+      If the test combinations provided by dgen represent one symmetrical
+      half of the possible combinations, then setting this flag will fill
+      in the results from the other half of the distribution.
+
+    smooth_variance : {True/False}, optional
+      Optionally do spatial smoothing of the variance image.
+      **Note**: if True, then *grid_shape*, *flat_map*, and *fwhm_pix*
+      are all required parameters.
+
+    analyze_clusters: {True/False}, optional
+      Optionally gather additional cluster statistics at each permutation.
+      **Note**: if True, then *grid_shape*, *flat_map*, and *t_crit*
+      are all required, and *fill_value* should be provided
+
+    grid_shape : tuple, optional
+      volume shape in which to embed voxel data
+    vox_map : 1D list, optional
+      The mapping from tested voxels to indices in the flattened image grid
+    fwhm_pix : len-3 list, optional
+      edge lengths for the volume, in units of pixels
     smoothed_variance : bool, optional
       do spatial variance smoothing
+    t_crit : float, optional
+      The `cluster-defining threshold`. This is a statistic drawn from a
+      theoretical (parametric) distribution.
     out : ndarray, optional
-      a (n_permutation x voxels) array to store the test distribution
+      a (n_permutation x voxels) array to store the
+      empirical null distribution
 
     Returns
     -------
     test_distribution : ndarray
-      A (n_permutation x voxels) shaped array of the test distribution.
-      The "true" value test is always in the 0th row.
+      A (n_permutation x voxels) shaped array of the emperical null
+      distribution. The `true` value test is always in the 0th row.
+
+    clusters : list
+      If analyze_clusters is on, then this function also returns a list
+      of cluster information for each permutation.
     """
 
     n_meas = samps.shape[0]
     n_vox = samps.shape[1]
+    total_perm = n_tests*2 if symmetry else n_tests
     if out is None:
-        pX = np.empty((n_perm, n_vox))
+        pX = np.empty((total_perm, n_vox))
     else:
-        assert out.shape == (n_perm, n_vox), 'output array has the wrong shape'
+        assert out.shape == (total_perm, n_vox), \
+               'output array has the wrong shape'
         pX = out
 
-    if smoothed_variance:
-        fwhm_pix = np.array([20.]*3) / np.asarray(vox_size)
-        sigma = np.array(fwhm_pix / np.sqrt( 8 * np.log(2) ) )
-        res_sm = np.empty((n_vox,), 'd')
-        r_sm = np.empty(grid_shape, 'd')
-        n_sm = np.empty(grid_shape, 'd')
+    # check the conditions specified against the arguments provided
+    spatial_satisfied = grid_shape is not None and vox_map is not None
+    smth_var_satisfied = fwhm_pix is not None
+    cluster_satisfied = t_crit is not None
+
+    if (analyze_clusters or smooth_variance):
+        if not spatial_satisfied:
+            raise ValueError(
+                'No spatial mapping information provided, even though at ' \
+                'least one spatially based method was requested'
+                )
+        stat_img = np.empty(grid_shape, 'd')
+    if smooth_variance:
+        if not smth_var_satisfied:
+            raise ValueError(
+                'FWHM parameters not provided, even though variance '\
+                'smoothing was requested'
+                )
+        sigma_pix = np.asarray(fwhm_pix) / np.sqrt(8 * np.log(2))
+    if analyze_clusters:
+        if not cluster_satisfied:
+            raise ValueError(
+                'No cluster threshold provided, even though cluster '\
+                'analysis was requestd'
+                )
+        ptail_clusters_list = []
+        ntail_clusters_list = []
         
-    df = -1
-    for p in xrange(n_perm):
-        dm = dgen.next()
-        if df < 0:
-            df = n_meas - rank(dm)
-        beta = np.dot(la.pinv(dm), samps)
-        err = ((samps - np.dot(dm, beta))**2).sum(axis=0)
-
-        if smoothed_variance:
-            r_sm[:] = 0
-            n_sm[:] = 0
-            r_sm.flat[flat_map] = err
-            n_sm.flat[flat_map] = 1.0
-            ndimage.gaussian_filter(r_sm, sigma, mode='constant', output=r_sm)
-            ndimage.gaussian_filter(n_sm, sigma, mode='constant', output=n_sm)
-            res_sm = r_sm.flat[flat_map] / n_sm.flat[flat_map]
+    for p in xrange(n_tests):
+        design = dgen.next()
+        # find estimate of beta, and then the error
+        # of ||Y-Yhat||**2
+        beta = np.dot(la.pinv(design), samps)
+        err = np.dot(design, beta)
+        np.subtract(samps, err, err)
+        np.power(err, 2, err)
+        ss_err = err.sum(axis=0)
+ 
+        if smooth_variance:
+            stat_img.fill(0)
+            np.put(stat_img, vox_map, ss_err)
+##             stat_img.flat[vox_map] = ss_err
+            ndimage.gaussian_filter(
+                stat_img, sigma_pix, mode='constant', output=stat_img
+                )
+            res_sm = np.take(stat_img, vox_map)
+##             res_sm = stat_img.flat[vox_map]
+            stat_img.fill(0)
+            np.put(stat_img, vox_map, 1)
+##             stat_img.flat[vox_map] = 1
+            ndimage.gaussian_filter(
+                stat_img, sigma_pix, mode='constant', output=stat_img
+                )
+            res_sm /= np.take(stat_img, vox_map)
+##             res_sm /= stat_img.flat[vox_map]
         else:
-            res_sm = err
+            res_sm = ss_err
 
-        pooling = np.dot(co, np.dot(la.pinv(np.dot(dm.T, dm)), co.T))
-        res_sm *= np.squeeze((pooling/df))
+        # pooling : variance pooling -- c*[(X^T*X)^-1]*c^T
+        pooling = np.dot(
+            beta_comp,
+            np.dot(la.pinv(np.dot(design.T, design)), beta_comp.T)
+            )
+        # res_sm := variance pooling * sigma^2
+        res_sm *= np.squeeze((pooling/dgen.dof))
         np.sqrt(res_sm, res_sm)
-        pX[p] = np.dot(co, beta)
+        pX[p] = np.dot(beta_comp, beta)
         pX[p] /= res_sm
 
-    if out is None:
+        if analyze_clusters:
+            stat_img.fill(fill_value)
+            np.put(stat_img, vox_map, pX[p])
+##             stat_img.flat[vox_map] = pX[p]
+            _, pcluster_info = label_clusters(stat_img, t_crit, tail='pos')
+            _, ncluster_info = label_clusters(stat_img, -t_crit, tail='neg')
+            ptail_clusters_list.append(pcluster_info)
+            ntail_clusters_list.append(ncluster_info)
+            if symmetry:
+                # if only doing one half of symmetrical permutations,
+                # then duplicate some information for free (just invert
+                # the sign on the maximum cluster intensity)
+                ptail_clusters_list.append(
+                    [ StatCluster(
+                        c.size, -c.peak, c.mass, c.voxels
+                        ) for c in ncluster_info ]
+                    )
+                ntail_clusters_list.append(
+                    [ StatCluster(
+                        c.size, -c.peak, c.mass, c.voxels
+                        ) for c in pcluster_info ]
+                    )
+    # now if only doing one half of symmetrical permutations, then
+    # record the sign inverted statistics for the other half
+    if symmetry:
+        t = pX[:n_tests]
+        pX[n_tests:] = -t
+    if analyze_clusters:
+        return pX, (ptail_clusters_list, ntail_clusters_list)
+    else:
         return pX
 
 # hide from Nose
 run_snpm_tests.__test__ = False
+
+def statistic_image_from_voxels(design, samps, beta_comp,
+                                img_grid, vox_map,
+                                fill_value=0,
+                                variance_img=False,
+                                fwhm_pix=None):
+    """
+    Calculate a statistics image from a (n x nvox) matrix of
+    samples, using the design matrix and a vector of weights to combine
+    the beta values.
+
+    Parameters
+    ----------
+    design : ndarray, (n x p)
+      The design matrix for the test
+    samps : ndarray, (n x nvox)
+      The samples for each of n tests at each of nvox voxels
+    beta_comp : ndarray, (1 x p)
+      Weights for combining the beta values
+    img_grid : array shape (tuple), or 3D ndarray
+      Either the array in which to store the stats image, or the shape of
+      such an array
+    vox_map : sequence
+      The mapping from tested voxels to indices in the flattened image grid
+    fill_value : float
+      What value to fill in for the non tested voxels in the image
+    variance_img : {True/False}, optional
+      Whether or not to compute a smoothed variance image. If an array
+      is provided for the image grid, that same array will be used as
+      temporary storage for the variance smoothing, before having the
+      statistics stored in it.
+      **Note**: if computing a variance image, then fwhm_pix MUST be
+      specified. 
+    fwhm_pix : sequence, optional
+      The FWHM of the smoothing kernel, in units of pixels, for each
+      dimension of the variance image
+
+    Returns
+    -------
+      The statistics image
+    """
+
+    if not isinstance(img_grid, np.ndarray):
+        img_grid = np.empty(img_grid, samps.dtype)
+
+    n_meas = samps.shape[0]
+    df = n_meas - design.shape[1]
+    beta_comp = np.asarray(beta_comp)
+
+    # find estimate of beta, and then the error
+    # of ||Y-Yhat||**2
+    beta = np.dot(la.pinv(design), samps)
+    err = np.dot(design, beta)
+    np.subtract(samps, err, err)
+    np.power(err, 2, err)
+    ss_err = err.sum(axis=0)
+
+##     err = ((samps - np.dot(design, beta))**2).sum(axis=0)
+
+    if variance_img:
+        if fwhm_pix is None:
+            raise ValueError(
+                'No smoothing parameters provided, even though variance '\
+                'smoothing was requested'
+                )
+        img_grid.fill(0)
+        sigma_pix = np.asarray(fwhm_pix) / np.sqrt(8 * np.log(2))
+        img_grid.flat[vox_map] = ss_err
+        ndimage.gaussian_filter(
+            img_grid, sigma_pix, mode='constant', output=img_grid
+            )
+        res_sm = img_grid.flat[vox_map]
+        img_grid.fill(0)
+        img_grid.flat[vox_map] = 1
+        ndimage.gaussian_filter(
+            img_grid, sigma_pix, mode='constant', output=img_grid
+            )
+        res_sm /= img_grid.flat[vox_map]
+        img_grid.fill(fill_value)
+    else:
+        res_sm = ss_err
+        img_grid.fill(fill_value)
+        
+    # pooling : variance pooling -- c*[(X^T*X)^-1]*c^T
+    pooling = np.dot(
+        beta_comp,
+        np.dot(la.pinv(np.dot(design.T, design)), beta_comp.T)
+        )
+    # res_sm := variance pooling * sigma^2
+    res_sm *= np.squeeze((pooling/df))
+    np.sqrt(res_sm, res_sm)
+    stat = np.dot(beta_comp, beta)
+    stat /= res_sm
+    img_grid.flat[vox_map] = stat
+    return img_grid
+
+def label_clusters(stats_image, t_crit, connectivity=18, tail='pos'):
+    """
+
+    Returns a list of cluster labels, an image of clustered labels,
+    as well as a dictionary of cluster information, keyed by the labels.
+
+    dictionary 
+
+    """
+
+    connectivity_arg = {6:1, 18:2, 26:3}.get(connectivity,2)
+    
+    m = ndimage.generate_binary_structure(3, connectivity_arg)
+    if tail.lower() == 'pos':
+        l_image, max_label = ndimage.label(stats_image > t_crit, structure=m)
+    else:
+        l_image, max_label = ndimage.label(stats_image < t_crit, structure=m)
+    labels = range(1, max_label+1)
+    csizes = []
+    max_t = []
+    t_mass = []
+    c_idx = [] # this is a (3 x len-cluster) array of ijk indices
+    for l in labels:
+        c_image = l_image==l
+        csizes.append( c_image.sum() )
+        c_idx.append( np.vstack(c_image.nonzero()) )
+
+        cluster_stats = stats_image[c_image]
+        if tail.lower()=='pos':
+            max_t.append( cluster_stats.max() )
+            t_mass.append( cluster_stats.sum() - len(cluster_stats)*t_crit )
+        else:
+            max_t.append( cluster_stats.min() )
+            t_mass.append( -cluster_stats.sum() + len(cluster_stats)*t_crit )
+
+    clusters = [StatCluster(*c) for c in zip(csizes, max_t, t_mass, c_idx)]
+    return l_image, clusters
+    
+    

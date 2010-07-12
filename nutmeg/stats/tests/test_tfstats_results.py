@@ -60,6 +60,13 @@ class testTFResults:
         print t.shape
         assert t.shape == pooled_shape, 'unexpected pooled shape'
 
+    def test_pooling_vals(self):
+        t = self.s_res._fix_dist('pos', (), (1,))
+        pooled_shape = (self.dist_sz*self.nt, 1, self.nf)
+        mx_t = self.s_res._max_t.reshape(pooled_shape)
+        sort_t = np.sort(mx_t, axis=0)[::-1]
+        assert (sort_t == t).all(), 'unexpected values'
+
     def test_pooling2(self):
         t = self.s_res._fix_dist('pos', (), (2,))
         pooled_shape = (self.dist_sz*self.nf, self.nt, 1)

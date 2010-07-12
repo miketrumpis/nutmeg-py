@@ -1,11 +1,13 @@
 import numpy as np
 import scipy as sp
 import scipy.special
+from scipy.stats import distributions as dist
 import os
 
 from nutmeg.stats import snpm_testing as snpm
 from nutmeg.stats.tfstats_results import TimeFreqSnPMResults
-from nutmeg.numutils import calc_fft_grid_and_map
+import nutmeg.stats.beam_stats as bstats
+from nutmeg.utils import calc_grid_and_map
        
 class SnPMTester(object):
     smoothed_variance = True
@@ -14,20 +16,23 @@ class SnPMTester(object):
         # self.sample_beams -- the list of beams whose signals to test
         # self.dm_gen -- the appropriate design matrix generator
         # self.test_stat -- the type of stat to calculate in snpm_testing
-        # self.co -- the comparison weights for the stats design solution
+        # self.beta_weights -- comparison weights for the stats design solution
         # self.inter_vox -- the mni voxels of the stat comparison
         pass
 
-    def test(self):
+    def test(self, analyze_clusters=False, cluster_pval=.01):
         """
         Runs a univariate statistical test at each time-frequency-voxel,
         filling in these measures:
 
-        T -- the statistic at each point
-        maxT -- the maximum statistic of all permuted measurements
-        minT -- the minimum statistic of all permuted measurements
-        percentiles -- the "ranking" of the statistics in T relative to all
-                       the permuted statistics
+        * T -- the statistic at each point
+        * maxT -- the maximum statistic of all permuted measurements
+        * minT -- the minimum statistic of all permuted measurements
+        * percentiles -- the "ranking" of the statistics in T relative to all
+          the permuted statistics
+
+        If analyzing clusters, then also collect the maximum cluster size
+        distribution across permutations
 
         """
         if not self._is_init:
@@ -41,33 +46,52 @@ class SnPMTester(object):
         n_bands = len(b.bands)
         n_times = len(b.timewindow)
         vox_size = b.voxelsize
-        # padding the volume to be centered can't hurt, leave it for now
-        grid_shape, flat_map = calc_fft_grid_and_map(b)
+        # VERY IMPORTANT! THIS GRID SHAPE AND MAP DETERMINE THE
+        # CLUSTER VOXELS.. POTENTIALY QUITE BRITTLE!!
+        grid_shape, flat_map = calc_grid_and_map(b.voxel_indices)
 
         # at each (t, f) pt, want to find:
         # T test
-        # max T stat
-        # min T stat
+        # max T stat (max across voxels)
+        # min T stat (min across voxels)
         # percentiles (converted to uncorrected p scores)
         T = np.empty( (n_vox, n_times, n_bands) )
         maxT = np.empty((self.n_perm, n_times, n_bands))
         minT = np.empty((self.n_perm, n_times, n_bands))
         percentiles = np.empty_like(T)
+        if analyze_clusters:
+            # also need a list of the cluster info from each permutation
+            # this will include (size, maximal stat, cluster mass)
+            all_ptail_clusters = []
+            all_ntail_clusters = []
+            tc = dist.t.isf(cluster_pval, self.dm_gen.dof)
+        else:
+            tc = None
         # the array of test results
         tt = np.empty((self.n_perm, n_vox))
+        # smoothing kernel size in pixels
+        fwhm = np.array([20.,20.,20])/np.asarray(vox_size)
         for t in xrange(n_times):
             for f in xrange(n_bands):
                 print 'performing stat test at (t,f) = (',t,f,')'
                 X = np.array([b.s[:,t,f] for b in beams])
-                snpm.run_snpm_tests(X, self.dm_gen, self.co, n_perm_tested,
-                                    grid_shape, flat_map, vox_size,
-                                    smoothed_variance=self.smoothed_variance,
-                                    out=tt[:n_perm_tested])
+                p_res = snpm.run_snpm_tests(
+                    X, self.dm_gen, self.beta_weights, n_perm_tested,
+                    symmetry=self.half_perms,
+                    smooth_variance=self.smoothed_variance,
+                    analyze_clusters=analyze_clusters,
+                    grid_shape=grid_shape, vox_map=flat_map,
+                    fwhm_pix=fwhm, t_crit=tc, fill_value=0,
+                    out=tt
+                    )
+                if analyze_clusters:
+                    pclusts, nclusts = p_res[1]
+                    # make down all the clusters from all permutations
+                    all_ptail_clusters.append(pclusts)
+                    all_ntail_clusters.append(nclusts)
                 self.dm_gen.reset()
                 true_t = tt[0]
                 # get T distributions 
-                if self.half_perms:
-                    tt[n_perm_tested:] = -tt[:n_perm_tested]
                 maxT[:,t,f] = tt.max(axis=1)
                 minT[:,t,f] = tt.min(axis=1)
                 tt = np.sort(tt, axis=0)
@@ -79,9 +103,13 @@ class SnPMTester(object):
                 percentiles[vloc,t,f] = locs[:,0]/float(self.n_perm)
                 T[:,t,f] = true_t
 
-        return TimeFreqSnPMResults(
+        sres = TimeFreqSnPMResults(
             T, self.avg_beams[0].voxel_indices, percentiles, maxT, minT
             )
+        if analyze_clusters:
+            return sres, all_ptail_clusters, all_ntail_clusters
+        else:
+            return sres
 
 class SnPMOneSampT(SnPMTester):
     """
@@ -93,7 +121,7 @@ class SnPMOneSampT(SnPMTester):
     """
 
     test_stat = 'T'
-    co = np.array([[1]])
+    beta_weights = np.array([[1]])
 
     @staticmethod
     def num_observations(condition, c_labels, s_labels):
@@ -168,17 +196,21 @@ class SnPMOneSampT(SnPMTester):
             time. Otherwise, initialization will be deferred until test time.
         """
 
-        if type(beam_comp) is BeamContrastAverager and \
+        if type(beam_comp) is bstats.BeamContrastAverager and \
                len(condition) != 2:
             raise ValueError(
 """You only may test one contrast pair for a contrast test"""
         )
-
-        if type(beam_comp) is BeamActivationAverager and \
-           hasattr(condition, '__iter__'):
-            raise ValueError(
-"""You only may test one condition for an activation test"""
-        )
+        
+        if type(beam_comp) is bstats.BeamActivationAverager and \
+               hasattr(condition, '__iter__'):
+            if len(condition) > 1:
+                raise ValueError(
+            "You only may test one condition for an activation test"
+            )
+            else:
+                condition = condition[0]
+            
 
         self.condition = condition
         self.comp = beam_comp
@@ -237,7 +269,7 @@ class SnPMUnpairedT(SnPMTester):
     """
     
     test_stat = 'T'
-    co = np.array([[-1,1]])
+    beta_weights = np.array([[1,-1]])
     
     @staticmethod
     def num_observations(cpair, c_labels, s_labels):
@@ -299,7 +331,8 @@ class SnPMUnpairedT(SnPMTester):
             raise ValueError(
 """Condition list must be length-2"""
         )
-        if type(beam_comp) is BeamContrastAverager and len(conditions[0]) != 2:
+        if type(beam_comp) is bstats.BeamContrastAverager and \
+               len(conditions[0]) != 2:
             raise ValueError(
 """For contrasts, both test conditions must be a pair of contrast conditions"""
         )

@@ -1,4 +1,5 @@
 import tempfile, os
+import nose.tools as nt
 import numpy as np
 import numpy.testing as npt
 
@@ -38,24 +39,11 @@ class A(array_pickler_mixin):
 
     _argnames = ['str', 'arr', 'list', 'int', 'float']
 
-    def __init__(self, a_string, an_array, a_list, an_int, a_float):
-        self.str = a_string
-        self.arr = an_array
-        self.list = a_list
-        self.int = an_int
-        self.float = a_float
-
 class B(array_pickler_mixin):
 
     _argnames = ['arr', 'atype']
     # these need to also be identical to the name keyword args
     _kwnames = ['opt1', 'opt2']
-
-    def __init__(self, an_array, typeA, opt1=None, opt2=None):
-        self.arr = an_array
-        self.atype = typeA
-        self.opt1 = opt1
-        self.opt2 = opt2
 
 def apickler_equality(p1, p2):
 
@@ -89,3 +77,16 @@ def test_complex_object_roundtrip():
     eq, msg = apickler_equality(b, b2)
     assert eq, msg
     
+class HasSequences(array_pickler_mixin):
+    _argnames = ['a_list', 'a_tuple']
+
+def test_array_pickler_with_sequences():
+    foo = HasSequences( [['a', None, 'c'], [1, 'three']],
+                        (3,2,4, [4, 3] ) )
+
+    f = tempfile.mktemp(suffix='.npy')
+    foo.save(f)
+
+    foo2 = HasSequences.load(f)
+    yield nt.assert_true, foo.a_list==foo2.a_list, 'List roundtrip failed'
+    yield nt.assert_true, foo.a_tuple==foo2.a_tuple, 'Tuple roundtrip failed'

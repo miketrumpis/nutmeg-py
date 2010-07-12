@@ -5,7 +5,7 @@ from scipy import stats, ndimage
 import xipy.volume_utils as vu
 
 from nutmeg.core import tfbeam
-from nutmeg.utils import array_pickler_mixin
+from nutmeg.utils import array_pickler_mixin, calc_grid_and_map
 import nutmeg.stats.stats_utils as su
 
 def load_tf_snpm_stats(snpm_arrays):
@@ -40,6 +40,7 @@ def adapt_mlab_tf_snpm_stats(combo_beam, avg_beam=None):
 
 
 class TimeFreqSnPMResults(array_pickler_mixin):
+
     threshold_types = [
         'Test score',
         'Test score (both tails)',
@@ -313,7 +314,7 @@ class TimeFreqSnPMResults(array_pickler_mixin):
         tf_size = nt*nf
         strides = np.array([nj*nk, nk, 1]) * tf_size
         flat_map = (self.vox_idx * strides).sum(axis=1)
-        flat_map = (flat_map[:,None] + np.arange(tf_size)[None,:]).flatten()
+        flat_map = (flat_map[:,None] + np.arange(tf_size)[None,:]).ravel()
         cluster_map = cluster_vols.flat[flat_map]
         del cluster_vols
         return cluster_map.reshape(self.t.shape)
@@ -349,7 +350,7 @@ class AdaptedTimeFreqSnPMResults(TimeFreqSnPMResults):
         """
         # potentially NON-robust estimation of the quantiles..
         # could have this be a constructor argument too
-        dp = np.diff(np.unique(vox_stat_ranking.flatten())).min()
+        dp = np.diff(np.unique(vox_stat_ranking.ravel())).min()
         min_t, max_t = self._estimate_maximal_stats(
             vox_stat, p_scores_pos, p_scores_neg, dp
             )

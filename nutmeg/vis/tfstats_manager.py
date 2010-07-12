@@ -18,10 +18,8 @@ from enthought.traits.api \
     String, List, on_trait_change, File, Array, Button, Range, \
     Property, cached_property, Bool, Int
     
-from enthought.traits.ui.api \
-    import Item, Group, View, VGroup, HGroup, \
-    EnumEditor, ListEditor, \
-    RangeEditor
+from enthought.traits.ui.api import Item, Group, View, VGroup, \
+     HGroup, EnumEditor, ListEditor, RangeEditor, CheckListEditor
 
 from xipy.overlay import ThresholdMap
 from nutmeg.stats.tfstats_results import TimeFreqSnPMResults
@@ -35,10 +33,14 @@ class TimeFreqThresholdMap(ThresholdMap):
     _tf_idx = t_api.Tuple((0,0))
 
     _tf_map_scalars = t_api.Array
-    map_scalars = t_api.Property(t_api.Array, depends_on='_tf_idx')
+    map_scalars = t_api.Property(
+        t_api.Array, depends_on='_tf_idx, _tf_map_scalars'
+        )
 
     _tf_thresh_limits = t_api.Array
-    thresh_limits = t_api.Property(t_api.Tuple, depends_on='_tf_idx')
+    thresh_limits = t_api.Property(
+        t_api.Tuple, depends_on='_tf_idx, _tf_thresh_limits'
+        )
 
     @t_api.on_trait_change('_tf_idx')
     def _change_index(self):
@@ -46,13 +48,17 @@ class TimeFreqThresholdMap(ThresholdMap):
 
     @t_api.cached_property
     def _get_map_scalars(self):
+        if self._tf_map_scalars.size==0:
+            return None
         t, f = self._tf_idx
         return self._tf_map_scalars[:,t,f]
 
     @t_api.cached_property
     def _get_thresh_limits(self):
         # _tf_thresh_limits should be shaped (2, ntp, nfp)
-        t, f = self._tf_idx        
+        t, f = self._tf_idx
+        if self._tf_thresh_limits.size==0:
+            return (0,0)
         return self._tf_thresh_limits[:,t,f]
 
     def create_tf_binary_mask(self, type='negative'):
@@ -212,6 +218,11 @@ class TimeFreqSnPMaps(t_api.HasTraits):
         title='Stats Thresholding'
         )
 
+tf_axes_to_array = {
+    'time' : 1,
+    'freq' : 2
+    }
+array_to_tf_axes = dict( ((v,u) for u, v in tf_axes_to_array.iteritems()) )
 
 class StatsThresholdMask(TimeFreqThresholdMap):
     """ A StatsThresholdMask creates masking parameters based on an
@@ -228,17 +239,44 @@ class StatsThresholdMask(TimeFreqThresholdMap):
                   editor=RangeEditor(format='%1.3f'))
     gamma = Range(low=0.0, high=1.0, value=0.05,
                   editor=RangeEditor(format='%1.3f'))
-    pool_tf_dims = Bool(True)
 
     _tf_map_scalars = Property(depends_on='thresh_map_name, alpha, gamma')
-    _tf_thresh_limits = Property(depends_on='alpha, thresh_map_name')
+    _tf_thresh_limits = Property(
+        depends_on='alpha, thresh_map_name, _pooled_dims, _corrected_dims'
+        )
     thresh_mode = Property(depends_on='thresh_map_name')
+
+    pooled_dims = Property
+    _pooled_dims = List(
+        editor=CheckListEditor(
+            values= ['time', 'freq'], cols=1
+            )
+        )
+
+    corrected_dims = Property
+    _corrected_dims = List(
+        editor=CheckListEditor(
+            values= ['time', 'freq'], cols=1
+            )
+        )
+
 
     mask_button = Button('Apply Stats Mask')
 
     @on_trait_change('stats_manager')
     def _get_copy_of_results(self):
         self.stats_results = self.stats_manager.stats_results
+
+    def _get_pooled_dims(self):
+        pdims = set([tf_axes_to_array[d] for d in self._pooled_dims])
+        cdims = set([tf_axes_to_array[d] for d in self._corrected_dims])
+        pdims.difference_update(cdims)
+        self._pooled_dims = [array_to_tf_axes[d] for d in pdims]
+        return tuple(pdims)
+
+    def _get_corrected_dims(self):
+        cdims = set([tf_axes_to_array[d] for d in self._corrected_dims])
+        return tuple(cdims)
         
     @cached_property
     def _get_available_maps(self):
@@ -267,13 +305,18 @@ class StatsThresholdMask(TimeFreqThresholdMap):
     @cached_property
     def _get__tf_thresh_limits(self):
         self.map_changed = True
+        pdims = self.pooled_dims
+        cdims = self.corrected_dims
+        print pdims, cdims
         if self.thresh_map_name.find('Test score')>=0:
             # find pos tail cutoff if computing for both tails, or just pos
             if self.thresh_map_name in ('Test score (both tails)',
                                  'Test score (pos tail)'):
                 # want to get pos tail cutoff for alpha
                 pos_cutoff, alpha = self.stats_results.threshold(
-                    self.alpha, 'pos'
+                    self.alpha, 'pos',
+                    pooled_dims=pdims,
+                    corrected_dims=cdims
                     )
                 pos_cutoff = pos_cutoff[0]
                 self.trait_setq(alpha=alpha)
@@ -281,7 +324,9 @@ class StatsThresholdMask(TimeFreqThresholdMap):
             if self.thresh_map_name in ('Test score (both tails)',
                                  'Test score (neg tail)'):
                 neg_cutoff, alpha = self.stats_results.threshold(
-                    self.alpha, 'neg'
+                    self.alpha, 'neg',
+                    pooled_dims=pdims,
+                    corrected_dims=cdims
                     )
                 neg_cutoff = neg_cutoff[0]
                 self.trait_setq(alpha=alpha)
@@ -310,18 +355,29 @@ class StatsThresholdMask(TimeFreqThresholdMap):
 
     def _mask_button_fired(self):
         # set all the props in the stats_manager to our properties
+        self.map_changed = True
         self.stats_manager.threshold = self
         self.stats_manager.thresh_changed *= -1
 
     view = View(
-        HGroup(
-            Item('mask_button', show_label=False),
-            Item('alpha'),
-            Item('gamma'),
-            #Item('pool_tf_dims', label='Pool TF dims'),
-##                 Group('gamma',
-##                       visible_when='map_type.find("Cluster")>=0')
-            ),
+        VGroup(
+            HGroup(
+                Item('mask_button', show_label=False),
+                Item('alpha'),
+                Item('gamma'),
+                ),
+            HGroup(
+                Item(
+                    '_pooled_dims', label='Pooled Stats', style='custom'
+                    ),
+                Item(
+                    '_corrected_dims', label='Corrected Stats', style='custom'
+                    ),
+                Item('unmasked_points',
+                     label='Unmasked Points at Current Image',
+                     style='readonly')
+                )
+            )
 ##         resizable=True
         )
         

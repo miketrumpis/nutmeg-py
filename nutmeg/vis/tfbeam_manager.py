@@ -71,7 +71,7 @@ class TFBeamManager( OverlayInterface ):
 
     # Peak finding---------------------------
     tf_idx = Tuple((0,0))
-    description = Property(depends_on='tf_idx')
+    description = Property(depends_on='overlay_updated')
     vox_idx = Int(-1)
     ana_xform = Enum('max', 'min', 'absmax')
     # seems that using "extended trait names" in the Range construction
@@ -123,7 +123,8 @@ class TFBeamManager( OverlayInterface ):
     beam_sig = Property(depends_on=['transforms', 'pextrabutton', 'resetsignal'])
     # beam mask is a negative mask (MaskedArray convention)
     _bmask_changed = Event
-    beam_mask = Property(Array, depends_on='_bmask_changed')
+##     beam_mask = Property(Array, depends_on='_bmask_changed')
+    beam_mask = Property(Array, depends_on='bstats_manager.thresh_changed')
 ##     _beam_mask = Array(dtype='B')
 
     # Fill value for external masked array handling (eg in Mayavi)
@@ -131,6 +132,7 @@ class TFBeamManager( OverlayInterface ):
     _fill_value = Float(np.nan)
 
     def _lame_coupling(self):
+        print 'bmask changed'
         self._bmask_changed = True
     
     def __init__(self, bbox,
@@ -162,6 +164,9 @@ class TFBeamManager( OverlayInterface ):
         """
         self.bbox = bbox
         self.beam = None
+        # want to start out with larger alpha, unless requested differently
+        if 'alpha_scale' not in traits:
+            traits['alpha_scale'] = 2.0
         OverlayInterface.__init__(self,
                                   loc_signal=loc_signal,
                                   props_signal=props_signal,
@@ -217,7 +222,18 @@ class TFBeamManager( OverlayInterface ):
         t, f = self.tf_idx
         time_pt = self.beam.timepts[t]
         fa, fb = self.beam.bands[f]
-        return '(t,f) --> %1.1f ms, [%1.1f Hz - %1.1f Hz] band'%(time_pt,fa,fb)
+        if self.threshold.thresh_map_name:
+            um_pts = str(self.threshold.unmasked_points)
+        else:
+            um_pts = 'no mask'
+        mn, mx = np.ma.min(self.overlay._data), np.ma.max(self.overlay._data)
+        dstr = \
+"""
+(t,f) --> %1.1f ms, [%1.1f Hz - %1.1f Hz] band
+data range: (%1.3f, %1.3f)
+unmasked pts: %s
+"""%(time_pt,fa,fb,mn,mx,um_pts)
+        return dstr
 
     #-------------------------------------------------------------------------
     ## THIS SECTION IS A LITTLE CRAZY.. DUE TO A POSSIBLE BUG IN THE
@@ -433,18 +449,11 @@ class TFBeamManager( OverlayInterface ):
 
     def signal_new_vox(self):
         meg_xyz = self.beam.voxels[self.vox_idx]
-        mri_xyz = self.beam.coreg.meg2mri(meg_xyz)[0]
+        mri_xyz = self.beam.coreg.meg2mri(meg_xyz)
         print 'signalling new world position'
         self.world_position_updated = True
         if self.loc_signal is not None:
             self.loc_signal.emit(*mri_xyz)
-
-    @on_trait_change('norm, cmap_option, interpolation')
-    def signal_image_props(self):
-        print 'signalling new im props'
-        self.image_props_updated = True
-        if self.props_signal:
-            self.props_signal.emit(self)
 
     @on_trait_change('vox_idx')
     def signal_new_beam_vox_idx(self):
@@ -464,12 +473,14 @@ class TFBeamManager( OverlayInterface ):
 
     #-------------------------------------------------------------------------
     ### UTILITY METHODS
-    def alpha(self, scale=1.0, threshold=True):
+    def alpha(self, scale=None):
 ##         half_alpha_db = 0.5
 ##         pc = np.polyfit([-half_alpha_db, 0, half_alpha_db],
 ##                         [192., 64., 192.], 2)
         if not self.beam:
             return 1.0
+        if scale is None:
+            scale = self.alpha_scale
         sig_range = np.linspace(self.norm[0], self.norm[1], 256)
         sig_range[np.argmin(sig_range)] = 0
         sig_range *= (scale * 2*np.pi/max(abs(self.norm[0]), abs(self.norm[1])))
@@ -616,6 +627,7 @@ class TFBeamManager( OverlayInterface ):
             vox_mask = np.logical_not(bmask[:,t_idx,f_idx])
         else:
             vox_mask = None
+        
         m_arr = signal_array_to_masked_vol(sig, vox,
                                            grid_shape=grid_shape,
                                            prior_mask=vox_mask,
@@ -700,7 +712,8 @@ class TFBeamManager( OverlayInterface ):
                visible_when='len(object._stats_maps) > 1'),
         Group(Item('resetsignal', show_label=False),
               visible_when='object._using_extra_map'),
-        Item('cmap_option', label='Colormap', width=20)
+        Item('cmap_option', label='Colormap', width=20),
+        Item('alpha_scale', label='Alpha Scaling')
         )
 
     loc_group = VGroup(
@@ -809,26 +822,23 @@ class NmTimeFreqWindow(OverlayWindowInterface):
                                         bbox,
                                         external_loc=external_loc,
                                         parent=parent,
-                                        main_ref=main_ref)
+                                        main_ref=main_ref,
+                                        functional_manager=functional_manager)
 
         # make sure that when the tfbeam manager's voxel index changes,
         # the tfplane image gets updated
         self.bvox_signal.connect(self.update_tf_figure)
         if functional_manager is None or \
-           type(functional_manager) is not TFBeamManager:
+           not isinstance(functional_manager, TFBeamManager):
             self.func_man = TFBeamManager(
                 bbox, image_signal = self.image_changed,
                 loc_signal = self.loc_changed,
                 props_signal = self.image_props_changed,
                 beam_vox_signal=self.bvox_signal
                 )
-        else:
-            self.func_man = functional_manager
-            self.func_man.loc_signal=self.loc_changed
-            self.func_man.image_signal=self.image_changed
-            self.func_man.props_signal=self.image_props_changed
-            self.func_man.beam_vox_signal = self.bvox_signal
-            
+
+        self.func_man.beam_vox_signal = self.bvox_signal
+        
         vbox = QtGui.QVBoxLayout(self)
 
         # set up figure
