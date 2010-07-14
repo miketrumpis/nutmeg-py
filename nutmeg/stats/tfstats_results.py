@@ -5,7 +5,7 @@ from scipy import stats, ndimage
 import xipy.volume_utils as vu
 
 from nutmeg.core import tfbeam
-from nutmeg.utils import array_pickler_mixin, calc_grid_and_map
+from nutmeg.utils import array_pickler_mixin, calc_grid_and_map, tablify_list
 import nutmeg.stats.stats_utils as su
 
 def load_tf_snpm_stats(snpm_arrays):
@@ -47,7 +47,8 @@ class TimeFreqSnPMResults(array_pickler_mixin):
         'Test score (pos tail)',
         'Test score (neg tail)',
         'Cluster size (pos tail)',
-        'Cluster size (neg tail)']
+        'Cluster size (neg tail)'
+        ]
 
     # these are the names of the attributes on the object
     _argnames = ['t', 'vox_idx', 't_rank', '_max_t', '_min_t']
@@ -376,39 +377,52 @@ class AdaptedTimeFreqSnPMResults(TimeFreqSnPMResults):
         raise NotImplementedError("Adapted results will not be saved")
 
 class TimeFreqSnPMClusters(TimeFreqSnPMResults):
+    """
+    This class analyzes the cluster information at each permutation
+    from a SnPM-style test in order to score the clusters found at
+    the truly labeled test.
+
+    In addition, it can make thresholds and calculate P scores based
+    on an empirical null distribution (ie, everything that
+    TimeFreqSnPMResults can do).
+    """
 
     _argnames = TimeFreqSnPMResults._argnames + \
-                ['all_ptail_clusters', 'all_ntail_clusters']
+                ['ptail_clusters', 'ptail_nulls',
+                 'ntail_clusters', 'ntail_nulls']
 
     threshold_types = TimeFreqSnPMResults.threshold_types + \
                       ['SnPM Cluster scores (pos tail)',
                        'SnPM Cluster scores (neg tail)']
 
     @staticmethod
-    def from_stats_and_clusters(stats_res, pos_clusters, neg_clusters):
-        # make a big nested list of all clusters at all permutations,
-        # marking down empty lists as such
-##         ptail_clusters = [ [ [StatCluster(*c) for c in pc] if pc else []
-##                              for pc in all_perms]
-##                            for all_perms in pos_clusters]
-##         ntail_clusters = [ [ [StatCluster(*c) for c in pc] if pc else []
-##                              for pc in all_perms]
-##                            for all_perms in neg_clusters]
+    def from_stats_and_clusters(stats_res,
+                                pos_clusters, pos_nulls,
+                                neg_clusters, neg_nulls):
         args = [ getattr(stats_res, a) for a in TimeFreqSnPMResults._argnames]
-        args += [pos_clusters, neg_clusters]
+        args += [pos_clusters, pos_nulls, neg_clusters, neg_nulls]
         return TimeFreqSnPMClusters(*args)
 
     def __init__(self, vox_stat, vox_map, vox_stat_ranking,
                  max_stat_dist, min_stat_dist,
-                 snpm_ptail_clusters, snpm_ntail_clusters):
+                 snpm_ptail_clusters, snpm_ptail_nulls,
+                 snpm_ntail_clusters, snpm_ntail_nulls):
         """
-        This class analyzes the cluster information at each permutation
-        from a SnPM-style test in order to score the clusters found at
-        the truly labeled test.
-        
-        In addition, it can make thresholds and calculate P scores based
-        on an empirical null distribution (ie, everything that
-        TimeFreqSnPMResults can do).
+
+        Parameters
+        ----------
+
+        All TimeFreqSnPMResults arguments, plus
+
+        snpm_ptail_clusters: list
+           List of ScoredStatClusters, for each (t,f) point
+        snpm_ptail_nulls: ndarray
+           Array of positive-tail null distributions for each (t,f) point
+        snpm_ntail_clusters: list
+           List of ScoredStatClusters, for each (t,f) point
+        snpm_ntail_nulls: ndarray
+           Array of negative-tail null distributions for each (t,f) point
+
         """
         super(TimeFreqSnPMClusters, self).__init__(
             vox_stat, vox_map, vox_stat_ranking,
@@ -418,171 +432,189 @@ class TimeFreqSnPMClusters(TimeFreqSnPMResults):
         t, f = self.t.shape[1:]
         assert t*f == len(snpm_ptail_clusters) and \
                t*f == len(snpm_ntail_clusters), \
-            'There is not enough distribution info for every time-freq point'
+            'There are not enough cluster lists for every time-freq point'
 
-        self.all_ptail_clusters = snpm_ptail_clusters
-        self.all_ntail_clusters = snpm_ntail_clusters  
-    
-    def get_scores_and_nulls(self): #stats_res, pos_clusters, neg_clusters):
-        # want to gather the corrected Pt and Ps scores from each cluster,
-        # at each permutation.
+        self.ptail_clusters = tablify_list(snpm_ptail_clusters, t, f)
+        self.ptail_nulls = snpm_ptail_nulls
+        self.ntail_clusters = tablify_list(snpm_ntail_clusters, t, f)
+        self.ntail_nulls = snpm_ntail_nulls
 
-        # Then, calculate the combined score W for each cluster, at each perm.
-        # Then, calculate the maximal W score for each permutation
-        t, f = self.t.shape[1:]
-        n_perm = float(self._max_t.shape[0])
+    def pscore_clusters(self, tail, corrected_dims=(), pooled_dims=()):
+        """
+        Returns
+        -------
 
-        # -- Positive tail cluster scores ------------------
-        pos_clusters = self.all_ptail_clusters
-        # get the maximum cluster size for each permutation, for each (t,f)
+        scores
+
+        A list of p values for each list of clusters (at each (t,f) point)
+        scored against the null
         
-        p_max_csize = [ [max(ci.size for ci in pclusts) if len(pclusts) else 0
-                         for pclusts in clusts] for clusts in pos_clusters ]
+        """
+        if len(corrected_dims) or len(pooled_dims):
+            raise NotImplementedError(
+                'Not yet combining time-freq dimensions for correction/pooling'
+                )
+        
+        pvalues = []
+        if tail.lower()=='pos':
+            clusters = self.ptail_clusters
+            nulls = np.sort(self.ptail_nulls, axis=0)
+        else:
+            clusters = self.ntail_clusters
+            nulls = np.sort(self.ntail_nulls, axis=0)
 
-        p_max_csize = np.array(p_max_csize, 'd')
-        p_max_csize.sort(axis=1)
-        max_t = np.sort(self._max_t.reshape(n_perm, t*f), axis=0).T
-
-        p_cluster_stats = []
-        p_true_label_score = []
-        for tdist, sdist, permutations in zip(max_t, p_max_csize, pos_clusters):
-            scores_by_permutation = []
-            for n, clusters in enumerate(permutations):
-                if not clusters:
-                    if n==0:
-                        p_true_label_score.append( [] )
-                    scores_by_permutation.append(0)
+        n_perm = float(nulls.shape[0])
+        nt, nf = nulls.shape[1:]
+        for t in xrange(nt):
+            for f in xrange(nf):
+                if not clusters[t][f]:
+                    pvalues.append([])
                     continue
-                size = np.array([ci.size for ci in clusters], 'd')
-                Ps_scores = 1.0 - sdist.searchsorted(size, side='left')/n_perm
-##                 Ps_scores = (1.0 + n_perm - su.index(size, sdist))/n_perm
-                intensity = np.array([ci.peak for ci in clusters])
-                Pt_scores = 1.0 - tdist.searchsorted(intensity, side='left')/n_perm
-##                 Pt_scores = (1.0 + n_perm - su.index(intensity, tdist))/n_perm
-                # This is the combining function!
-                Wscore = -2*(np.log(Pt_scores) + np.log(Ps_scores))
-                scores_by_permutation.append( Wscore.max() )
-                if n==0:
-                    p_true_label_score.append( Wscore )
-            p_cluster_stats.append( sorted(scores_by_permutation) )
-
-        # -- Negative tail cluster scores ------------------
-        neg_clusters = self.all_ntail_clusters
-        n_max_csize = [ [max(ci.size for ci in pclusts) if len(pclusts) else 0
-                         for pclusts in clusts] for clusts in neg_clusters ]
-        n_max_csize = np.array(n_max_csize, 'd')
-        n_max_csize.sort(axis=1)
-        min_t = np.sort(self._min_t.reshape(n_perm, t*f), axis=0).T
-
-        n_cluster_stats = []
-        n_true_label_score = []
-        for tdist, sdist, permutations in zip(min_t, n_max_csize, neg_clusters):
-            scores_by_permutation = []
-            for n, clusters in enumerate(permutations):
-                if not clusters:
-                    if n==0:
-                        n_true_label_score.append( [] )
-                    scores_by_permutation.append(0)
-                    continue
-                size = np.array([ci.size for ci in clusters], 'd')
-                Ps_scores = 1.0 - sdist.searchsorted(size, side='left')/n_perm
-##                 Ps_scores = (1.0 + n_perm - su.index(size, sdist))/n_perm
-                intensity = np.array([ci.peak for ci in clusters])
-                Pt_scores = tdist.searchsorted(intensity, side='right')/n_perm
-##                 Pt_scores = su.index(intensity, tdist).astype('d')/n_perm
-                # This is the combining function!
-                Wscore = -2*(np.log(Pt_scores) + np.log(Ps_scores))
-                scores_by_permutation.append( Wscore.max() )
-                if n==0:
-                    n_true_label_score.append( Wscore )
-
-            n_cluster_stats.append( sorted(scores_by_permutation) )
-        return [ (p_cluster_stats, p_true_label_score),
-                 (n_cluster_stats, n_true_label_score) ]
-
-    def score_true_clusters(self):
-        p_cluster_res, n_cluster_res = self.get_scores_and_nulls()
-
-        pos_cluster_p = []
-        dists_at_tf, scores_at_tf = p_cluster_res
-        n_perm = float(len(dists_at_tf[0]))
-        for dist, scores in zip(dists_at_tf, scores_at_tf):
-            if not len(scores):
-                pos_cluster_p.append([])
-                continue
-            # don't know if this should be side='right' or side='left'
-            pvals = 1 - np.array(dist).searchsorted(scores, side='left')/n_perm
-            pos_cluster_p.append( pvals )
-
-        neg_cluster_p = []    
-        dists_at_tf, scores_at_tf = n_cluster_res
-        n_perm = float(len(dists_at_tf[0]))
-        for dist, scores in zip(dists_at_tf, scores_at_tf):
-            if not len(scores):
-                neg_cluster_p.append([])
-                continue
-            # don't know if this should be side='right' or side='left'
-            pvals = 1 - np.array(dist).searchsorted(scores, side='left')/n_perm
-            neg_cluster_p.append( pvals )
-
-        pos_clusters = [pc[0] for pc in self.all_ptail_clusters]
-        neg_clusters = [pc[0] for pc in self.all_ntail_clusters]
-
-        return [ (pos_clusters, pos_cluster_p),
-                 (neg_clusters, neg_cluster_p) ]
-    
+                ntf = nulls[:,t,f]
+                wscores = [ci.wscore for ci in clusters[t][f]]
+                pvalues.append(
+                    1.0 - ntf.searchsorted(wscores, side='left')/n_perm
+                    )
+        return tablify_list(pvalues, nt, nf)
+            
+        
 
 def map_of_clusters_and_labels(stats, tail, tf, pcrit):
+    """
+    Generate a statistics map and a list of clusters based on the
+    presence of clusters that exceed a critical p-value.
+
+    Parameters
+    ----------
+
+    stats: a TimeFreqSnPMClusters object
+    tail: str {'pos', 'neg'}
+    tf: tuple (time,freq) index
+    pcrit: float in (0.0,1.0)
+
+    Returns
+    -------
+
+    stats_image, clusters
+
+    The `stats_image` is the image of the statistical test values.
+    `clusters` is a list of the significant clusters. If there
+    are no cluster scores exceeding pcrit, then clusters returns as None.
+    """
     g, m = calc_grid_and_map(stats.vox_idx)
     
     l_img = np.zeros(g)
     t_img = np.zeros(g)
-    np.put(t_img, m, stats.t)
     t, f = tf
-    tf_flat = f + t*stats.t.shape[-1]
-    all_scores = stats.score_true_clusters()
+    np.put(t_img, m, stats.t[:,t,f])
+    scores = stats.pscore_clusters(tail)
     if tail.lower() == 'pos':
         print 'doing pos tail'
-        clusters, scores = all_scores[0]
+        clusters = stats.ptail_clusters
     else:
         print 'doing neg tail'
-        clusters, scores = all_scores[1]
-    if not clusters[tf_flat]:
+        clusters = stats.ntail_clusters
+    if not clusters[t][f]:
         print 'no clusters!'
-        return None, None
-    elif not (scores[tf_flat] < pcrit).any():
+        return t_img, None, 0
+    crit_scores = (scores[t][f] < pcrit)
+    if not crit_scores.any():
         print 'no significant clusters!'
-        return None, None
+        return t_img, None, 0
     else:
-        tfclusters = clusters[tf_flat]
-        idx = np.argwhere(scores[tf_flat] < pcrit).reshape(-1)
-        l = 1
-        for i in idx:
-            c = tfclusters[i]
-            _, mc = calc_grid_and_map(c.voxels.T, grid=g)
-            np.put(l_img, mc, l)
-            l += 1
-        return t_img, l_img
-    
-def quick_plot_clusters(stats, tail, tf, pcrit):
-    t_img, l_img = map_of_clusters_and_labels(stats, tail, tf, pcrit)
-    if t_img is None:
-        return
+        tfclusters = clusters[t][f]
+        idx = np.argwhere(crit_scores).reshape(-1)
+        critical_clusters = [clusters[t][f][i] for i in idx]
+        return t_img, critical_clusters
+
+def quick_plot_top_n(stats, tail, n=3):
+    scores = stats.pscore_clusters(tail)
+    clusters = stats.ptail_clusters if tail.lower()=='pos' \
+               else stats.ntail_clusters
+
+    # flatten score into a flat list of cluster scores
+    flattened_scores = []
+    # flatten clusters into a ntime x nfreq list of cluster sublists
+    flattened_clusters = []
+    for crow, srow in zip(clusters, scores):
+        flattened_scores = np.r_[flattened_scores,
+                                 reduce(lambda x, y: x+y,
+                                        [ list(e) for e in srow ])]
+        flattened_clusters += crow
+    tf_map = []
+    cluster_lookup = dict()
+    nc = 0
+    for i, cl in enumerate(flattened_clusters):
+        nt, nf = stats.t.shape[1:]
+        t, f = i / nf, i % nf
+        tf_map += [ (t,f) ] * len(cl)
+        cluster_lookup.update( dict( zip(xrange(nc, nc+len(cl)), cl) ) )
+        nc += len(cl)
+
+    n_idx = flattened_scores.argsort()[:n]
+    g, m = calc_grid_and_map(stats.vox_idx)
+    imgs = []
+    tf_pts = []
+    nclusters = []
+    for i in n_idx:
+        clst = cluster_lookup[i]
+        tf_pts.append('(t,f) = %s, %d pts, p = %1.2f'%(str(tf_map[i]),
+                                                       clst.size,
+                                                       flattened_scores[i]))
+        nclusters.append(cluster_lookup[i])
+        t_img = np.zeros(g)
+        t, f = tf_map[i]
+        np.put(t_img, m, stats.t[:,t,f])
+        imgs.append(t_img)
+    quick_plot_clusters(imgs, nclusters, titles=tf_pts)
+
+def quick_plot_clusters(imgs, clusters, titles=None):
+    """
+
+    Parameters
+    ----------
+
+    imgs: ndarray, or list
+       The stats image for each cluster (may be one or many images)
+    clusters: list of StatClusters
+    titles: list of figure titles
+
+    """
     import nipy.core.api as ni_api
     import xipy.slicing.image_slicers as islicers
     from xipy.vis import quick_plot_image_slicer
     import scipy.ndimage as ndimage
-    ni_image = ni_api.Image(
-        np.ma.masked_array(t_img, mask=np.logical_not(l_img.astype('B'))),
-        ni_api.AffineTransform.from_params('ijk', islicers.xipy_ras, np.eye(4))
-        )
-    isl = islicers.ResampledIndexVolumeSlicer(ni_image)
-    com = ndimage.center_of_mass(
-        t_img, labels=l_img, index=range(1, int(l_img.max())+1)
-        )
-    if l_img.max() == 1:
-        com = [com]
-    for center in com:
-        quick_plot_image_slicer(isl, center)
+    from matplotlib.colors import Normalize
+
+    if isinstance(imgs, np.ndarray):
+        imgs_gen = (imgs for i in xrange(len(clusters)))
+    else:
+        imgs_gen = (i for i in imgs)
+    if titles is None:
+        titles = [''] * len(imgs)
+    for img, cluster, tt in zip(imgs_gen, clusters, titles):
+##         _, cvox = calc_grid_and_map(cluster.voxels.T, grid=img.shape)
+        cvox = cluster.voxels
+        l_img = np.zeros_like(img)
+        np.put(l_img, cvox, 1)
+        
+        ni_image = ni_api.Image(
+            np.ma.masked_array(img, mask=np.logical_not(l_img.astype('B'))),
+            ni_api.AffineTransform.from_params(
+                'ijk', islicers.xipy_ras, np.eye(4)
+                )
+            )
+        isl = islicers.ResampledVolumeSlicer(ni_image)
+        vxcom = ndimage.center_of_mass(img, labels=l_img, index=1)
+        com = ni_image.coordmap(vxcom)
+        norm = Normalize(img.min(), img.max())
+        quick_plot_image_slicer(isl, com, title=tt, norm=norm)
+    
+def quick_plot_critical_clusters(stats, tail, tf, pcrit):
+    t_img, clusters = map_of_clusters_and_labels(stats, tail, tf, pcrit)
+    if clusters is None:
+        return
+    titles = titles=['time-freq = %s'%str(tf)]*len(clusters)
+    quick_plot_clusters(t_img, clusters, titles=titles)
     
                                                

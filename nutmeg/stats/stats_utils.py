@@ -10,6 +10,18 @@ class StatCluster(array_pickler_mixin):
     "A simple 'bunch' and array pickler"
     _argnames = ['size', 'peak', 'mass', 'voxels']
 
+    def __repr__(self):
+        s = ''
+        for n in filter(lambda s: s!='voxels', self._argnames):
+            s += (n + ':\t' + str(getattr(self, n)) + '\n')
+        return s
+    
+class ScoredStatCluster(StatCluster):
+    """
+    A StatCluster that has a score based on a combination of its
+    size, peak, and/or mass statistics
+    """
+    _argnames = StatCluster._argnames + ['wscore']
 
 all_tfstats_maps = [
     'T test',

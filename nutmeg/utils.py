@@ -165,3 +165,27 @@ class array_pickler_mixin(object):
         # found (or not found) in the record array
         kws.update(kwargs)
         return klass(*args, **kws)
+
+
+def tablify_list(l, nr, nc):
+    "Make a 2D table from a 1D sequence (of possibly heterogenous elements)"
+    table = []
+    if len(l) == nr:
+        try:
+            if len(l[0]) == nc:
+                # Then it's already a table!
+                return l
+        except TypeError:
+            pass
+    else:
+        assert len(l) == nr*nc, 'There are not enough elements in l to fit '\
+               'into a %d x %d table'%(nr, nc)
+    while l:
+        row = []
+        c = 0
+        while c < nc:
+            row.append(l.pop(0))
+            c += 1
+        table.append(row)
+    return table
+

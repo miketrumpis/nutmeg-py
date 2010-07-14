@@ -4,8 +4,10 @@ import scipy.special
 from scipy.stats import distributions as dist
 import os
 
+from nutmeg.stats.stats_utils import ScoredStatCluster
 from nutmeg.stats import snpm_testing as snpm
-from nutmeg.stats.tfstats_results import TimeFreqSnPMResults
+from nutmeg.stats.tfstats_results import TimeFreqSnPMResults, \
+     TimeFreqSnPMClusters
 import nutmeg.stats.beam_stats as bstats
 from nutmeg.utils import calc_grid_and_map
        
@@ -60,10 +62,13 @@ class SnPMTester(object):
         minT = np.empty((self.n_perm, n_times, n_bands))
         percentiles = np.empty_like(T)
         if analyze_clusters:
-            # also need a list of the cluster info from each permutation
+            # also need a list of the cluster info from each permutation test
             # this will include (size, maximal stat, cluster mass)
             all_ptail_clusters = []
+            pc_nulls = np.empty_like(maxT)
             all_ntail_clusters = []
+            nc_nulls = np.empty_like(maxT)
+            
             tc = dist.t.isf(cluster_pval, self.dm_gen.dof)
         else:
             tc = None
@@ -84,11 +89,6 @@ class SnPMTester(object):
                     fwhm_pix=fwhm, t_crit=tc, fill_value=0,
                     out=tt
                     )
-                if analyze_clusters:
-                    pclusts, nclusts = p_res[1]
-                    # make down all the clusters from all permutations
-                    all_ptail_clusters.append(pclusts)
-                    all_ntail_clusters.append(nclusts)
                 self.dm_gen.reset()
                 true_t = tt[0]
                 # get T distributions 
@@ -102,14 +102,36 @@ class SnPMTester(object):
                 vloc = locs[:,1]
                 percentiles[vloc,t,f] = locs[:,0]/float(self.n_perm)
                 T[:,t,f] = true_t
+                if analyze_clusters:
+                    print 'scoring clusters'
+                    pclusts, nclusts = p_res[1]
+                    # Score and record the pos tail clusters
+                    pscores, pc_nulls[:,t,f] = snpm.score_clusters(
+                        maxT[:,t,f], pclusts
+                        )
+                    scored_pclusts = [ ScoredStatCluster(
+                        ci.size, ci.peak, ci.mass, ci.voxels, wscore
+                        ) for ci, wscore in zip(pclusts[0], pscores) ]
+                    # Score and record the neg tail clusters
+                    nscores, nc_nulls[:,t,f] = snpm.score_clusters(
+                        minT[:,t,f], nclusts
+                        )
+                    scored_nclusts = [ ScoredStatCluster(
+                        ci.size, ci.peak, ci.mass, ci.voxels, wscore
+                        ) for ci, wscore in zip(nclusts[0], nscores) ]
+                    
+                    all_ptail_clusters.append(scored_pclusts)
+                    all_ntail_clusters.append(scored_nclusts)
 
-        sres = TimeFreqSnPMResults(
-            T, self.avg_beams[0].voxel_indices, percentiles, maxT, minT
-            )
+        stats_args = (T, self.avg_beams[0].voxel_indices,
+                      percentiles, maxT, minT)
         if analyze_clusters:
-            return sres, all_ptail_clusters, all_ntail_clusters
+            stats_args = stats_args + \
+                         (all_ptail_clusters, pc_nulls,
+                          all_ntail_clusters, nc_nulls)
+            return TimeFreqSnPMClusters(*stats_args)
         else:
-            return sres
+            return TimeFreqSnPMResults(*stats_args)
 
 class SnPMOneSampT(SnPMTester):
     """
