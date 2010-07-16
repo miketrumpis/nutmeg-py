@@ -35,10 +35,11 @@ def plot_tfbeam(beam, stats=None, with3d=False):
 
     win = ortho_viewer(image=struct, mayavi_viewer=with3d)
     win.make_tool_from_functional_manager(NmTimeFreqWindow, bman)
-    # XYZ: this is truly ugly
-    bman.image_signal.emit(bman)
     win.show()
     app.exec_()
+##     # XYZ: this is truly ugly
+    bman.signal_image_props()
+    bman.signal_new_image()
     return win
 
 def with_attribute(a):

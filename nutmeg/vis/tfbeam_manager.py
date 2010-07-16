@@ -581,50 +581,14 @@ unmasked pts: %s
     #-------------------------------------------------------------------------
     ### DATA EXPORT FUNCTIONS
     
-##     def map_stats_like_overlay(self, map_mask=False, mask_type='negative'):
-##         """Return a VolumeSlicer type for the current threshold scalar map.
-##         It is assumed that the map has the same voxel to world mapping
-##         as the current overlay.
-
-##         Returns
-##         -------
-##         a VolumeSlicerInterface subclass (of the same type as the
-##         current overlay)
-##         """
-##         if self.overlay is None:
-##             print 'Overlay not yet loaded'
-##             return None
-##         if self.threshold.thresh_map_name == '':
-##             print 'No active threshold'
-##             return None
-##         oclass = type(self.overlay)
-##         t, f = self.tf_idx
-##         if map_mask:
-##             if mask_type=='positive':
-##                 vdata = np.logical_not(self.threshold.binary_mask).astype('d')
-## ##                 vdata = np.logical_not(self.beam_mask[:,t,f]).astype('d')
-##             else:
-##                 vdata = self.threshold.binary_mask.astype('d')
-## ##                 vdata = self.beam_mask[:,t,f].astype('d')
-##         else:
-##             vdata = self.threshold.map_scalars #[:,t,f]
-##         vox = self.beam.voxel_indices
-##         arr = signal_array_to_masked_vol(
-##             vdata, vox,
-##             fill_value=np.nan
-##             ).filled()
-##         cmap = self.overlay.coordmap
-##         bbox = self.overlay.bbox # ???
-##         grid_spacing = self.overlay.grid_spacing
-##         return oclass(ni_api.Image(arr, cmap),
-##                       bbox=bbox, grid_spacing=grid_spacing)
-    
     def to_masked_array(self, t_idx, f_idx, grid_shape=None):
         sig = self.beam_sig[:,t_idx,f_idx]
         vox = self.beam.voxel_indices
         bmask = self.beam_mask
         if bmask is not None:
-            vox_mask = np.logical_not(bmask[:,t_idx,f_idx])
+            vox_mask = bmask[:,t_idx,f_idx]
+            if not (vox_mask==self.threshold.binary_mask).all():
+                print 'warning! beam mask not synced with threshold mask!'
         else:
             vox_mask = None
         
@@ -644,23 +608,9 @@ unmasked pts: %s
     def to_overlay(self, t_idx, f_idx, grid_spacing=None):
         m_arr = self.to_masked_array(t_idx, f_idx)
         meg2mri = self.beam.coreg.meg2mri
-##         img = ni_api.Image(m_arr.filled(),
-##                            compose(meg2mri, self.beam.coordmap))
         img = ni_api.Image(m_arr,
                            compose(meg2mri, self.beam.coordmap))
         return img
-##         overlay = ResampledVolumeSlicer(img, bbox=self.bbox,
-##                                         grid_spacing=grid_spacing)
-##         overlay = SampledVolumeSlicer(img, bbox=self.bbox,
-##                                       mask=np.logical_not(m_arr.mask),
-##                                       grid_spacing=grid_spacing)
-##         overlay = ResampledVolumeSlicer(img, bbox=self.bbox,
-##                                         mask=np.logical_not(m_arr.mask),
-##                                         grid_spacing=grid_spacing)
-##         overlay = ResampledIndexVolumeSlicer(img, norm=self.norm,
-##                                              bbox=self.bbox,
-##                                              grid_spacing=grid_spacing)
-##         return overlay
         
     #-------------------------------------------------------------------------
     ### DATA REFRESH

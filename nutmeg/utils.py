@@ -78,6 +78,7 @@ class array_pickler_mixin(object):
     def _get_dtype(klass):
         type_list = [(n, object) for n in klass._argnames+klass._kwnames]
         type_list.append( ('conversion_lookup', object) )
+        type_list.append( ('klass_string', object) )
         return np.dtype(type_list)
 
 
@@ -100,6 +101,8 @@ class array_pickler_mixin(object):
         a = np.empty(1, dtype=self._get_dtype())
         names = self._argnames + self._kwnames
         conversion_lookup = dict()
+        cls = self.__class__
+        klass_string = '.'.join( (cls.__module__, cls.__name__) )
         for n in names:
             attr = getattr(self, n, None)
             # name rule for obj->array converter is "_array_from_"+n
@@ -125,15 +128,20 @@ class array_pickler_mixin(object):
             # this reads weird.. basically avoid doing asarray(None) here
             a[n][0] = np.asanyarray(attr) if attr is not None else None
         a['conversion_lookup'][0] = conversion_lookup
+        a['klass_string'][0] = klass_string
         return a
 
-    @classmethod
-    def load(klass, f):
+    @staticmethod
+    def load(f):
         try:
             arr = np.load(f)
-            return klass.from_array(arr)
         except AttributeError:
-            return klass.from_array(f)
+            arr = f
+        klass_string = arr['klass_string'][0]
+        mod, obj = klass_string.rsplit('.', 1)
+        mod = __import__(mod, globals(), locals(), (obj,))
+        klass = getattr(mod, obj)
+        return klass.from_array(arr)
 
     @classmethod
     def from_array(klass, a, **kwargs):

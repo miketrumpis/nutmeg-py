@@ -39,7 +39,7 @@ class TimeFreqThresholdMap(ThresholdMap):
 
     _tf_thresh_limits = t_api.Array
     thresh_limits = t_api.Property(
-        t_api.Tuple, depends_on='_tf_idx, _tf_thresh_limits'
+        t_api.Tuple #, depends_on='_tf_idx, _tf_thresh_limits'
         )
 
     @t_api.on_trait_change('_tf_idx')
@@ -53,7 +53,7 @@ class TimeFreqThresholdMap(ThresholdMap):
         t, f = self._tf_idx
         return self._tf_map_scalars[:,t,f]
 
-    @t_api.cached_property
+##     @t_api.cached_property
     def _get_thresh_limits(self):
         # _tf_thresh_limits should be shaped (2, ntp, nfp)
         t, f = self._tf_idx
@@ -117,18 +117,12 @@ class TimeFreqSnPMaps(t_api.HasTraits):
     # Provide a name of all the defined thresholds
     user_thresholds_names = List 
 
-    
-
-##     map = Array
-##     thresh_limits = Tuple((0.0, 0.0))
-##     thresh_mode = String
-##     thresh_map_name = String
     thresh_changed = Int(1)
     threshold = Instance(TimeFreqThresholdMap)
-##     active_thresh =
 
     def __init__(self, **traits):
         t_api.HasTraits.__init__(self, **traits)
+        # create default
         self.threshold
 
     def _threshold_default(self):
@@ -165,7 +159,7 @@ class TimeFreqSnPMaps(t_api.HasTraits):
     def _get_map_types(self):
         default_list = ['MEG map']
         if self.stats_results is not None:
-            default_list += TimeFreqSnPMResults.threshold_types[:]
+            default_list += self.stats_results.threshold_types[:]
         return default_list
             
     def _create_mask_fired(self):
@@ -176,7 +170,6 @@ class TimeFreqSnPMaps(t_api.HasTraits):
         else:
             t = StatsThresholdMask(stats_manager=self,
                                    map_voxels=vox)
-##         t.sync_trait('_tf_idx', self.tfbeam_man, alias='tf_idx', mutual=False)
         # push tfbeam manager's tf_idx onto the threshold
         self.tfbeam_man.sync_trait('tf_idx', t, alias='_tf_idx', mutual=False)
         t.thresh_map_name = self.map_type
@@ -237,10 +230,8 @@ class StatsThresholdMask(TimeFreqThresholdMap):
 
     alpha = Range(low=0.0, high=1.0, value=0.05,
                   editor=RangeEditor(format='%1.3f'))
-    gamma = Range(low=0.0, high=1.0, value=0.05,
-                  editor=RangeEditor(format='%1.3f'))
 
-    _tf_map_scalars = Property(depends_on='thresh_map_name, alpha, gamma')
+    _tf_map_scalars = Property(depends_on='thresh_map_name, alpha')
     _tf_thresh_limits = Property(
         depends_on='alpha, thresh_map_name, _pooled_dims, _corrected_dims'
         )
@@ -263,6 +254,8 @@ class StatsThresholdMask(TimeFreqThresholdMap):
 
     mask_button = Button('Apply Stats Mask')
 
+    # XXX: this seems odd.. why not just have it be provided by the
+    # constructor?
     @on_trait_change('stats_manager')
     def _get_copy_of_results(self):
         self.stats_results = self.stats_manager.stats_results
@@ -289,14 +282,15 @@ class StatsThresholdMask(TimeFreqThresholdMap):
 
     @cached_property
     def _get__tf_map_scalars(self):
-        self.map_changed = True
         if self.thresh_map_name.find('Test score') >= 0:
             return self.stats_results.t
         elif self.thresh_map_name.find('Cluster') >= 0:
             tail = 'pos' if self.thresh_map_name.lower().find('pos')>=0 \
                    else 'neg'
+            cdims = self.corrected_dims
+            pdims = self.pooled_dims
             return self.stats_results.map_of_significant_clusters(
-                tail, alpha=self.alpha, gamma=self.gamma
+                tail, alpha=self.alpha, pooled_dims=pdims, corrected_dims=cdims
                 )
         else:
             print 'did not understand map type:', self.thresh_map_name
@@ -304,17 +298,22 @@ class StatsThresholdMask(TimeFreqThresholdMap):
     
     @cached_property
     def _get__tf_thresh_limits(self):
-        self.map_changed = True
         pdims = self.pooled_dims
         cdims = self.corrected_dims
         print pdims, cdims
         if self.thresh_map_name.find('Test score')>=0:
+            if self.thresh_map_name.find('both tails')>=0:
+                # be careful to test for p < alpha/2 if looking at
+                # both tails simultaneously
+                spec_alpha = self.alpha/2.0
+            else:
+                spec_alpha = self.alpha
             # find pos tail cutoff if computing for both tails, or just pos
             if self.thresh_map_name in ('Test score (both tails)',
                                  'Test score (pos tail)'):
                 # want to get pos tail cutoff for alpha
                 pos_cutoff, alpha = self.stats_results.threshold(
-                    self.alpha, 'pos',
+                    spec_alpha, 'pos',
                     pooled_dims=pdims,
                     corrected_dims=cdims
                     )
@@ -324,28 +323,29 @@ class StatsThresholdMask(TimeFreqThresholdMap):
             if self.thresh_map_name in ('Test score (both tails)',
                                  'Test score (neg tail)'):
                 neg_cutoff, alpha = self.stats_results.threshold(
-                    self.alpha, 'neg',
+                    spec_alpha, 'neg',
                     pooled_dims=pdims,
                     corrected_dims=cdims
                     )
                 neg_cutoff = neg_cutoff[0]
                 self.trait_setq(alpha=alpha)
             if self.thresh_map_name == 'Test score (both tails)':
+                # reset self.alpha to 2x what was returned before
+                self.trait_setq(alpha = 2*alpha)
                 return np.array( [neg_cutoff, pos_cutoff] )
             if self.thresh_map_name == 'Test score (pos tail)':
                 return np.array([pos_cutoff, self.stats_results.t.max(axis=0)])
             if self.thresh_map_name == 'Test score (neg tail)':
                 return np.array([self.stats_results.t.min(axis=0), neg_cutoff])
-        elif self.thresh_map_name.find('Cluster size')>=0:
-            ntp, nfp = self._tf_map_scalars.shape[1:]
+        elif self.thresh_map_name.find('Cluster')>=0:
+            ntp, nfp = self.stats_results.t.shape[1:]
             thresh = np.empty((2,ntp,nfp))
-            thresh[0] = 0
-            thresh[1] = 0.5
+            thresh[0] = 0.5
+            thresh[1] = 1
             return thresh
     
     @cached_property
     def _get_thresh_mode(self):
-        self.map_changed = True        
         if self.thresh_map_name == 'Test score (both tails)':
             return 'mask between'
         if self.thresh_map_name == 'Test score (neg tail)':
@@ -364,7 +364,6 @@ class StatsThresholdMask(TimeFreqThresholdMap):
             HGroup(
                 Item('mask_button', show_label=False),
                 Item('alpha'),
-                Item('gamma'),
                 ),
             HGroup(
                 Item(
@@ -389,20 +388,15 @@ class SimpleThresholdMask(TimeFreqThresholdMap):
     and the stats test score.
     """
 
-    stats_manager = Instance(TimeFreqSnPMaps)
+    stats_manager = Instance('nutmeg.vis.tfstats_manager.TimeFreqSnPMaps')
     available_functions = Property(depends_on='stats_manager')
-    #thresh_map_name = Enum(values='available_functions')
     thresh_map_name = Enum(values='available_functions')
     tval = Range(low='min_t', high='max_t',
                        editor=RangeEditor(low_name='min_t', high_name='max_t',
-##                                     low_label='min_t_label',
-##                                     high_label='max_t_label',
                                     format='%1.2f'))
     comp = Enum('greater than', 'less than')
     max_t = Property(depends_on='thresh_map_name')
-    max_t_label = Property(depends_on='thresh_map_name')
     min_t = Property(depends_on='thresh_map_name')
-    min_t_label = Property(depends_on='thresh_map_name')
 
     mask_button = Button('Apply Simple Mask')
 
@@ -438,18 +432,12 @@ class SimpleThresholdMask(TimeFreqThresholdMap):
         mx = self._tf_map_scalars.max()
         return int(1000*mx)/1000.0
     @cached_property
-    def _get_max_t_label(self):
-        return '%1.2f'%self.max_t
-    @cached_property
     def _get_min_t(self):
         mn = self._tf_map_scalars.min()
         return int(1000*mn)/1000.0
-    @cached_property
-    def _get_min_t_label(self):
-        return '%1.2f'%self.min_t
     def _get__tf_thresh_limits(self):
-        # if masking greater than tval
         bcaster = np.ones((self._tf_map_scalars.shape[1:]))
+        # if masking greater than tval
         if self.comp=='greater than':
             return np.array([bcaster*self.min_t, bcaster*self.tval])
         # if masking less than tval
@@ -469,5 +457,6 @@ class SimpleThresholdMask(TimeFreqThresholdMap):
         return []
 
     def _mask_button_fired(self):
+        self.map_changed = True
         self.stats_manager.threshold = self
         self.stats_manager.thresh_changed *= -1

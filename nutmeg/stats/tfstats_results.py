@@ -20,7 +20,7 @@ def load_tf_snpm_stats(snpm_arrays):
         if ext_type == '.mat':
             return adapt_mlab_tf_snpm_stats(snpm_arrays)
         elif ext_type in ('.npz', '.npy'):
-            return TimeFreqSnPMResults.load(snpm_arrays)
+            return array_pickler_mixin.load(snpm_arrays)
         else:
             raise ValueError('did not recognize the file format: '+snpm_arrays)
     return TimeFreqSnPMResults(t, vox_map, p, mxt, mnt)
@@ -46,8 +46,6 @@ class TimeFreqSnPMResults(array_pickler_mixin):
         'Test score (both tails)',
         'Test score (pos tail)',
         'Test score (neg tail)',
-        'Cluster size (pos tail)',
-        'Cluster size (neg tail)'
         ]
 
     # these are the names of the attributes on the object
@@ -152,7 +150,7 @@ class TimeFreqSnPMResults(array_pickler_mixin):
         Parameters
         ----------
         alpha : float
-          The significance threshold (as in p < 0.05)
+          The significance threshold (as in p < alpha)
         tail : str
           {'pos', 'neg'} -- return p values for whether the test statistic
           if significantly large or small, respectively
@@ -249,76 +247,6 @@ class TimeFreqSnPMResults(array_pickler_mixin):
                         
         
         return p_vals
-        
-    def map_of_significant_clusters(self, tail, alpha=0.05, gamma=0.05):
-        """Make a map based on cluster-size significance.
-        First find all the clusters of voxels exceeding the
-        individual-statistic p value of alpha. Then, from a distribution
-        of cluster sizes, return a map of clusters whose size exceed
-        the p value of gamma.
-
-        Parameters
-        ----------
-        tail : str in {'pos', 'neg'}
-          Use p values for whether the test statistic if significantly
-          large or small, respectively
-        alpha : float
-          Individual test statistic confidence level
-        gamma : float
-          Cluster size statistic confidence level
-
-        Returns
-        -------
-        cluster_map : ndarray
-          binary map which is non-negative at significant clusters
-
-        """
-        # map individually tested p values to a volume grid,
-        # find cluster sizes,
-        # determine significant cluster threshold,
-        # mask out sub-threshold clusters,
-        # convert back to voxel lists
-        p_score = self.uncorrected_p_score(tail)
-        nt, nf = p_score.shape[1:]
-        ni, nj, nk = self.vox_idx.max(axis=0)+1
-        cluster_vols = np.empty( (ni, nj, nk, nt, nf) )
-        max_labels = np.empty((nt,nf))
-        c_sizes = []
-        for t in xrange(nt):
-            for f in xrange(nf):
-                vol = vu.signal_array_to_masked_vol(
-                    p_score[:,t,f],
-                    self.vox_idx,
-                    fill_value=1
-                    ).filled()
-                cluster_vols[:,:,:,t,f], max_labels[t,f] = ndimage.label(
-                    vol <= alpha
-                    )
-                for lval in xrange(1, int(max_labels[t,f])):
-                    c_sizes.append( (cluster_vols[:,:,:,t,f]==lval).sum() )
-        c_sizes = np.sort(np.array(c_sizes))
-        c_sz_cutoff = c_sizes[ int(np.ceil((1-gamma) * len(c_sizes))) ]
-        survivor_label = int(max_labels.max() + 1)
-        # now go and re-label all super/sub threshold clusters
-        for t in xrange(nt):
-            for f in xrange(nf):
-                for lval in xrange(1, int(max_labels[t,f])):
-                    if (cluster_vols[:,:,:,t,f]==lval).sum() < c_sz_cutoff:
-                        relabel = 0
-                    else:
-                        relabel = survivor_label
-                    np.putmask(cluster_vols[:,:,:,t,f],
-                               cluster_vols[:,:,:,t,f] == lval,
-                               relabel)
-
-        # now re-map to voxel list arrays
-        tf_size = nt*nf
-        strides = np.array([nj*nk, nk, 1]) * tf_size
-        flat_map = (self.vox_idx * strides).sum(axis=1)
-        flat_map = (flat_map[:,None] + np.arange(tf_size)[None,:]).ravel()
-        cluster_map = cluster_vols.flat[flat_map]
-        del cluster_vols
-        return cluster_map.reshape(self.t.shape)
 
 class AdaptedTimeFreqSnPMResults(TimeFreqSnPMResults):
     """This class adapts MATLAB Nutmeg results for TimeFreqSnPMResults
@@ -430,9 +358,15 @@ class TimeFreqSnPMClusters(TimeFreqSnPMResults):
             )
 
         t, f = self.t.shape[1:]
-        assert t*f == len(snpm_ptail_clusters) and \
-               t*f == len(snpm_ntail_clusters), \
-            'There are not enough cluster lists for every time-freq point'
+        assert t*f==len(snpm_ptail_clusters) or \
+               (t==len(snpm_ptail_clusters) and \
+                f==len(snpm_ptail_clusters[0])), \
+                'Not enough pos-tail clusters for every time-freq point'
+        assert t*f==len(snpm_ntail_clusters) or \
+               (t==len(snpm_ntail_clusters) and \
+                f==len(snpm_ntail_clusters[0])), \
+                'Not enough neg-tail clusters for every time-freq point'
+
 
         self.ptail_clusters = tablify_list(snpm_ptail_clusters, t, f)
         self.ptail_nulls = snpm_ptail_nulls
@@ -476,9 +410,57 @@ class TimeFreqSnPMClusters(TimeFreqSnPMResults):
                     1.0 - ntf.searchsorted(wscores, side='left')/n_perm
                     )
         return tablify_list(pvalues, nt, nf)
-            
-        
 
+    def map_of_significant_clusters(self, tail, alpha,
+                                    corrected_dims=(), pooled_dims=()):
+        """Make a map based on a score that mixes cluster-size
+        significance and peak cluster value significance. This score
+        is then compared to an empirical null distribution generated
+        by permutation testing of the samples, and a map is created
+        across all (voxels, time, freq) where the cluster scores
+        are deemed significant compared to `alpha`.
+
+        Parameters
+        ----------
+
+        tail : str in {'pos', 'neg'}
+           Return clusters where test statistic if significantly large
+           or small, respectively
+        alpha : float, p < alpha significance level
+
+        Returns
+        -------
+
+        cluster_map : ndarray
+           binary map which is non-negative at significant clusters
+
+        Notes
+        -----
+
+        This method is based on
+        `Combining voxel intensity and cluster extent with permutation 
+        test framework`, Hayasaka and Nichols, 2004
+        """
+        pvals = self.pscore_clusters(tail)
+        clusters = self.ptail_clusters if tail.lower()=='pos' \
+                   else self.ntail_clusters
+        g, m = calc_grid_and_map(self.vox_idx)
+        cmap = np.zeros_like(self.t)
+        img = np.zeros(g)
+        for t in xrange(cmap.shape[1]):
+            for f in xrange(cmap.shape[2]):
+                scores = pvals[t][f]
+                c_tf = clusters[t][f]
+                for p, ci in zip(scores, c_tf):
+                    # if the score beats alpha, then find the
+                    if p < alpha:
+                        # this is actually faster than looking up
+                        # where ci.voxels intersect with map "m"
+                        img.fill(0)
+                        np.put(img, ci.voxels, 1)
+                        cmap[:,t,f] += np.take(img, m)
+        return cmap
+        
 def map_of_clusters_and_labels(stats, tail, tf, pcrit):
     """
     Generate a statistics map and a list of clusters based on the

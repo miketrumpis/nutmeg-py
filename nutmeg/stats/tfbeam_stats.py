@@ -22,7 +22,8 @@ class SnPMTester(object):
         # self.inter_vox -- the mni voxels of the stat comparison
         pass
 
-    def test(self, analyze_clusters=False, cluster_pval=.01):
+    def test(self, analyze_clusters=False,
+             cluster_critical_pval=.005, cluster_connectivity=18):
         """
         Runs a univariate statistical test at each time-frequency-voxel,
         filling in these measures:
@@ -34,7 +35,21 @@ class SnPMTester(object):
           the permuted statistics
 
         If analyzing clusters, then also collect the maximum cluster size
-        distribution across permutations
+        distribution across permutations. These are the cluster level
+        analysis parameters:
+
+        Parameters
+        ----------
+
+        cluster_critical_pval : float
+           Use the tvalue at this non-empirical quantile as the
+           cluster-defining threshold.
+        cluster_connectivity : int in {6, 18, 26}
+           The connectivity rule for voxels.
+
+           * 6 -- connected if faces touch
+           * 18 -- connected if faces or edges touch
+           * 26 -- connected if faces, edges, or corners touch
 
         """
         if not self._is_init:
@@ -68,8 +83,10 @@ class SnPMTester(object):
             pc_nulls = np.empty_like(maxT)
             all_ntail_clusters = []
             nc_nulls = np.empty_like(maxT)
+
+            # divide pval by 2, since we're testing both tails
+            tc = dist.t.isf(cluster_critical_pval, self.dm_gen.dof)
             
-            tc = dist.t.isf(cluster_pval, self.dm_gen.dof)
         else:
             tc = None
         # the array of test results
@@ -86,8 +103,9 @@ class SnPMTester(object):
                     smooth_variance=self.smoothed_variance,
                     analyze_clusters=analyze_clusters,
                     grid_shape=grid_shape, vox_map=flat_map,
-                    fwhm_pix=fwhm, t_crit=tc, fill_value=0,
-                    out=tt
+                    fwhm_pix=fwhm, t_crit=tc,
+                    connectivity=cluster_connectivity,
+                    fill_value=0, out=tt
                     )
                 self.dm_gen.reset()
                 true_t = tt[0]
@@ -109,16 +127,18 @@ class SnPMTester(object):
                     pscores, pc_nulls[:,t,f] = snpm.score_clusters(
                         maxT[:,t,f], pclusts
                         )
-                    scored_pclusts = [ ScoredStatCluster(
-                        ci.size, ci.peak, ci.mass, ci.voxels, wscore
-                        ) for ci, wscore in zip(pclusts[0], pscores) ]
+                    scored_pclusts = [
+                        ScoredStatCluster.from_cluster(ci, wscore)
+                        for ci, wscore in zip(pclusts[0], pscores)
+                        ]
                     # Score and record the neg tail clusters
                     nscores, nc_nulls[:,t,f] = snpm.score_clusters(
                         minT[:,t,f], nclusts
                         )
-                    scored_nclusts = [ ScoredStatCluster(
-                        ci.size, ci.peak, ci.mass, ci.voxels, wscore
-                        ) for ci, wscore in zip(nclusts[0], nscores) ]
+                    scored_nclusts = [
+                        ScoredStatCluster.from_cluster(ci, wscore)
+                        for ci, wscore in zip(nclusts[0], nscores)
+                        ]
                     
                     all_ptail_clusters.append(scored_pclusts)
                     all_ntail_clusters.append(scored_nclusts)

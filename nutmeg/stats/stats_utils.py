@@ -8,10 +8,15 @@ from _sutils import *
 # a simple class for representing clusters
 class StatCluster(array_pickler_mixin):
     "A simple 'bunch' and array pickler"
-    _argnames = ['size', 'peak', 'mass', 'voxels']
+    _argnames = ['peak', 'mass', 'voxels']
+
+    def __init__(self, *args):
+        array_pickler_mixin.__init__(self, *args)
+        self.size = self.voxels.size
 
     def __repr__(self):
         s = ''
+        s += 'size:\t' + str(self.size) + '\n'
         for n in filter(lambda s: s!='voxels', self._argnames):
             s += (n + ':\t' + str(getattr(self, n)) + '\n')
         return s
@@ -22,6 +27,11 @@ class ScoredStatCluster(StatCluster):
     size, peak, and/or mass statistics
     """
     _argnames = StatCluster._argnames + ['wscore']
+
+    @staticmethod
+    def from_cluster(c, w):
+        args = [getattr(c, n) for n in StatCluster._argnames] + [w]
+        return ScoredStatCluster(*args)
 
 all_tfstats_maps = [
     'T test',

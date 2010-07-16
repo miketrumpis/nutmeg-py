@@ -58,6 +58,8 @@ def map_t(np.ndarray[np.npy_double, ndim=1] t,
     
     CDF[t] --> n*(dp) := order{ tm | (tm in M) and tm < t } / order{M}
 
+    where `dp` is the quantum step size of the CDF function.
+    
     Given quantized p values in the set { n*(dp) } for some n in [0,1/dp)
     and corresponding test values, this method attempts to roughly invert
     the relationship of the CDF.

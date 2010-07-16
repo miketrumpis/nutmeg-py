@@ -2,7 +2,7 @@ import numpy as np
 import scipy.stats as st
 import nose.tools as nt
 
-from nutmeg.utils import voxel_index_list
+from nutmeg.utils import voxel_index_list, calc_grid_and_map
 import nutmeg.stats.stats_utils as su
 from nutmeg.stats.tfstats_results import *
 
@@ -97,3 +97,33 @@ class testTFResults:
 
         assert (t == ref_t).all(), \
                'correction did not replace axis with maximal value'
+
+
+def cluster_sanity(sres):
+
+    def clusters_intersect(c1, c2):
+        s1 = set( c1.voxels )
+        s2 = set( c2.voxels )
+        return len(s1.intersection(s2)) > 0
+
+    mn_pt = 1e10
+    mx_nt = -1e10
+    g, m = calc_grid_and_map(sres.vox_idx)
+    img = np.zeros(g)
+    for i, clist in enumerate((sres.ptail_clusters, sres.ntail_clusters)):
+        for t in xrange(sres.t.shape[1]):
+            for f in xrange(sres.t.shape[2]):
+                np.put(img, m, sres.t[:,t,f])
+                c_tf = clist[t][f]
+                for c in c_tf:
+                    cvals = np.take(img, c.voxels)
+                    if i==1 and cvals.max() > mx_nt:
+                        mx_nt = cvals.max()
+                    if i==0 and cvals.min() < mn_pt:
+                        mn_pt = cvals.min()
+                    
+                if len(c_tf) > 1:
+                    for c1, c2 in zip(c_tf[:-1], c_tf[1:]):
+                        assert not clusters_intersect(c1, c2), \
+                               'Cluster intersection at tf=(%d,%d)'%(t,f)
+    print 'estimated ntail cutoff: %1.3f, estimated ptail cutoff: %1.3f'%(mx_nt, mn_pt)

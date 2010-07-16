@@ -208,6 +208,7 @@ def run_snpm_tests(samps, dgen, beta_comp, n_tests,
                    fwhm_pix=None,
                    # cluster analysis info
                    t_crit=None,
+                   connectivity=18,
                    fill_value=0,
                    out=None):
     """
@@ -233,7 +234,7 @@ def run_snpm_tests(samps, dgen, beta_comp, n_tests,
     analyze_clusters: {True/False}, optional
       Optionally gather additional cluster statistics at each permutation.
       **Note**: if True, then *grid_shape*, *flat_map*, and *t_crit*
-      are all required, and *fill_value* should be provided
+      are all required, and *fill_value* and *connectivity* should be provided
 
     grid_shape : tuple, optional
       volume shape in which to embed voxel data
@@ -246,6 +247,8 @@ def run_snpm_tests(samps, dgen, beta_comp, n_tests,
     t_crit : float, optional
       The `cluster-defining threshold`. This is a statistic drawn from a
       theoretical (parametric) distribution.
+    connectivity : int in {6, 18, 26}
+      The cluster connectivity rule
     out : ndarray, optional
       a (n_permutation x voxels) array to store the
       empirical null distribution
@@ -344,8 +347,12 @@ def run_snpm_tests(samps, dgen, beta_comp, n_tests,
             stat_img.fill(fill_value)
             np.put(stat_img, vox_map, pX[p])
 ##             stat_img.flat[vox_map] = pX[p]
-            _, pcluster_info = label_clusters(stat_img, t_crit, tail='pos')
-            _, ncluster_info = label_clusters(stat_img, -t_crit, tail='neg')
+            _, pcluster_info = label_clusters(
+                stat_img, t_crit, connectivity=connectivity, tail='pos'
+                )
+            _, ncluster_info = label_clusters(
+                stat_img, -t_crit, connectivity=connectivity, tail='neg'
+                )
             ptail_clusters_list.append(pcluster_info)
             ntail_clusters_list.append(ncluster_info)
             if symmetry:
@@ -354,12 +361,12 @@ def run_snpm_tests(samps, dgen, beta_comp, n_tests,
                 # the sign on the maximum cluster intensity)
                 ptail_clusters_list.append(
                     [ StatCluster(
-                        c.size, -c.peak, c.mass, c.voxels
+                        -c.peak, c.mass, c.voxels
                         ) for c in ncluster_info ]
                     )
                 ntail_clusters_list.append(
                     [ StatCluster(
-                        c.size, -c.peak, c.mass, c.voxels
+                        -c.peak, c.mass, c.voxels
                         ) for c in pcluster_info ]
                     )
     # now if only doing one half of symmetrical permutations, then
@@ -490,15 +497,15 @@ def label_clusters(stats_image, t_crit, connectivity=18, tail='pos'):
     csizes = []
     max_t = []
     t_mass = []
-    c_idx = [] # this is a (3 x len-cluster) array of ijk indices
+    # maps of indices locating the clusters in the flattened stats_image grid
+    c_idx = [] 
     labels = xrange(1, max_label+1)
     for l in labels:
         c_image = l_image==l
-        csizes.append( c_image.sum() )
-        c_idx.append( c_image.ravel().nonzero()[0] )
-##         c_idx.append( np.vstack(c_image.nonzero()) )
+        idx = c_image.ravel().nonzero()[0]
+        c_idx.append( idx )
 
-        cluster_stats = stats_image[c_image]
+        cluster_stats = np.take(stats_image.ravel(), idx)
         if tail.lower()=='pos':
             max_t.append( cluster_stats.max() )
             t_mass.append( cluster_stats.sum() - len(cluster_stats)*t_crit )
@@ -506,7 +513,7 @@ def label_clusters(stats_image, t_crit, connectivity=18, tail='pos'):
             max_t.append( cluster_stats.min() )
             t_mass.append( -cluster_stats.sum() + len(cluster_stats)*t_crit )
 
-    clusters = [StatCluster(*c) for c in zip(csizes, max_t, t_mass, c_idx)]
+    clusters = [StatCluster(*c) for c in zip(max_t, t_mass, c_idx)]
     return l_image, clusters
     
     
