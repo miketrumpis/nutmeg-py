@@ -30,7 +30,7 @@ def main():
     register_xipy_tools()
         
     from xipy.vis.ortho_viewer import ortho_viewer
-    win = ortho_viewer(image=opts.image, fliplr=opts.fliplr,
+    win = ortho_viewer(image=opts.image,
                        mayavi_viewer=not opts.no_mayavi_viewer)
 
 ##     if opts.image:

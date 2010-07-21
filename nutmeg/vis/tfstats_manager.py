@@ -21,7 +21,7 @@ from enthought.traits.api \
 from enthought.traits.ui.api import Item, Group, View, VGroup, \
      HGroup, EnumEditor, ListEditor, RangeEditor, CheckListEditor
 
-from xipy.overlay import ThresholdMap
+from xipy.overlay.interface import ThresholdMap
 from nutmeg.stats.tfstats_results import TimeFreqSnPMResults
 
 
