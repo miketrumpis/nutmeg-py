@@ -12,10 +12,6 @@ def main():
     op.add_option('-m', '--main-file', dest='image',
                   help='To be plotted as a base image', type='string',
                   default=None)
-##     op.add_option('-o', '--overlay-file', dest='overlay',
-##                   help='Nifti file to use for overlays', type='string',
-##                   default=None)
-
     
     (opts, args) = op.parse_args()
 

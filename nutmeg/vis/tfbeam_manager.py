@@ -21,7 +21,7 @@ from enthought.traits.ui.api \
 
 ## from enthought.traits.ui.file_dialog import open_file
 from xipy.vis.qt4_widgets import browse_files
-from xipy.overlay import OverlayInterface, OverlayWindowInterface
+from xipy.overlay.interface import OverlayInterface, OverlayWindowInterface
 from xipy.slicing.image_slicers import SampledVolumeSlicer, \
      ResampledVolumeSlicer, ResampledIndexVolumeSlicer
 from xipy.volume_utils import maximum_world_distance, signal_array_to_masked_vol
