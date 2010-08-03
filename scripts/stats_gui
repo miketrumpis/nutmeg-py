@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+from nutmeg.stats.ui import stats_ui
+
+def main():
+    clist = stats_ui.ListOfConditions()
+    clist.configure_traits()
+
+if __name__=='__main__':
+    main()
