@@ -1,5 +1,6 @@
 import os
-from xipy.vis.qt4_widgets import browse_files, browse_multiple_files
+from xipy.vis.qt4_widgets import browse_files, browse_multiple_files, \
+     get_saveas_file
 ## from nutmeg.vis import ortho_plot_window_qt4 as plotter
 from nutmeg.stats import beam_stats as bstats
 from nutmeg.stats import tfbeam_stats as tfbstats
@@ -186,10 +187,12 @@ class StatsResult(HasTraits):
     _avg_beams = List
     avg_beam = Enum(values='_avg_beams')
     plot_avg = Button('Plot Average')
+    save_avg = Button('Save Average')
     # this doesn't actually do anything yet
     stats_maps = Enum(*tfstats_results.TimeFreqSnPMResults.threshold_types)
     plot_stat = Button('Plot Stats Map')
-
+    save_stat = Button('Save Stats Results')
+    
     def __init__(self, condition, avg_beams, stats_results, **traits):
         HasTraits.__init__(self, **traits)
         self._avg_dict = {}
@@ -205,15 +208,31 @@ class StatsResult(HasTraits):
     def _plot_stat_fired(self):
         pass
 
+    def _save_avg_fired(self):
+        f = get_saveas_file(
+            None, dialog='Select Filename to Save', wildcard='*.npy'
+            )
+        f, ext = os.path.splitext(f)
+        self._avg_dict[self.avg_beam].save(f)
+
+    def _save_stat_fired(self):
+        f = get_saveas_file(
+            None, dialog='Select Filename to Save', wildcard='*.npy'
+            )
+        f, ext = os.path.splitext(f)
+        self.stats_results.save(f)
+        
     view = View(
         HGroup(
             VGroup(
                 Item('avg_beam', label='Average beams', style='custom'),
-                Item('plot_avg', show_label=False)
+                Item('plot_avg', show_label=False),
+                Item('save_avg', show_label=False)
                 ),
             VGroup(
                 Item('stats_maps', label='Stats Maps', style='custom'),
-                Item('plot_stat', show_label=False)
+                Item('plot_stat', show_label=False),
+                Item('save_stat', show_label=False)
                 )
             ),
         resizable=True
@@ -238,6 +257,12 @@ class SnPMTesterUI(HasTraits):
     _max_perm = Property(Int, depends_on='snpm_test, active_conditions')
     sym_perms = Bool(True)
     minimum_pval = Property(Str, depends_on='n_perm')
+    analyze_clusters = Bool(True)
+    cluster_connectivity = Enum(['sides', 'edges', 'corners'])
+    cluster_critical_pval = Range(
+        low=0.0, high=1.0, editor=RangeEditor(format='%1.4f')
+        )
+    test_kwargs = Property
 
     run_stats = Button('Run Stats Test')
     
@@ -263,6 +288,18 @@ class SnPMTesterUI(HasTraits):
         else:
             return 'Select two conditions to contrast'
 
+    def _get_test_kwargs(self):
+        kws = dict(analyze_clusters = self.analyze_clusters)
+        if self.analyze_clusters:
+            connectivity_rule = {
+                'sides': 6,
+                'edges': 18,
+                'corners': 26
+                }[self.cluster_connectivity]
+            kws['cluster_connectivity'] = connectivity_rule
+            kws['cluster_critical_pval'] = self.cluster_critical_pval
+        return kws
+        
     @cached_property
     def _get__available_tests(self):
         tests = ['One sample T test']
@@ -380,7 +417,7 @@ class SnPMTesterUI(HasTraits):
                 ctitle = cond_titles[n]
 
             print cond, ctitle
-            stats = test.test()
+            stats = test.test(**self.test_kwargs)
             
             sresult = StatsResult(cond, avgs, stats, comp_name=ctitle)
             self.stat_results.append(sresult)
@@ -420,6 +457,20 @@ class SnPMTesterUI(HasTraits):
                         Item('minimum_pval', label='Minimum uncorrected P val',
                              help='This is the minimum p score that can be achieved with the current settings',
                              style='readonly'),
+                        ),
+                    HGroup(
+                        Item('analyze_clusters', label='Analyze Clusters'),
+                        Group(
+                            Item(
+                                'cluster_connectivity',
+                                label='Connectivity Rule'
+                                ),
+                            Item(
+                                'cluster_critical_pval',
+                                label='Defining cluster P-value'
+                                ),
+                            enabled_when='object.analyze_clusters'
+                            )
                         ),
                     HGroup(
                         Item('run_comp', show_label=False),
