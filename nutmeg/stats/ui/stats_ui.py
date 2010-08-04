@@ -92,7 +92,6 @@ class Condition(HasTraits):
     @on_trait_change('tab_event')
     def _edit_subject_trait(self):
         if self.tab_event is None:
-            print 'oops'
             return
         subj_attrs = ['name', 'fname', 'fpath']
         print self.tab_event.row, self.tab_event.column
@@ -119,7 +118,7 @@ class Condition(HasTraits):
         columns = [ObjectColumn(name='name', label='Subject Name', width=.25),
                    ExpressionColumn(label='Subject File',
                                     width=.5,
-                                    expression="object.fpath.split('%c')[-1]"%sep_char),
+                                    expression="object.fpath.split('%s'%sep_char)[-1]"),
                    ObjectColumn(name='fpath', label='File', width=.25,
                                 editor=FileEditor(),
                                 #editor=InstanceEditor(),
