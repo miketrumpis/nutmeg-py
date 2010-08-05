@@ -3,13 +3,9 @@ import nutmeg
 import os
 import numpy as np
 from xipy.utils import voxel_index_list
+from xipy import TEMPLATE_MRI_PATH
 
 # define some "globals"
-
-TEMPLATE_MRI_PATH = os.path.join(os.path.dirname(nutmeg.__file__),
-                                 'resources/template_1mm_anat.nii.gz')
-## TEMPLATE_MRI_PATH = os.path.join(os.path.dirname(nutmeg.__file__),
-##                                  'resources/template_T1_1mm_brain.nii.gz')
 
 BEAM_SPACE_LEFT = -90.; BEAM_SPACE_RIGHT = 90.
 BEAM_SPACE_POST = -125.; BEAM_SPACE_ANT = 90.
