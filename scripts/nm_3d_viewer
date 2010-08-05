@@ -19,10 +19,9 @@ def main():
     app = QtGui.QApplication(sys.argv)
 
     # register the nutmeg plugin before launching the ortho viewer
-    from xipy.overlay.plugins import register_overlay_plugin, \
-         all_registered_plugins
-    from nutmeg.vis.tfbeam_manager import NmTimeFreqWindow
-    register_overlay_plugin(NmTimeFreqWindow)
+    from nutmeg import register_xipy_tools
+    register_xipy_tools()
+
     from xipy.vis.three_dee_viewer import MayaviViewer
 
     win = MayaviViewer(image=opts.image)

@@ -27,19 +27,17 @@ def main():
     # THIS MUST HAPPEN FIRST BEFORE IMPORTING ENTHOUGHT STUFF!!!
     app = QtGui.QApplication(sys.argv)
     from nutmeg import register_xipy_tools
+    from nutmeg.core import tfbeam
+    from nutmeg.vis import plot_tfbeam
     register_xipy_tools()
-        
-    from xipy.vis.ortho_viewer import ortho_viewer
-    win = ortho_viewer(image=opts.image,
-                       mayavi_viewer=not opts.no_mayavi_viewer)
 
-##     if opts.image:
-##         if opts.beam and opts.overlay:
-##             # silently choose opts.beam for now
-##             opts.overlay = None
-##         if opts.beam:
-            
-            
+    if opts.beam:
+        b = tfbeam.load_tfbeam(opts.beam)
+        win = plot_tfbeam(b, with3d= not opts.no_mayavi_viewer)
+    else:
+        from xipy.vis.ortho_viewer import ortho_viewer
+        win = ortho_viewer(image=opts.image,
+                           mayavi_viewer=not opts.no_mayavi_viewer)
 
     win.show()
     return win, app
