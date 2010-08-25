@@ -1,0 +1,158 @@
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Section
+Nutmeg In Python
+\end_layout
+
+\begin_layout Standard
+Python is an open-source, general purpose, object oriented programming language
+ that is gaining popularity as a tool for scientific computing.
+ As an interpreted language with robust object model support, Python allows
+ a wide variety of programming styles, from line-by-line scripting to abstracted
+, reusable library code.
+ Though not specifically developed for numerics and computation, its strenghts
+ include an emphasis on legibility and ease-of-use, system portability,
+ and straightforward access to system libraries.
+ Additionally, there is a very stable, well developed stack of basic computation
+al tools developed by the scientific Python community.
+ First among the many commonly used tools are: Numpy for n-dimensional arrays;
+ Scipy for a wealth of computational code, much of it being a Python layer
+ over established, validated libraries such as LAPACK and FFTPACK; and Matplotli
+b which provides interactive and scriptable 2D plotting tools that emulate
+ MATLAB plotting.
+ All these features provide a convenient computing environment for the developme
+nt of modern scientific data processing systems whose scope may expand over
+ time, and whose core functionality typically demands a design ranging from
+ optimized algorithms to complex data models for physical phenomena.
+\end_layout
+
+\begin_layout Standard
+Nutmeg has begun a small scale transition from MATLAB to Python.
+ To date, the membrane from one system to the other lies between voxelwise
+ source reconstruction, and statistical post processing and visualization.
+ 
+\end_layout
+
+\begin_layout Subsection
+From MATLAB Data And Routines To Python Objects
+\end_layout
+
+\begin_layout Standard
+The workflow for a Nutmeg based analysis that incorporates Python tools
+ presents both a design challenge and a technical data translation problem.
+ The latter is a solved problem, thanks to code from SciPy enabling I/O
+ between Numpy arrays and MATLAB data contained in 
+\begin_inset Quotes eld
+\end_inset
+
+mat
+\begin_inset Quotes erd
+\end_inset
+
+ files.
+ The former allows the use of Python's object model.
+ 
+\end_layout
+
+\begin_layout Standard
+Nutmeg-Py's core includes very simple data models which, abstractly, have
+ immutable data and metadata, have methods to interrogate or transform the
+ data in some fashion, and finally can read and write itself on disk without
+ loss of precision.
+ The Python analog to the MATLAB 
+\begin_inset Quotes eld
+\end_inset
+
+struct
+\begin_inset Quotes erd
+\end_inset
+
+ containing a time-frequency reconstruction, the TFBeam, is an example of
+ such an object that is extensively employed in the code.
+ Another object in this category is the TimeFreqSnPMResults, which represent
+ the results from a statistical test and can be used to generate thresholds
+ and maps.
+\end_layout
+
+\begin_layout Standard
+Another common design pattern employed in Nutmeg-Py is the modeling of a
+ related set of processing task using a hierarchy of classes.
+ This is done by defining a common parent classes that specifies or even
+ performs the bulk of the data organization and computation, and then defining
+ variations of the task with subclasses that prepare data in task-specific
+ ways and inherit the common functionality.
+ Nutmeg-Py takes advantage of this pattern in its recreation of Nutmeg's
+ non-parametric statistical processing machinery.
+ 
+\end_layout
+
+\begin_layout Subsection
+Visualization
+\end_layout
+
+\begin_layout Standard
+The project to transition Nutmeg into a Python based toolkit has also generated
+ a small but powerful visualization effort named Xipy (cross-modality Imaging
+ in Python), which lies somewhat under the umbrella of the seminal Nipy
+ (neuroimaging in Python) project.
+ The main ambition of Xipy is to provide a flexible and extensible system
+ for displaying brain imagery from various data sources (eg, anatomical
+ MR, statistical maps, diffusion tracks) in the same 3D scene.
+ The graphics technology behind most displays in Xipy is Mayavi << ref?
+ >>, which is a Python visualization codebase which itself uses VTK << ref?
+ >> for all of its graphical heavy lifting.
+\end_layout
+
+\begin_layout Standard
+Xipy is in fact totally decoupled from Nutmeg-Py.
+ Visualization of results from Nutmeg and Nutmeg-Py within Xipy is enabled
+ by a richly featured plugin contained in the Nutmeg-Py package which implements
+ stereotyped overlay and thresholding interfaces (see figure X).
+ In principle, this this overlay plugin architecture could be exploited
+ for displaying any dataset that can be mapped to a volumetric grid coregistered
+ to an underlying image.
+ 
+\end_layout
+
+\end_body
+\end_document
