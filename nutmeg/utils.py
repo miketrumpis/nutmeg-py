@@ -18,6 +18,8 @@ def cmap_from_array(arr):
     return ni_api.AffineTransform.from_params(arr['incoord'][0],
                                               arr['outcoord'][0],
                                               aff)
+def load_any(fpath):
+    return array_pickler_mixin.load(fpath)
 
 class array_pickler_mixin(object):
     """

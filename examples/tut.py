@@ -81,7 +81,7 @@ threshold, true_alpha = stats_res.threshold(.5, 'neg')
 surviving_t_map = stats_res.t < threshold
 vox_map_at_tf_10_1 = stats_res.vox_idx[surviving_t_map[:,10,1]]
 
-p_map = stats_res.p_score_from_maximal_statistics(.5, 'pos')
+p_map = stats_res.p_score_from_maximal_statistics('pos')
 
 avg.save('avgbeam')
 stats_res.save('onesampTstats')
