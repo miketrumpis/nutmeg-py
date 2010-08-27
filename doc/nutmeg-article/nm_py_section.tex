@@ -14,27 +14,28 @@ language that is gaining popularity as a tool for scientific computing.
 As an interpreted language with robust object model support, Python
 allows a wide variety of programming styles, from line-by-line scripting
 to abstracted, reusable library code. Though not specifically developed
-for numerics and computation, its strenghts include an emphasis on
-legibility and ease-of-use, system portability, and straightforward
-access to system libraries. Additionally, there is a very stable,
-well developed stack of basic computational tools developed by the
-scientific Python community. First among the many commonly used tools
-are: Numpy for n-dimensional arrays; Scipy for a wealth of computational
-code, much of it being a Python layer over established, validated
-libraries such as LAPACK and FFTPACK; and Matplotlib which provides
-interactive and scriptable 2D plotting tools that emulate MATLAB plotting.
-All these features provide a convenient computing environment for
-the development of modern scientific data processing systems whose
-scope may expand over time, and whose core functionality typically
-demands a design ranging from optimized algorithms to complex data
-models for physical phenomena.
+for numerics and scientific computation, its strenghts include an
+emphasis on legibility and ease-of-use, system portability, and straightforward
+access to system libraries. Additionally, there is a very stable stack
+of basic computational tools actively developed by the scientific
+Python community. First among the many commonly used tools are: Numpy
+for n-dimensional arrays; Scipy for a wealth of computational code,
+much of it being a Python layer over established, validated libraries
+such as LAPACK and FFTPACK; and Matplotlib, which provides interactive
+and scriptable 2D plotting tools that emulate MATLAB plotting. All
+these features provide a convenient computing environment for the
+development of modern scientific data processing systems, whose scope
+may expand over time, and whose core functionality typically demand
+a design covering a range from optimized algorithms to complex <\textcompwordmark{}<
+complicated? >\textcompwordmark{}> data models for physical phenomena.
 
-Nutmeg has begun a small scale transition from MATLAB to Python. To
-date, the membrane from one system to the other lies between voxelwise
-source reconstruction, and statistical post processing and visualization. 
+Nutmeg has begun a small scale transition from MATLAB to Python, named
+Nutmeg-Py. To date, the membrane from one system to the other lies
+between voxelwise source reconstruction, and statistical post processing
+and visualization. 
 
 
-\subsection{From MATLAB Data And Routines To Python Objects}
+\subsection{From MATLAB Data To Python Objects}
 
 The workflow for a Nutmeg based analysis that incorporates Python
 tools presents both a design challenge and a technical data translation
@@ -45,12 +46,21 @@ files. The former allows the use of Python's object model.
 Nutmeg-Py's core includes very simple data models which, abstractly,
 have immutable data and metadata, have methods to interrogate or transform
 the data in some fashion, and finally can read and write itself on
-disk without loss of precision. The Python analog to the MATLAB {}``struct''
-containing a time-frequency reconstruction, the TFBeam, is an example
-of such an object that is extensively employed in the code. Another
-object in this category is the TimeFreqSnPMResults, which represent
-the results from a statistical test and can be used to generate thresholds
-and maps.
+disk without loss of precision. The TFBeam is an example of such an
+object, and is the Python analog to the MATLAB {}``struct'' containing
+a time-frequency reconstruction. Modeling the data in this fashion
+has the advantage of allowing users to more easily develop custom
+scripts and routines to further interrogate their results.
+
+The toolbox side of Nutmeg-Py currently includes a non-parametric
+statistical testing package, based on <\textcompwordmark{}< Nichols
+and Holmes, 2001 >\textcompwordmark{}>, including cluster level analysis
+from <\textcompwordmark{}< Hayasaka and Nichols, 2004 >\textcompwordmark{}>.
+Both approaches have been adapted to the five-dimensional space of
+time-frequency MEG imaging. The results are encapsulated in an object
+oriented manner, as the TimeFreqSnPMResults, which stores the generated
+null distributions, and has methods available for creating thresholds
+and maps based on levels of significance.
 
 Another common design pattern employed in Nutmeg-Py is the modeling
 of a related set of processing task using a hierarchy of classes.
@@ -66,21 +76,31 @@ statistical processing machinery.
 
 The project to transition Nutmeg into a Python based toolkit has also
 generated a small but powerful visualization effort named Xipy (cross-modality
-Imaging in Python), which lies somewhat under the umbrella of the
+imaging in Python), which lies somewhat under the umbrella of the
 seminal Nipy (neuroimaging in Python) project. The main ambition of
 Xipy is to provide a flexible and extensible system for displaying
 brain imagery from various data sources (eg, anatomical MR, statistical
-maps, diffusion tracks) in the same 3D scene. The graphics technology
-behind most displays in Xipy is Mayavi <\textcompwordmark{}< ref?
->\textcompwordmark{}>, which is a Python visualization codebase which
-itself uses VTK <\textcompwordmark{}< ref? >\textcompwordmark{}> for
-all of its graphical heavy lifting.
+maps, diffusion tracks) in the same 3D scene (see figure X). The graphics
+technology behind most displays in Xipy is Mayavi <\textcompwordmark{}<
+ref? >\textcompwordmark{}>, which is a Python visualization code base
+which itself uses VTK <\textcompwordmark{}< ref? >\textcompwordmark{}>
+for all of its graphical heavy lifting.
 
 Xipy is in fact totally decoupled from Nutmeg-Py. Visualization of
 results from Nutmeg and Nutmeg-Py within Xipy is enabled by a richly
-featured plugin contained in the Nutmeg-Py package which implements
-stereotyped overlay and thresholding interfaces (see figure X). In
-principle, this this overlay plugin architecture could be exploited
-for displaying any dataset that can be mapped to a volumetric grid
-coregistered to an underlying image. 
+featured plugin contained in the Nutmeg-Py package. The plugin itself
+is a custom implementation of comparatively simple, stereotyped overlay
+and thresholding interfaces. In principle, this overlay plugin architecture
+could be exploited for displaying any dataset that can be mapped to
+a volumetric grid coregistered to an underlying image. 
+\begin{thebibliography}{2}
+\bibitem{key-1}Satoru Hayasaka and Thomas E. Nichols, Combining voxel
+intensity and cluster extent with permutation test framework, NeuroImage
+23 (2004) 54\textendash{}63
+
+\bibitem{key-2}Thomas E. Nichols and Andrew P. Holmes, Nonparametric
+Permutation Tests For Functional Neuroimaging: A Primer with Examples,
+Human Brain Mapping 15 1\textendash{}25 (2001)
+\end{thebibliography}
+
 \end{document}
