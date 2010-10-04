@@ -44,7 +44,7 @@ class array_pickler_mixin(object):
       * ndarray
       * array_pickler_mixin subclass
       * any type that can be reconstructed such that
-        a == type(a)(asarray(a) )
+        a == type(a)(asarray(a))
         (satisfied by many built-in types)
       * any type that has special staticmethods '_array_from_{attr}'
         and '_reconstruct_{attr}' defined on the class. The first
@@ -86,7 +86,7 @@ class array_pickler_mixin(object):
 
     def __init__(self, *args, **kwargs):
         if len(args) != len(self._argnames):
-            raise ValueError('Not enough construtor arguments')
+            raise ValueError('Wrong number of construtor arguments')
         self.__dict__.update( dict(zip(self._argnames, args)) )
         for nm in kwargs:
             if nm not in self._kwnames:
@@ -97,6 +97,7 @@ class array_pickler_mixin(object):
         self.__dict__.update(kwargs)
 
     def save(self, f):
+        "Roll this object as an ndarray and call np.save"
         np.save(f, np.asarray(self))
 
     def __array__(self):
@@ -135,6 +136,9 @@ class array_pickler_mixin(object):
 
     @staticmethod
     def load(f):
+        """Load up ndarray from file 'f', and attempt to reconstruct
+        the original object from the data within the array.
+        """
         try:
             arr = np.load(f)
         except AttributeError:

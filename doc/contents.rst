@@ -13,6 +13,7 @@
    :maxdepth: 2
 
    users/index.rst
+   devel/index.rst
    faq/index.rst
    api/index.rst
    publications
