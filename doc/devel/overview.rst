@@ -23,7 +23,7 @@ General Notes And Caveats
 
 This project is the fruit of roughly six months of work, and is
 therefore limited in scope and highly experimental. Read otherwise,
-you may say it is incomplete and also retains some rough edges. 
+you may say it is incomplete and rough around the edges.
 
 The programming methodology I have tried to follow includes:
 

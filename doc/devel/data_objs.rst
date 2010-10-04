@@ -3,6 +3,12 @@
 Data Objects
 ============
 
+This page contains high level descriptions of the various data
+classes found in Nutmeg-Py. 
+
+Special Data Classes
+====================
+
 Before describing the domain-specific data, one architectural decision
 concerning data deserves special attention. 
 
@@ -101,12 +107,219 @@ library. You can see that the class has specially named static
 functions that convert coordinate mapping information through the two
 methods :meth:`~nutmeg.utils.parameterize_cmap` and :meth:`~nutmeg.utils.cmap_from_array`.
 
-MEG Data
-++++++++
+Time-Frequency MEG Data
+=======================
 
 The first challenge of the Nutmeg-Py project was to translate the
 existing Matlab based data representation into a Python class.
 
+Coregistration Concerns
++++++++++++++++++++++++
+
+From what I can tell, all spatially normalized NUTMEG data has been
+reconstructed and resampled on a spatial grid with a common spatial
+offset that I have encoded thus::
+
+  >>> from nutmeg.core import beam
+  >>> beam.BEAM_SPACE_LEFT, beam.BEAM_SPACE_POST, beam.BEAM_SPACE_INF
+  (-90.0, -125.0, -70.0)
+
+Therefore, all the data-grid-index coordinate to world-space-position
+coordinate transformations are 4D affine matrices parameterized only
+by the voxel grid size. 
+
+:class:`~nutmeg.core.beam.Beam`
++++++++++++++++++++++++++++++++
+
+Despite the fact that Nutmeg-Py does not directly support 4D
+volumetric timeseries data, the principle of hierarchical abstraction
+demanded that the basic class for MEG data be based on the 4D "beam"
+structure from NUTMEG.
+
+The Beam type is an :class:`~nutmeg.utils.array_pickler_mixin` that
+holds voxel-wise reconstructed MEG data.
+
+Volumetric Data
+---------------
+
+The signal data from a Beam is held in a format appropriate to an
+ROI. The volumetric interpretation of the data is established from:
+
+* a table of positions, *voxels* (a :math:`I^1 \longrightarrow R^3` mapping of array indices to
+  coordinates in the MEG spatial coordinate system)
+* an array of signal data, *sig*, with each row holding a voxel's timeseries
+* an AffineTransformation object, *coordmap*, (from the NIPY_ library), which
+  describes the relationship between this data on a index-coordinate
+  grid and a spatial coordinate grid (through a :math:`I^3 \longrightarrow R^3` mapping)
+* an additional coregistration object, *coreg* 
+  (a :class:`~nutmeg.core.beam.MEG_coreg` object), which describes an
+  MEG-to-MRI coordinate transform
+
+:class:`~nutmeg.core.tfbeam.TFBeam`
++++++++++++++++++++++++++++++++++++
+
+The much more richly developed class of data is the TFBeam. In
+addition to being a Beam, as described above, in every way, a TFBeam
+also has a dimension of frequency bands in its signal. Therefore, the
+signal data is held as a 3 dimensional table of time-frequency grids,
+whose first dimension index again corresponds to the ROI coordinates lookup.
+
+A TFBeam's signal array may take three forms:
+
+* a triplet of (active-state, control-state, estimated-noise)
+* a pair of (active-state, control-state)
+* a pre-computed comparison between active and control
+
+In the case of the first two conditions, a TFBeam can be used in a
+variety of ways to expose different comparisons. This is accomplished
+through special properties on the object called "one time properties"
+[1]. These are effectively methods that appear to be attributes, and
+that cache their results for future performance. There are several
+comparisons that can be made, enumerated in
+``TFBeam.signal_transforms``.
+
+Take this mock construction of a TFBeam for example::
+
+  >>> from nutmeg.core import tfbeam
+  >>> import numpy as np
+  >>> voxsize = [5, 5, 5]
+  >>> voxels = utils.voxel_index_list((10,10,10))
+  >>> voxels
+  array([[0, 0, 0],
+	 [1, 0, 0],
+	 [2, 0, 0],
+	 ..., 
+	 [7, 9, 9],
+	 [8, 9, 9],
+	 [9, 9, 9]])
+  >>> samp_rate = 1000.0
+  >>> timepts = np.linspace(0,100/samp_rate,100)
+  >>> sig_activ = np.random.rand(10*10*10, 100, 2) # POWER SAMPLES, MUST BE > 0
+  >>> sig_baseln = np.random.rand(10*10*10, 100, 2)
+  >>> from nutmeg.core import beam
+  >>> coreg = beam.MEG_coreg('', '', np.eye(4), np.eye(3))
+  >>> coreg.meg2mri
+  AffineTransform(
+     function_domain=CoordinateSystem(coord_names=('x+LR', 'y+PA', 'z+SI'), name='', coord_dtype=float64),
+     function_range=CoordinateSystem(coord_names=('x+LR', 'y+PA', 'z+SI'), name='', coord_dtype=float64),
+     affine=array([[ 1.,  0.,  0.,  0.],
+		   [ 0.,  1.,  0.,  0.],
+		   [ 0.,  0.,  1.,  0.],
+		   [ 0.,  0.,  0.,  1.]])
+  )
+  >>> bands = np.array([ [0,25], [25,60] ])
+  >>> time_win = np.array( [ timepts, timepts+1/samp_rate] ).T
+  >>> tfb = tfbeam.TFBeam(voxsize, voxels, samp_rate, timepts, (sig_activ, sig_baseln), coreg, bands, time_win)
+
+Now, the various comparisons can be accessed by name::
+
+  >>> tfb.pseudo_f.shape
+  (1000, 100, 2)
+  >>> tfb.f_db.shape
+  (1000, 100, 2)
+
+Alternatively, the ``tfb.uses`` property controls what signal
+comparison is exposes through the special ``tfb.s`` property::
+
+  >>> tfb.uses
+  'F dB'
+  >>> (tfb.s == tfb.f_db).all()
+  True
+  >>> tfb.uses = 'f raw'
+  >>> tfb.uses
+  'F raw'
+  >>> (tfb.s == tfb.f_raw).all()
+  True
+
+Furthermore, in order to minimize the memory footprint of these
+objects, one can fix the comparison to a single method, either before
+or after the fact. The storage advantage here is that only one (nvox,
+ntime, nfreq) sized array is stored, rather than separate signal
+components, and one or more comparisons::
+
+  >>> tfb_fraw = tfbeam.TFBeam(voxsize, voxels, samp_rate, timepts, (sig_activ, sig_baseln), coreg, bands, time_win, fixed_comparison='f raw')
+  >>> tfb_fraw.uses
+  'F raw'
+  >>> (tfb_fraw.s == tfb.f_raw).all()
+  >>> tfb.fix_comparison('f raw')
+  >>> tfb.uses
+  'F raw'
+  >>> (tfb_fraw.s == tfb.s).all()
+  True
+
+Once the comparison has been fixed, you'll also notice that different
+comparisons are, of course, unavailable::
+
+  >>> tfb_fraw.uses = 'f db'
+  ------------------------------------------------------------
+  Traceback (most recent call last):
+  ...
+  RuntimeError: ratio type f db not available, see TFBeam.signal_transforms
+
+  >>> tfb_fraw.pseudo_f
+  ------------------------------------------------------------
+  Traceback (most recent call last):
+  ...
+  RuntimeError: This signal transform no longer available on this object: pseudo_f
+
+The remaining case for signal data is when there is only one component
+provided, and it is presumed to be a precomputed active-to-control
+comparison. To discourage confusion as much as possible, one is not
+allowed to construct a TFBeam from such data without providing a label
+for the comparison (using the ``fixed_comparison`` keyword argument)::
+
+  >>> tfb = tfbeam.TFBeam(voxsize, voxels, samp_rate, timepts, sig_activ, coreg, bands, time_win)
+  ------------------------------------------------------------
+  Traceback (most recent call last):
+  ...
+  ValueError: Ambiguous signal argument has only 1 component and no fixed active to noise
+  comparison has been specified. The signal should have at least 2 components
+  corresponding to (active, control, [noise]).
 
 
+  >>> tfb_active = tfbeam.TFBeam(voxsize, voxels, samp_rate, timepts, sig_activ, coreg, bands, time_win, fixed_comparison='Active Power')
+  >>> tfb_active.fixed_comparison
+  'Active Power'
+  >>> tfb_active.uses
+  'Active Power'
+
+No s_beamtf* file records the comparison type. If the data
+contained therein are not in separate components, then the TFBeam object
+constructed from the s_beamtf file is tagged as having an *"unknown"*
+comparison. It is strongly recommended to correctly label this
+comparison, if it is known!
+
+::
+
+  >>> nm_tfbeam = tfbeam.TFBeam.from_mat_file('workywork/nutmeg-py/data/s_beamtf12_avg.mat', fixed_comparison='f db')
+  >>> nm_tfbeam.uses
+  'F dB'
+
+or::
+
+  >>> nm_tfbeam = tfbeam.TFBeam.from_mat_file('workywork/nutmeg-py/data/s_beamtf12_avg.mat')
+  >>> nm_tfbeam.uses
+  'unknown'
+  >>> nm_tfbeam.fix_comparison('F dB')
+  >>> nm_tfbeam.uses
+  'F dB'
+
+
+Stats Results
+=============
+
+:class:`~nutmeg.stats.tfstats_results.TimeFreqSnPMResults`
+++++++++++++++++++++++++++++++++++++++++++
+
+blah blah
+
+:class:`~nutmeg.stats.tfstats_results.AdaptedTimeFreqSnPMResults`
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+blah blah
+
+:class:`~nutmeg.stats.tfstats_results.TimeFreqSnPMClusters`
++++++++++++++++++++++++++++++++++++++++++++
+
+blah blah
 

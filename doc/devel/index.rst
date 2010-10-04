@@ -16,6 +16,7 @@ Developer's Guide
 
    overview
    data_objs
+   stats_mod
 
 .. htmlonly::
 
