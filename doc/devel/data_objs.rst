@@ -308,18 +308,116 @@ or::
 Stats Results
 =============
 
+These data objects all encapsulate results of an SnPM (statistical
+non-parametric map) test. These tests follow the framework described
+in [Nichols_Holmes_2001]_. The various flavors of statistical results
+have the following points in common:  
+
+* storing results of extreme (maximal and minimal) scores across
+  permutation tests
+* storing "ranking" of the natural test result in the list of
+  permutation results--IE, the p-value
+
+The structure of the arrays representing the results is helpful to
+remember in order to understand the various operations.
+
+* *max_stat_dist, min_stat_dist* : (N_perm, N_time, N_freq)
+
+These represent the extreme test results, across all tested voxels, at
+each permutation (repeated per time bin, per frequency bin).
+
+* *vox_stat, vox_stat_ranking* : (N_vox, N_time, N_freq)
+
+The first is simply the natural stat score under the true data
+arrangement. The latter is the "normalized ranking" of the natural
+stat score, ranked from high to low. That is, if the natural stat
+score for vox_stat(r) is 75th lowest out of 100, then
+vox_stat_ranking(r) = 0.75. In other words, it is the point on the
+empirically derived CDF(T < t, r) for a given voxel, and the natural
+stat score at that voxel.
+
+As a depature from MATLAB Nutmeg, storing the extreme stats maps
+allows for re-computing thresholds and p-values under different
+rules currently, and yet-to-be, defined.
+
 :class:`~nutmeg.stats.tfstats_results.TimeFreqSnPMResults`
 ++++++++++++++++++++++++++++++++++++++++++
 
-blah blah
+One of the most important features of the *TimeFreqSnPMResults* types
+is the ability to combine statistics across different dimensions. This
+behavior is managed by the
+:meth:`~nutmeg.stats.tfstats_results.TimeFreqSnPMResults._fix_dist` method.
+
+Pooled Dims
+-----------
+
+Ultimately, we're looking for a threshold or map in three dimensions:
+(N_vox, N_time, N_freq). Normally, this threshold is determined by the
+null distributions found for each (time, freq) image. In *pooled dims*
+mode, we take distributions across the chosen dimensions--either
+(time,), (freq,), or (time, freq)--and aggregate them in order to form
+a more fine grained null distribution. 
+
+Corrected Dims
+--------------
+
+On the other hand, one can correct across time and/or freq dimensions
+in order to further correct for the multiple comparisons problem. In
+this mode, rather than aggregating null distributions, we instead
+replace the extreme statistic at each bin in the chosen dimensions
+with the extreme statistic across all bins in those dimensions.
+
 
 :class:`~nutmeg.stats.tfstats_results.AdaptedTimeFreqSnPMResults`
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
-blah blah
+MATLAB Nutmeg results stored in s_beamtf* files can be converted to
+TimeFreqSnPMResults. The original null distributions are estimated by
+the relationship between the natural stats and the corrected p
+scores. The estimation process is conservative, in the sense that the
+maps for a given p value calculated on the estimated data are a subset
+of the original maps for that p value. 
+
+Here is a worked example of estimating the original null
+distribution. We simulate an empirical null of maximal statistics
+generated from 100 permutations, in addition to a relatively small
+sample of natural statistic scores. By using the statistics and the
+associated p scores, we recover an estimated null distribution. Here's
+a plot of the inverse of the CDF( T <= t ) function of both distributions.
+
+.. plot:: devel/null_est1.py
+   :include-source:
+
+You can see this estimated distribution has the property of having a
+equal or greater threshold for each quantile than the original
+distribution, and that the threshold is determined by the minimum
+known statistic within a given quantile range. The exceptions are the
+quantile range outside of the known p values, which are set to an
+arbitrary value outside of the known statistic range.
+
+Typically there are many more samples of the statistic-to-p-value
+relationship than there were samples on the null distribution. This,
+fortunately, improves the estimate (within the sampled range).
+
+.. plot:: devel/null_est2.py
 
 :class:`~nutmeg.stats.tfstats_results.TimeFreqSnPMClusters`
 +++++++++++++++++++++++++++++++++++++++++++
 
-blah blah
+Cluster level analysis is also an option when running the SnPM
+tests. This analysis follows the framework of
+[Hayasaka_Nichols_2004]_. Along with all the results and capabilities
+of the *TimeFreqSnPMStats*, the *TimeFreqSnPMClusters* object can make
+thresholds based on cluster statistics, which are calculated from one
+of various "combining functions" specified in the paper.
+
+More information to follow.
+
+.. [Nichols_Holmes_2001] T. Nichols and A. Holmes. Nonparametric
+        Permutation Tests For Functional Neuroimaging: A Primer with
+        Examples. *Human Brain Mapping*, 25:1-25
+
+.. [Hayasaka_Nichols_2004] S. Hayasaka and T. Nichols. Combining voxel
+        intensity and cluster extent with permutation test framework. *NeuroImage*,
+        23:54-63
 

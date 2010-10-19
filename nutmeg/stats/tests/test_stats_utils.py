@@ -7,16 +7,19 @@ import nutmeg.stats.stats_utils as su
 def test_map_t():
     n = 2000
     
-    p = np.random.randint(1, high=n, size=100).astype('d')
-    # want to find some sampling is incomplete
+    p = np.sort(np.random.randint(1, high=n, size=100)).astype('d')
+    # want to find some sampling of p scores with large
+    # gaps between values
     while(np.diff(p).max() < 5):
-        p = np.random.randint(1, high=n, size=100).astype('d')
+        p = np.sort(np.random.randint(1, high=n, size=100)).astype('d')
     p /= float(n)
+    # unsort p
+    np.random.shuffle(p)
     # test the neg tail, so reverse the sign of the isf function
     t = -st.norm.isf(p)
     edges, pvals = su.map_t(t, p, 1.0/n)
     # choose an alpha that is not exactly on a bin edge
-    alpha = p[0] + .25/n
+    alpha = p[5] + .25/n
     k = int( alpha * n )
     thresh = edges[k]
     m = t <= thresh

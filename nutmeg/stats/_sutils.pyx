@@ -11,18 +11,21 @@ cimport cython
 def index(np.ndarray[np.npy_double, ndim=1] t, 
           np.ndarray[np.npy_double, ndim=1] dist):
     """Pidgeon-hole the values of t (along the 0th dimension) based on
-    the (arranged) quantiles in dist.
+    the (arranged) values in dist.
 
     Notes
     -----
-    It is assumed that the quantized values of dist are
-    ordered from low to high
+    It is assumed that the values of dist are ordered from low to high.
+    The value of t may meet or exceed the highest value of dist, in
+    which case the index value is set to the length of dist.
 
     Returns
     -------
     ti : ndarray
-      the indices mapping t[i] < dist[ti[i]],
-      ti's range is [ 0, len(dist) )   
+      for all t[i] < max(dist):
+      the indices mapping t[i] < dist[ti[i]]
+      ti's range is [ 0, len(dist) ).
+      For all t[i] >= max(dist), t[i] = len(dist)
     """
     cdef np.ndarray si = np.argsort(t)
     cdef Py_ssize_t i, nt, nd
@@ -58,7 +61,7 @@ def map_t(np.ndarray[np.npy_double, ndim=1] t,
     
     CDF[t] --> n*(dp) := order{ tm | (tm in M) and tm < t } / order{M}
 
-    where `dp` is the quantum step size of the CDF function.
+    where `dp` is the quantile step size of the CDF function.
     
     Given quantized p values in the set { n*(dp) } for some n in [0,1/dp)
     and corresponding test values, this method attempts to roughly invert
@@ -80,7 +83,7 @@ def map_t(np.ndarray[np.npy_double, ndim=1] t,
     cdef np.ndarray[np.npy_double, ndim=1] pbins = \
          np.linspace(0.0,dp*(nbins-1),nbins)
     cdef np.ndarray[np.npy_int32, ndim=1] ranks = \
-         (pvals * nbins).astype('i')
+         np.round(pvals * nbins).astype('i')
     cdef np.ndarray[np.npy_int32, ndim=1] si = np.argsort(ranks)
     cdef np.ndarray[np.npy_int32, ndim=1] s_ranks = np.take(ranks, si)
     cdef np.ndarray[np.npy_double, ndim=1] edges

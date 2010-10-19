@@ -34,7 +34,9 @@ extensions = ['sphinx.ext.autodoc',
               #'inheritance_diagram',
               #'sphinx.ext.inheritance_diagram',
               'numpydoc',
-              'autosummary']
+              'autosummary',
+              'matplotlib.sphinxext.only_directives',
+              'matplotlib.sphinxext.plot_directive']
 
 # Matplotlib sphinx extensions
 # ----------------------------
