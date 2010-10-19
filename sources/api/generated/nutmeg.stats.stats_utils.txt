@@ -9,11 +9,33 @@ Module: :mod:`stats.stats_utils`
 
 .. currentmodule:: nutmeg.stats.stats_utils
 
+Classes
+-------
+
+:class:`ScoredStatCluster`
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: ScoredStatCluster
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+:class:`StatCluster`
+~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: StatCluster
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
 Functions
 ---------
-
-
-.. autofunction:: nutmeg.stats.stats_utils.map_t_py
 
 
 .. autofunction:: nutmeg.stats.stats_utils.split_combo_tfstats_file

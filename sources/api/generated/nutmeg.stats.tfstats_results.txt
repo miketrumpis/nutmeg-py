@@ -23,6 +23,17 @@ Classes
 
   .. automethod:: __init__
 
+:class:`TimeFreqSnPMClusters`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. autoclass:: TimeFreqSnPMClusters
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
 :class:`TimeFreqSnPMResults`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -42,4 +53,16 @@ Functions
 
 
 .. autofunction:: nutmeg.stats.tfstats_results.load_tf_snpm_stats
+
+
+.. autofunction:: nutmeg.stats.tfstats_results.map_of_clusters_and_labels
+
+
+.. autofunction:: nutmeg.stats.tfstats_results.quick_plot_clusters
+
+
+.. autofunction:: nutmeg.stats.tfstats_results.quick_plot_critical_clusters
+
+
+.. autofunction:: nutmeg.stats.tfstats_results.quick_plot_top_n
 

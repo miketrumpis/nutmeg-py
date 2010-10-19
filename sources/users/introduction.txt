@@ -4,5 +4,5 @@
  Introduction
 ==============
 
-Placeholder for Nutmeg in Python introduction.
+Placeholder for User's Guide introduction.
 

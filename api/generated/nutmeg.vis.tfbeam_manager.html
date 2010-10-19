@@ -119,7 +119,7 @@
 <dt id="nutmeg.vis.tfbeam_manager.NmTimeFreqWindow">
 <em class="property">
 class </em><tt class="descclassname">nutmeg.vis.tfbeam_manager.</tt><tt class="descname">NmTimeFreqWindow</tt><big>(</big><em>loc_connections</em>, <em>image_connections</em>, <em>image_props_connections</em>, <em>bbox</em>, <em>functional_manager=None</em>, <em>external_loc=None</em>, <em>parent=None</em>, <em>main_ref=None</em>, <em>tfbeam=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.NmTimeFreqWindow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">xipy.overlay.OverlayWindowInterface</span></tt></p>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">xipy.overlay.interface.OverlayWindowInterface</span></tt></p>
 <dl class="method">
 <dt id="nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>loc_connections</em>, <em>image_connections</em>, <em>image_props_connections</em>, <em>bbox</em>, <em>functional_manager=None</em>, <em>external_loc=None</em>, <em>parent=None</em>, <em>main_ref=None</em>, <em>tfbeam=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.NmTimeFreqWindow.__init__" title="Permalink to this definition">¶</a></dt>
@@ -220,7 +220,7 @@ beam_vox_signal and image_props_changed</dd></dl>
 <dt id="nutmeg.vis.tfbeam_manager.TFBeamManager">
 <em class="property">
 class </em><tt class="descclassname">nutmeg.vis.tfbeam_manager.</tt><tt class="descname">TFBeamManager</tt><big>(</big><em>bbox</em>, <em>image_signal=None</em>, <em>loc_signal=None</em>, <em>props_signal=None</em>, <em>beam_vox_signal=None</em>, <em>**traits</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">xipy.overlay.OverlayInterface</span></tt></p>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">xipy.overlay.interface.OverlayInterface</span></tt></p>
 <p>Manages the GUI manipulation of a TFBeam object, including:
 * Extrema localization in partitioned or all dimensions
 * Active to control ratio transforms
@@ -268,7 +268,7 @@ voxel list index has changed. (call pattern is beam_vox_signal(vox))</p>
 
 <dl class="method">
 <dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.alpha">
-<tt class="descname">alpha</tt><big>(</big><em>scale=1.0</em>, <em>threshold=True</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.alpha" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">alpha</tt><big>(</big><em>scale=None</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.alpha" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -302,24 +302,6 @@ voxel list index has changed. (call pattern is beam_vox_signal(vox))</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.map_stats_like_overlay">
-<tt class="descname">map_stats_like_overlay</tt><big>(</big><em>map_mask=False</em>, <em>mask_type='negative'</em><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.map_stats_like_overlay" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a VolumeSlicer type for the current threshold scalar map.
-It is assumed that the map has the same voxel to world mapping
-as the current overlay.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>a VolumeSlicerInterface subclass (of the same type as the</strong> :</p>
-<p class="last"><strong>current overlay)</strong> :</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.ordered_idx_alldim">
 <tt class="descname">ordered_idx_alldim</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.ordered_idx_alldim" title="Permalink to this definition">¶</a></dt>
 <dd>Create a list of sorted map indices for all dimensions</dd></dl>
@@ -332,11 +314,6 @@ as the current overlay.</p>
 <dl class="method">
 <dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.ordered_idx_tf">
 <tt class="descname">ordered_idx_tf</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.ordered_idx_tf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="nutmeg.vis.tfbeam_manager.TFBeamManager.signal_image_props">
-<tt class="descname">signal_image_props</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.vis.tfbeam_manager.TFBeamManager.signal_image_props" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -419,7 +396,7 @@ as the current overlay.</p>
     </div>
     <div class="footer">
       &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
-      Last updated on Jun 10, 2010.
+      Last updated on Oct 19, 2010.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
     </div>
   </body>

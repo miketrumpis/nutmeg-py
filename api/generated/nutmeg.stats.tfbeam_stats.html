@@ -241,15 +241,41 @@ class </em><tt class="descclassname">nutmeg.stats.tfbeam_stats.</tt><tt class="d
 
 <dl class="method">
 <dt id="nutmeg.stats.tfbeam_stats.SnPMTester.test">
-<tt class="descname">test</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.stats.tfbeam_stats.SnPMTester.test" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">test</tt><big>(</big><em>analyze_clusters=False</em>, <em>cluster_critical_pval=0.0050000000000000001</em>, <em>cluster_connectivity=18</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfbeam_stats.SnPMTester.test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs a univariate statistical test at each time-frequency-voxel,
 filling in these measures:</p>
-<p>T &#8211; the statistic at each point
-maxT &#8211; the maximum statistic of all permuted measurements
-minT &#8211; the minimum statistic of all permuted measurements
-percentiles &#8211; the &#8220;ranking&#8221; of the statistics in T relative to all</p>
+<ul class="simple">
+<li>T &#8211; the statistic at each point</li>
+<li>maxT &#8211; the maximum statistic of all permuted measurements</li>
+<li>minT &#8211; the minimum statistic of all permuted measurements</li>
+<li>percentiles &#8211; the &#8220;ranking&#8221; of the statistics in T relative to all
+the permuted statistics</li>
+</ul>
+<p>If analyzing clusters, then also collect the maximum cluster size
+distribution across permutations. These are the cluster level
+analysis parameters:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>cluster_critical_pval</strong> : float</p>
 <blockquote>
-the permuted statistics</blockquote>
+<p>Use the tvalue at this non-empirical quantile as the
+cluster-defining threshold.</p>
+</blockquote>
+<p><strong>cluster_connectivity</strong> : int in {6, 18, 26}</p>
+<blockquote class="last">
+<p>The connectivity rule for voxels.</p>
+<ul class="simple">
+<li>6 &#8211; connected if faces touch</li>
+<li>18 &#8211; connected if faces or edges touch</li>
+<li>26 &#8211; connected if faces, edges, or corners touch</li>
+</ul>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -370,7 +396,7 @@ set up, for given specs</p>
     </div>
     <div class="footer">
       &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
-      Last updated on Jun 10, 2010.
+      Last updated on Oct 19, 2010.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
     </div>
   </body>

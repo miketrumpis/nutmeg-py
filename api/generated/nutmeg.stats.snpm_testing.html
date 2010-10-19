@@ -284,57 +284,186 @@ excluded by further contraining the bit strings to begin with 1</p>
 <dd>Returns the first 2**n rows of a binary counting pattern</dd></dl>
 
 <dl class="function">
+<dt id="nutmeg.stats.snpm_testing.label_clusters">
+<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">label_clusters</tt><big>(</big><em>stats_image</em>, <em>t_crit</em>, <em>connectivity=18</em>, <em>tail='pos'</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.label_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of cluster labels, an image of clustered labels,
+as well as a dictionary of cluster information, keyed by the labels.</p>
+<p>dictionary</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="nutmeg.stats.snpm_testing.rank">
 <tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">rank</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.rank" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="nutmeg.stats.snpm_testing.run_snpm_tests">
-<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">run_snpm_tests</tt><big>(</big><em>samps</em>, <em>dgen</em>, <em>co</em>, <em>n_perm</em>, <em>grid_shape</em>, <em>flat_map</em>, <em>vox_size</em>, <em>smoothed_variance=True</em>, <em>out=None</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.run_snpm_tests" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">run_snpm_tests</tt><big>(</big><em>samps</em>, <em>dgen</em>, <em>beta_comp</em>, <em>n_tests</em>, <em>symmetry=False</em>, <em>smooth_variance=True</em>, <em>analyze_clusters=False</em>, <em>grid_shape=None</em>, <em>vox_map=None</em>, <em>fwhm_pix=None</em>, <em>t_crit=None</em>, <em>connectivity=18</em>, <em>fill_value=0</em>, <em>out=None</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.run_snpm_tests" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>samps</strong> : ndarray</p>
 <blockquote>
-<p>(samples x voxels) array</p>
+<p>(samples x nvoxels) array</p>
 </blockquote>
 <p><strong>dgen</strong> : design matrix generator</p>
-<p><strong>co</strong> : ndarray</p>
+<p><strong>beta_comp</strong> : ndarray</p>
 <blockquote>
-<p>comparison weights for the solution to dgen(p)*b = samps</p>
+<p>comparison weight(s) for the solution b, in dgen(p)*b = samps</p>
 </blockquote>
-<p><strong>n_perm</strong> : int</p>
+<p><strong>n_tests</strong> : int</p>
 <blockquote>
-<p>number of permutations to actual test</p>
+<p>number of reweighted designs to test</p>
 </blockquote>
-<p><strong>grid_shape</strong> : tuple</p>
+<p><strong>symmetric</strong> : {True/False}, optional</p>
 <blockquote>
-<p>volume shape in which to embed voxel data, for variance smoothing</p>
+<p>If the test combinations provided by dgen represent one symmetrical
+half of the possible combinations, then setting this flag will fill
+in the results from the other half of the distribution.</p>
 </blockquote>
-<p><strong>flat_map</strong> : 1D list</p>
+<p><strong>smooth_variance</strong> : {True/False}, optional</p>
 <blockquote>
-<p>flat voxel index into the volume</p>
+<p>Optionally do spatial smoothing of the variance image.
+<strong>Note</strong>: if True, then <em>grid_shape</em>, <em>flat_map</em>, and <em>fwhm_pix</em>
+are all required parameters.</p>
 </blockquote>
-<p><strong>vox_size</strong> : len-3 list</p>
+<p><strong>analyze_clusters: {True/False}, optional</strong> :</p>
 <blockquote>
-<p>edge lengths for the volume</p>
+<p>Optionally gather additional cluster statistics at each permutation.
+<strong>Note</strong>: if True, then <em>grid_shape</em>, <em>flat_map</em>, and <em>t_crit</em>
+are all required, and <em>fill_value</em> and <em>connectivity</em> should be provided</p>
+</blockquote>
+<p><strong>grid_shape</strong> : tuple, optional</p>
+<blockquote>
+<p>volume shape in which to embed voxel data</p>
+</blockquote>
+<p><strong>vox_map</strong> : 1D list, optional</p>
+<blockquote>
+<p>The mapping from tested voxels to indices in the flattened image grid</p>
+</blockquote>
+<p><strong>fwhm_pix</strong> : len-3 list, optional</p>
+<blockquote>
+<p>edge lengths for the volume, in units of pixels</p>
 </blockquote>
 <p><strong>smoothed_variance</strong> : bool, optional</p>
 <blockquote>
 <p>do spatial variance smoothing</p>
 </blockquote>
+<p><strong>t_crit</strong> : float, optional</p>
+<blockquote>
+<p>The <cite>cluster-defining threshold</cite>. This is a statistic drawn from a
+theoretical (parametric) distribution.</p>
+</blockquote>
+<p><strong>connectivity</strong> : int in {6, 18, 26}</p>
+<blockquote>
+<p>The cluster connectivity rule</p>
+</blockquote>
 <p><strong>out</strong> : ndarray, optional</p>
 <blockquote>
-<p>a (n_permutation x voxels) array to store the test distribution</p>
+<p>a (n_permutation x voxels) array to store the
+empirical null distribution</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>test_distribution</strong> : ndarray</p>
-<blockquote class="last">
-<p>A (n_permutation x voxels) shaped array of the test distribution.
-The &#8220;true&#8221; value test is always in the 0th row.</p>
+<blockquote>
+<p>A (n_permutation x voxels) shaped array of the emperical null
+distribution. The <cite>true</cite> value test is always in the 0th row.</p>
 </blockquote>
+<p><strong>clusters</strong> : list</p>
+<blockquote class="last">
+<p>If analyze_clusters is on, then this function also returns a list
+of cluster information for each permutation.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.stats.snpm_testing.score_clusters">
+<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">score_clusters</tt><big>(</big><em>ext_t</em>, <em>permutation_clusters</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.score_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ext_t: ndarray</strong> :</p>
+<blockquote>
+<p>The extreme statistics null distribution for this permutation test</p>
+</blockquote>
+<p><strong>permutation_clusters: list</strong> :</p>
+<blockquote>
+<p>List of StatClusters at each permutation for this  test. The
+clusters of the true labeling must be in the first sub-list.</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>scores, null</strong> :</p>
+<blockquote class="last">
+<p>The array of scores is based on a <cite>combining function</cite> for each
+cluster in the true labeling. The  empirical null distribution
+is generated by the max score at each permutation.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.stats.snpm_testing.statistic_image_from_voxels">
+<tt class="descclassname">nutmeg.stats.snpm_testing.</tt><tt class="descname">statistic_image_from_voxels</tt><big>(</big><em>design</em>, <em>samps</em>, <em>beta_comp</em>, <em>img_grid</em>, <em>vox_map</em>, <em>fill_value=0</em>, <em>variance_img=False</em>, <em>fwhm_pix=None</em><big>)</big><a class="headerlink" href="#nutmeg.stats.snpm_testing.statistic_image_from_voxels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a statistics image from a (n x nvox) matrix of
+samples, using the design matrix and a vector of weights to combine
+the beta values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>design</strong> : ndarray, (n x p)</p>
+<blockquote>
+<p>The design matrix for the test</p>
+</blockquote>
+<p><strong>samps</strong> : ndarray, (n x nvox)</p>
+<blockquote>
+<p>The samples for each of n tests at each of nvox voxels</p>
+</blockquote>
+<p><strong>beta_comp</strong> : ndarray, (1 x p)</p>
+<blockquote>
+<p>Weights for combining the beta values</p>
+</blockquote>
+<p><strong>img_grid</strong> : array shape (tuple), or 3D ndarray</p>
+<blockquote>
+<p>Either the array in which to store the stats image, or the shape of
+such an array</p>
+</blockquote>
+<p><strong>vox_map</strong> : sequence</p>
+<blockquote>
+<p>The mapping from tested voxels to indices in the flattened image grid</p>
+</blockquote>
+<p><strong>fill_value</strong> : float</p>
+<blockquote>
+<p>What value to fill in for the non tested voxels in the image</p>
+</blockquote>
+<p><strong>variance_img</strong> : {True/False}, optional</p>
+<blockquote>
+<p>Whether or not to compute a smoothed variance image. If an array
+is provided for the image grid, that same array will be used as
+temporary storage for the variance smoothing, before having the
+statistics stored in it.
+<strong>Note</strong>: if computing a variance image, then fwhm_pix MUST be
+specified.</p>
+</blockquote>
+<p><strong>fwhm_pix</strong> : sequence, optional</p>
+<blockquote>
+<p>The FWHM of the smoothing kernel, in units of pixels, for each
+dimension of the variance image</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>The statistics image</strong> :</p>
 </td>
 </tr>
 </tbody>
@@ -373,7 +502,7 @@ The &#8220;true&#8221; value test is always in the 0th row.</p>
     </div>
     <div class="footer">
       &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
-      Last updated on Jun 10, 2010.
+      Last updated on Oct 19, 2010.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
     </div>
   </body>

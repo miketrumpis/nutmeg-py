@@ -1,0 +1,612 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Data Objects &mdash; Nutmeg-Py Documentation</title>
+    <link rel="stylesheet" href="../static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0-devel',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../static/jquery.js"></script>
+    <script type="text/javascript" src="../static/doctools.js"></script>
+    <link rel="top" title="Nutmeg-Py Documentation" href="../index.html" />
+    <link rel="up" title="Developer’s Guide" href="index.html" />
+    <link rel="next" title="Statistics Module" href="stats_mod.html" />
+    <link rel="prev" title="Overview" href="overview.html" />
+  <meta name="keywords" content="nutmeg, meg, magnetic source imaging,
+  python, neuroscience">
+
+  </head>
+  <body>
+  <div id="header">
+  <table width="100%">
+  <tr>
+   <td style="text-align:right;vertical-align:bottom">Nutmeg in Python
+    </td>
+  </tr>
+  </table>
+  </div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="stats_mod.html" title="Statistics Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             accesskey="P">previous</a> |</li>
+  <li><a href="../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="index.html" accesskey="U">Developer&#8217;s Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../contents.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">Data Objects</a><ul>
+<li><a class="reference external" href="#special-data-classes">Special Data Classes</a><ul>
+<li><a class="reference external" href="#array-pickler-mixin"><tt class="docutils literal"><span class="pre">array_pickler_mixin</span></tt></a><ul>
+<li><a class="reference external" href="#compatible-data">Compatible Data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference external" href="#time-frequency-meg-data">Time-Frequency MEG Data</a><ul>
+<li><a class="reference external" href="#coregistration-concerns">Coregistration Concerns</a></li>
+<li><a class="reference external" href="#beam"><tt class="docutils literal"><span class="pre">Beam</span></tt></a><ul>
+<li><a class="reference external" href="#volumetric-data">Volumetric Data</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#tfbeam"><tt class="docutils literal"><span class="pre">TFBeam</span></tt></a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#stats-results">Stats Results</a><ul>
+<li><a class="reference external" href="#timefreqsnpmresults"><tt class="docutils literal"><span class="pre">TimeFreqSnPMResults</span></tt></a><ul>
+<li><a class="reference external" href="#pooled-dims">Pooled Dims</a></li>
+<li><a class="reference external" href="#corrected-dims">Corrected Dims</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#adaptedtimefreqsnpmresults"><tt class="docutils literal"><span class="pre">AdaptedTimeFreqSnPMResults</span></tt></a></li>
+<li><a class="reference external" href="#timefreqsnpmclusters"><tt class="docutils literal"><span class="pre">TimeFreqSnPMClusters</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="overview.html"
+                                  title="previous chapter">Overview</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="stats_mod.html"
+                                  title="next chapter">Statistics Module</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../sources/devel/data_objs.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="data-objects">
+<h1>Data Objects<a class="headerlink" href="#data-objects" title="Permalink to this headline">¶</a></h1>
+<p>This page contains high level descriptions of the various data
+classes found in Nutmeg-Py.</p>
+<div class="section" id="special-data-classes">
+<h2>Special Data Classes<a class="headerlink" href="#special-data-classes" title="Permalink to this headline">¶</a></h2>
+<p>Before describing the domain-specific data, one architectural decision
+concerning data deserves special attention.</p>
+<div class="section" id="array-pickler-mixin">
+<h3><a title="nutmeg.utils.array_pickler_mixin" class="reference external" href="../api/generated/nutmeg.utils.html#nutmeg.utils.array_pickler_mixin"><tt class="xref docutils literal"><span class="pre">array_pickler_mixin</span></tt></a><a class="headerlink" href="#array-pickler-mixin" title="Permalink to this headline">¶</a></h3>
+<p>The <a title="nutmeg.utils.array_pickler_mixin" class="reference external" href="../api/generated/nutmeg.utils.html#nutmeg.utils.array_pickler_mixin"><tt class="xref docutils literal"><span class="pre">array_pickler_mixin</span></tt></a> class of objects
+essentially can save-itself-to/load-itself-from a file on disk, in the
+&#8220;npy&#8221; format defined for a Numpy array (an ndarray). These two
+functions are defined on an <em>array_pickler_mixin</em> object through its
+methods <a title="nutmeg.utils.array_pickler_mixin.save" class="reference external" href="../api/generated/nutmeg.utils.html#nutmeg.utils.array_pickler_mixin.save"><tt class="xref docutils literal"><span class="pre">save()</span></tt></a> and
+<a title="nutmeg.utils.array_pickler_mixin.load" class="reference external" href="../api/generated/nutmeg.utils.html#nutmeg.utils.array_pickler_mixin.load"><tt class="xref docutils literal"><span class="pre">load()</span></tt></a>. By inheriting
+from this class, many objects throughout Nutmeg-Py gain this
+mechanism, at the cost of having a mildly templated definition.</p>
+<p>The saving/loading is accomplished by rolling all of an object&#8217;s data
+into a special, flexible ndarray called a structured array, where each
+slot of the array holds a pointer to some Python data type. The
+pattern that must be followed in order for a class of objects to also
+be an <em>array_pickler_mixin</em> is described as follows (from the class
+docstring):</p>
+<ol class="arabic simple">
+<li>define two class-level fields:</li>
+</ol>
+<blockquote>
+<ul class="simple">
+<li>_argnames &#8211; the list of names of positional arguments in the
+constructor</li>
+<li>_kwnames  &#8211; the list of names of keyword arguments in the
+constructor</li>
+</ul>
+</blockquote>
+<ol class="arabic simple" start="2">
+<li>The positional arguments must be listed in the correct order.</li>
+<li>The names in both lists must be attributes of the class objects.</li>
+<li>Each name in the kwnames list must be identical to both the
+corresponding class object attribute AND the keyword argument name in
+the class constructor.</li>
+<li>All attributes named in the lists must be one of:</li>
+</ol>
+<blockquote>
+<ul class="simple">
+<li>ndarray</li>
+<li>array_pickler_mixin subclass</li>
+<li>any type that can be reconstructed such that
+a == type(a)(asarray(a)) (this is satisfied by many built-in types)</li>
+<li>any type that has special staticmethods <strong>&#8216;_array_from_{attr}&#8217;</strong> and
+<strong>&#8216;_reconstruct_{attr}&#8217;</strong> defined on the class. The first method
+creates an ndarray from an object of this type, and the second one
+reconstructs an object in a round-trip sense.</li>
+</ul>
+</blockquote>
+<p>The main idea is that all of the information needed to construct each
+object is saved within the object, and enables the object to be
+recreated later (from data off the disk). Thus, the
+<em>array_pickler_mixin</em> is intended to be used to represent objects that
+are essentially a list of data and metadata.</p>
+<p>The construction signature, then, must be along the lines of:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">info1</span><span class="p">,</span> <span class="n">option1</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">option2</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>Additionally, each of these positional and keyword arguments must be
+then defined as attributes on the object (although this will happen
+automatically, as described in a moment).</p>
+<p>To inform the object of its own structure, the class must be defined with
+a list of its data and metadata attributes&#8211;the <strong>_argnames</strong> and
+<strong>_kwnames</strong> class-level lists. Each list has a distinct
+constraint. It is important that <strong>_argnames</strong> lists the
+attribute-names of the positional arguments <em>in order</em>, and that
+<strong>_kwnames</strong> lists exactly the same names as the corresponding
+attributes. Good examples of these principles can be found in the
+class docstring, as well as in the class tests.</p>
+<p>The most basic <em>array_pickler_mixin</em> simply lists arguments and
+keyword arguments. In addition to saving and loading, the naming of
+attributes is done automatically, due to a &#8220;bucket&#8221; design. For
+example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nutmeg</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">A</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">array_pickler_mixin</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">_argnames</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;la&#39;</span><span class="p">,</span> <span class="s">&#39;di&#39;</span><span class="p">,</span> <span class="s">&#39;da&#39;</span><span class="p">]</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a1</span> <span class="o">=</span> <span class="n">A</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="s">&#39;two&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mf">3</span><span class="p">,</span><span class="mf">4</span><span class="p">,</span><span class="mf">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a1</span><span class="o">.</span><span class="n">la</span><span class="p">,</span> <span class="n">a1</span><span class="o">.</span><span class="n">di</span><span class="p">,</span> <span class="n">a1</span><span class="o">.</span><span class="n">da</span>
+<span class="go">(1, &#39;two&#39;, (3, 4, 5))</span>
+</pre></div>
+</div>
+<p>More rich objects, of course, will model the questions being asked
+about the data, and will only fall back on this mixin class in order
+to save/load the data.</p>
+<div class="section" id="compatible-data">
+<h4>Compatible Data<a class="headerlink" href="#compatible-data" title="Permalink to this headline">¶</a></h4>
+<p>Most data types can be saved and loaded without a fuss, as they fall
+into the first three categories under item &#8220;5&#8221; in the list above. For
+more complicated objects, an <em>array_pickler_mixin</em> may define a pair
+of static methods that translate the attribute to/from an ndarray. For
+example, the <a title="nutmeg.core.beam.Beam" class="reference external" href="../api/generated/nutmeg.core.beam.html#nutmeg.core.beam.Beam"><tt class="xref docutils literal"><span class="pre">Beam</span></tt></a> class must translate its
+<em>coordmap</em> attribute, which is an object defined from the NIPY
+library. You can see that the class has specially named static
+functions that convert coordinate mapping information through the two
+methods <a title="nutmeg.utils.parameterize_cmap" class="reference external" href="../api/generated/nutmeg.utils.html#nutmeg.utils.parameterize_cmap"><tt class="xref docutils literal"><span class="pre">parameterize_cmap()</span></tt></a> and <a title="nutmeg.utils.cmap_from_array" class="reference external" href="../api/generated/nutmeg.utils.html#nutmeg.utils.cmap_from_array"><tt class="xref docutils literal"><span class="pre">cmap_from_array()</span></tt></a>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="time-frequency-meg-data">
+<h2>Time-Frequency MEG Data<a class="headerlink" href="#time-frequency-meg-data" title="Permalink to this headline">¶</a></h2>
+<p>The first challenge of the Nutmeg-Py project was to translate the
+existing Matlab based data representation into a Python class.</p>
+<div class="section" id="coregistration-concerns">
+<h3>Coregistration Concerns<a class="headerlink" href="#coregistration-concerns" title="Permalink to this headline">¶</a></h3>
+<p>From what I can tell, all spatially normalized NUTMEG data has been
+reconstructed and resampled on a spatial grid with a common spatial
+offset that I have encoded thus:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nutmeg.core</span> <span class="kn">import</span> <span class="n">beam</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">beam</span><span class="o">.</span><span class="n">BEAM_SPACE_LEFT</span><span class="p">,</span> <span class="n">beam</span><span class="o">.</span><span class="n">BEAM_SPACE_POST</span><span class="p">,</span> <span class="n">beam</span><span class="o">.</span><span class="n">BEAM_SPACE_INF</span>
+<span class="go">(-90.0, -125.0, -70.0)</span>
+</pre></div>
+</div>
+<p>Therefore, all the data-grid-index coordinate to world-space-position
+coordinate transformations are 4D affine matrices parameterized only
+by the voxel grid size.</p>
+</div>
+<div class="section" id="beam">
+<h3><a title="nutmeg.core.beam.Beam" class="reference external" href="../api/generated/nutmeg.core.beam.html#nutmeg.core.beam.Beam"><tt class="xref docutils literal"><span class="pre">Beam</span></tt></a><a class="headerlink" href="#beam" title="Permalink to this headline">¶</a></h3>
+<p>Despite the fact that Nutmeg-Py does not directly support 4D
+volumetric timeseries data, the principle of hierarchical abstraction
+demanded that the basic class for MEG data be based on the 4D &#8220;beam&#8221;
+structure from NUTMEG.</p>
+<p>The Beam type is an <a title="nutmeg.utils.array_pickler_mixin" class="reference external" href="../api/generated/nutmeg.utils.html#nutmeg.utils.array_pickler_mixin"><tt class="xref docutils literal"><span class="pre">array_pickler_mixin</span></tt></a> that
+holds voxel-wise reconstructed MEG data.</p>
+<div class="section" id="volumetric-data">
+<h4>Volumetric Data<a class="headerlink" href="#volumetric-data" title="Permalink to this headline">¶</a></h4>
+<p>The signal data from a Beam is held in a format appropriate to an
+ROI. The volumetric interpretation of the data is established from:</p>
+<ul class="simple">
+<li>a table of positions, <em>voxels</em> (a <img src="../images/mathmpl/math-3f19db0b62.png" style="position: relative; bottom: -3px"/> mapping of array indices to
+coordinates in the MEG spatial coordinate system)</li>
+<li>an array of signal data, <em>sig</em>, with each row holding a voxel&#8217;s timeseries</li>
+<li>an AffineTransformation object, <em>coordmap</em>, (from the <a href="#id3"><span class="problematic" id="id4">NIPY_</span></a> library), which
+describes the relationship between this data on a index-coordinate
+grid and a spatial coordinate grid (through a <img src="../images/mathmpl/math-cfd50f18ab.png" style="position: relative; bottom: -3px"/> mapping)</li>
+<li>an additional coregistration object, <em>coreg</em>
+(a <a title="nutmeg.core.beam.MEG_coreg" class="reference external" href="../api/generated/nutmeg.core.beam.html#nutmeg.core.beam.MEG_coreg"><tt class="xref docutils literal"><span class="pre">MEG_coreg</span></tt></a> object), which describes an
+MEG-to-MRI coordinate transform</li>
+</ul>
+</div>
+</div>
+<div class="section" id="tfbeam">
+<h3><a title="nutmeg.core.tfbeam.TFBeam" class="reference external" href="../api/generated/nutmeg.core.tfbeam.html#nutmeg.core.tfbeam.TFBeam"><tt class="xref docutils literal"><span class="pre">TFBeam</span></tt></a><a class="headerlink" href="#tfbeam" title="Permalink to this headline">¶</a></h3>
+<p>The much more richly developed class of data is the TFBeam. In
+addition to being a Beam, as described above, in every way, a TFBeam
+also has a dimension of frequency bands in its signal. Therefore, the
+signal data is held as a 3 dimensional table of time-frequency grids,
+whose first dimension index again corresponds to the ROI coordinates lookup.</p>
+<p>A TFBeam&#8217;s signal array may take three forms:</p>
+<ul class="simple">
+<li>a triplet of (active-state, control-state, estimated-noise)</li>
+<li>a pair of (active-state, control-state)</li>
+<li>a pre-computed comparison between active and control</li>
+</ul>
+<p>In the case of the first two conditions, a TFBeam can be used in a
+variety of ways to expose different comparisons. This is accomplished
+through special properties on the object called &#8220;one time properties&#8221;
+[1]. These are effectively methods that appear to be attributes, and
+that cache their results for future performance. There are several
+comparisons that can be made, enumerated in
+<tt class="docutils literal"><span class="pre">TFBeam.signal_transforms</span></tt>.</p>
+<p>Take this mock construction of a TFBeam for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nutmeg.core</span> <span class="kn">import</span> <span class="n">tfbeam</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">voxsize</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5</span><span class="p">,</span> <span class="mf">5</span><span class="p">,</span> <span class="mf">5</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">voxels</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">voxel_index_list</span><span class="p">((</span><span class="mf">10</span><span class="p">,</span><span class="mf">10</span><span class="p">,</span><span class="mf">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">voxels</span>
+<span class="go">array([[0, 0, 0],</span>
+<span class="go">       [1, 0, 0],</span>
+<span class="go">       [2, 0, 0],</span>
+<span class="go">       ...,</span>
+<span class="go">       [7, 9, 9],</span>
+<span class="go">       [8, 9, 9],</span>
+<span class="go">       [9, 9, 9]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">samp_rate</span> <span class="o">=</span> <span class="mf">1000.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timepts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="mf">100</span><span class="o">/</span><span class="n">samp_rate</span><span class="p">,</span><span class="mf">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig_activ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mf">10</span><span class="o">*</span><span class="mf">10</span><span class="o">*</span><span class="mf">10</span><span class="p">,</span> <span class="mf">100</span><span class="p">,</span> <span class="mf">2</span><span class="p">)</span> <span class="c"># POWER SAMPLES, MUST BE &gt; 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig_baseln</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mf">10</span><span class="o">*</span><span class="mf">10</span><span class="o">*</span><span class="mf">10</span><span class="p">,</span> <span class="mf">100</span><span class="p">,</span> <span class="mf">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nutmeg.core</span> <span class="kn">import</span> <span class="n">beam</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span> <span class="o">=</span> <span class="n">beam</span><span class="o">.</span><span class="n">MEG_coreg</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mf">4</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mf">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coreg</span><span class="o">.</span><span class="n">meg2mri</span>
+<span class="go">AffineTransform(</span>
+<span class="go">   function_domain=CoordinateSystem(coord_names=(&#39;x+LR&#39;, &#39;y+PA&#39;, &#39;z+SI&#39;), name=&#39;&#39;, coord_dtype=float64),</span>
+<span class="go">   function_range=CoordinateSystem(coord_names=(&#39;x+LR&#39;, &#39;y+PA&#39;, &#39;z+SI&#39;), name=&#39;&#39;, coord_dtype=float64),</span>
+<span class="go">   affine=array([[ 1.,  0.,  0.,  0.],</span>
+<span class="go">                 [ 0.,  1.,  0.,  0.],</span>
+<span class="go">                 [ 0.,  0.,  1.,  0.],</span>
+<span class="go">                 [ 0.,  0.,  0.,  1.]])</span>
+<span class="go">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="p">[</span><span class="mf">0</span><span class="p">,</span><span class="mf">25</span><span class="p">],</span> <span class="p">[</span><span class="mf">25</span><span class="p">,</span><span class="mf">60</span><span class="p">]</span> <span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">time_win</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">timepts</span><span class="p">,</span> <span class="n">timepts</span><span class="o">+</span><span class="mf">1</span><span class="o">/</span><span class="n">samp_rate</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfb</span> <span class="o">=</span> <span class="n">tfbeam</span><span class="o">.</span><span class="n">TFBeam</span><span class="p">(</span><span class="n">voxsize</span><span class="p">,</span> <span class="n">voxels</span><span class="p">,</span> <span class="n">samp_rate</span><span class="p">,</span> <span class="n">timepts</span><span class="p">,</span> <span class="p">(</span><span class="n">sig_activ</span><span class="p">,</span> <span class="n">sig_baseln</span><span class="p">),</span> <span class="n">coreg</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">time_win</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, the various comparisons can be accessed by name:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tfb</span><span class="o">.</span><span class="n">pseudo_f</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1000, 100, 2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfb</span><span class="o">.</span><span class="n">f_db</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1000, 100, 2)</span>
+</pre></div>
+</div>
+<p>Alternatively, the <tt class="docutils literal"><span class="pre">tfb.uses</span></tt> property controls what signal
+comparison is exposes through the special <tt class="docutils literal"><span class="pre">tfb.s</span></tt> property:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tfb</span><span class="o">.</span><span class="n">uses</span>
+<span class="go">&#39;F dB&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">tfb</span><span class="o">.</span><span class="n">s</span> <span class="o">==</span> <span class="n">tfb</span><span class="o">.</span><span class="n">f_db</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfb</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="s">&#39;f raw&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfb</span><span class="o">.</span><span class="n">uses</span>
+<span class="go">&#39;F raw&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">tfb</span><span class="o">.</span><span class="n">s</span> <span class="o">==</span> <span class="n">tfb</span><span class="o">.</span><span class="n">f_raw</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Furthermore, in order to minimize the memory footprint of these
+objects, one can fix the comparison to a single method, either before
+or after the fact. The storage advantage here is that only one (nvox,
+ntime, nfreq) sized array is stored, rather than separate signal
+components, and one or more comparisons:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tfb_fraw</span> <span class="o">=</span> <span class="n">tfbeam</span><span class="o">.</span><span class="n">TFBeam</span><span class="p">(</span><span class="n">voxsize</span><span class="p">,</span> <span class="n">voxels</span><span class="p">,</span> <span class="n">samp_rate</span><span class="p">,</span> <span class="n">timepts</span><span class="p">,</span> <span class="p">(</span><span class="n">sig_activ</span><span class="p">,</span> <span class="n">sig_baseln</span><span class="p">),</span> <span class="n">coreg</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">time_win</span><span class="p">,</span> <span class="n">fixed_comparison</span><span class="o">=</span><span class="s">&#39;f raw&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfb_fraw</span><span class="o">.</span><span class="n">uses</span>
+<span class="go">&#39;F raw&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">tfb_fraw</span><span class="o">.</span><span class="n">s</span> <span class="o">==</span> <span class="n">tfb</span><span class="o">.</span><span class="n">f_raw</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfb</span><span class="o">.</span><span class="n">fix_comparison</span><span class="p">(</span><span class="s">&#39;f raw&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfb</span><span class="o">.</span><span class="n">uses</span>
+<span class="go">&#39;F raw&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">tfb_fraw</span><span class="o">.</span><span class="n">s</span> <span class="o">==</span> <span class="n">tfb</span><span class="o">.</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Once the comparison has been fixed, you&#8217;ll also notice that different
+comparisons are, of course, unavailable:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tfb_fraw</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="s">&#39;f db&#39;</span>
+<span class="go">------------------------------------------------------------</span>
+<span class="gp">...</span>
+<span class="go">RuntimeError: ratio type f db not available, see TFBeam.signal_transforms</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfb_fraw</span><span class="o">.</span><span class="n">pseudo_f</span>
+<span class="go">------------------------------------------------------------</span>
+<span class="gp">...</span>
+<span class="go">RuntimeError: This signal transform no longer available on this object: pseudo_f</span>
+</pre></div>
+</div>
+<p>The remaining case for signal data is when there is only one component
+provided, and it is presumed to be a precomputed active-to-control
+comparison. To discourage confusion as much as possible, one is not
+allowed to construct a TFBeam from such data without providing a label
+for the comparison (using the <tt class="docutils literal"><span class="pre">fixed_comparison</span></tt> keyword argument):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tfb</span> <span class="o">=</span> <span class="n">tfbeam</span><span class="o">.</span><span class="n">TFBeam</span><span class="p">(</span><span class="n">voxsize</span><span class="p">,</span> <span class="n">voxels</span><span class="p">,</span> <span class="n">samp_rate</span><span class="p">,</span> <span class="n">timepts</span><span class="p">,</span> <span class="n">sig_activ</span><span class="p">,</span> <span class="n">coreg</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">time_win</span><span class="p">)</span>
+<span class="go">------------------------------------------------------------</span>
+<span class="gp">...</span>
+<span class="go">ValueError: Ambiguous signal argument has only 1 component and no fixed active to noise</span>
+<span class="go">comparison has been specified. The signal should have at least 2 components</span>
+<span class="go">corresponding to (active, control, [noise]).</span>
+
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfb_active</span> <span class="o">=</span> <span class="n">tfbeam</span><span class="o">.</span><span class="n">TFBeam</span><span class="p">(</span><span class="n">voxsize</span><span class="p">,</span> <span class="n">voxels</span><span class="p">,</span> <span class="n">samp_rate</span><span class="p">,</span> <span class="n">timepts</span><span class="p">,</span> <span class="n">sig_activ</span><span class="p">,</span> <span class="n">coreg</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">time_win</span><span class="p">,</span> <span class="n">fixed_comparison</span><span class="o">=</span><span class="s">&#39;Active Power&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfb_active</span><span class="o">.</span><span class="n">fixed_comparison</span>
+<span class="go">&#39;Active Power&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tfb_active</span><span class="o">.</span><span class="n">uses</span>
+<span class="go">&#39;Active Power&#39;</span>
+</pre></div>
+</div>
+<p>No s_beamtf* file records the comparison type. If the data
+contained therein are not in separate components, then the TFBeam object
+constructed from the s_beamtf file is tagged as having an <em>&#8220;unknown&#8221;</em>
+comparison. It is strongly recommended to correctly label this
+comparison, if it is known!</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">nm_tfbeam</span> <span class="o">=</span> <span class="n">tfbeam</span><span class="o">.</span><span class="n">TFBeam</span><span class="o">.</span><span class="n">from_mat_file</span><span class="p">(</span><span class="s">&#39;workywork/nutmeg-py/data/s_beamtf12_avg.mat&#39;</span><span class="p">,</span> <span class="n">fixed_comparison</span><span class="o">=</span><span class="s">&#39;f db&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nm_tfbeam</span><span class="o">.</span><span class="n">uses</span>
+<span class="go">&#39;F dB&#39;</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">nm_tfbeam</span> <span class="o">=</span> <span class="n">tfbeam</span><span class="o">.</span><span class="n">TFBeam</span><span class="o">.</span><span class="n">from_mat_file</span><span class="p">(</span><span class="s">&#39;workywork/nutmeg-py/data/s_beamtf12_avg.mat&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nm_tfbeam</span><span class="o">.</span><span class="n">uses</span>
+<span class="go">&#39;unknown&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nm_tfbeam</span><span class="o">.</span><span class="n">fix_comparison</span><span class="p">(</span><span class="s">&#39;F dB&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nm_tfbeam</span><span class="o">.</span><span class="n">uses</span>
+<span class="go">&#39;F dB&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="stats-results">
+<h2>Stats Results<a class="headerlink" href="#stats-results" title="Permalink to this headline">¶</a></h2>
+<p>These data objects all encapsulate results of an SnPM (statistical
+non-parametric map) test. These tests follow the framework described
+in <a class="reference internal" href="#nichols-holmes-2001">[Nichols_Holmes_2001]</a>. The various flavors of statistical results
+have the following points in common:</p>
+<ul class="simple">
+<li>storing results of extreme (maximal and minimal) scores across
+permutation tests</li>
+<li>storing &#8220;ranking&#8221; of the natural test result in the list of
+permutation results&#8211;IE, the p-value</li>
+</ul>
+<p>The structure of the arrays representing the results is helpful to
+remember in order to understand the various operations.</p>
+<ul class="simple">
+<li><em>max_stat_dist, min_stat_dist</em> : (N_perm, N_time, N_freq)</li>
+</ul>
+<p>These represent the extreme test results, across all tested voxels, at
+each permutation (repeated per time bin, per frequency bin).</p>
+<ul class="simple">
+<li><em>vox_stat, vox_stat_ranking</em> : (N_vox, N_time, N_freq)</li>
+</ul>
+<p>The first is simply the natural stat score under the true data
+arrangement. The latter is the &#8220;normalized ranking&#8221; of the natural
+stat score, ranked from high to low. That is, if the natural stat
+score for vox_stat(r) is 75th lowest out of 100, then
+vox_stat_ranking(r) = 0.75. In other words, it is the point on the
+empirically derived CDF(T &lt; t, r) for a given voxel, and the natural
+stat score at that voxel.</p>
+<p>As a depature from MATLAB Nutmeg, storing the extreme stats maps
+allows for re-computing thresholds and p-values under different
+rules currently, and yet-to-be, defined.</p>
+<div class="section" id="timefreqsnpmresults">
+<h3><a title="nutmeg.stats.tfstats_results.TimeFreqSnPMResults" class="reference external" href="../api/generated/nutmeg.stats.tfstats_results.html#nutmeg.stats.tfstats_results.TimeFreqSnPMResults"><tt class="xref docutils literal"><span class="pre">TimeFreqSnPMResults</span></tt></a><a class="headerlink" href="#timefreqsnpmresults" title="Permalink to this headline">¶</a></h3>
+<p>One of the most important features of the <em>TimeFreqSnPMResults</em> types
+is the ability to combine statistics across different dimensions. This
+behavior is managed by the
+<tt class="xref docutils literal"><span class="pre">_fix_dist()</span></tt> method.</p>
+<div class="section" id="pooled-dims">
+<h4>Pooled Dims<a class="headerlink" href="#pooled-dims" title="Permalink to this headline">¶</a></h4>
+<p>Ultimately, we&#8217;re looking for a threshold or map in three dimensions:
+(N_vox, N_time, N_freq). Normally, this threshold is determined by the
+null distributions found for each (time, freq) image. In <em>pooled dims</em>
+mode, we take distributions across the chosen dimensions&#8211;either
+(time,), (freq,), or (time, freq)&#8211;and aggregate them in order to form
+a more fine grained null distribution.</p>
+</div>
+<div class="section" id="corrected-dims">
+<h4>Corrected Dims<a class="headerlink" href="#corrected-dims" title="Permalink to this headline">¶</a></h4>
+<p>On the other hand, one can correct across time and/or freq dimensions
+in order to further correct for the multiple comparisons problem. In
+this mode, rather than aggregating null distributions, we instead
+replace the extreme statistic at each bin in the chosen dimensions
+with the extreme statistic across all bins in those dimensions.</p>
+</div>
+</div>
+<div class="section" id="adaptedtimefreqsnpmresults">
+<h3><a title="nutmeg.stats.tfstats_results.AdaptedTimeFreqSnPMResults" class="reference external" href="../api/generated/nutmeg.stats.tfstats_results.html#nutmeg.stats.tfstats_results.AdaptedTimeFreqSnPMResults"><tt class="xref docutils literal"><span class="pre">AdaptedTimeFreqSnPMResults</span></tt></a><a class="headerlink" href="#adaptedtimefreqsnpmresults" title="Permalink to this headline">¶</a></h3>
+<p>MATLAB Nutmeg results stored in s_beamtf* files can be converted to
+TimeFreqSnPMResults. The original null distributions are estimated by
+the relationship between the natural stats and the corrected p
+scores. The estimation process is conservative, in the sense that the
+maps for a given p value calculated on the estimated data are a subset
+of the original maps for that p value.</p>
+<p>Here is a worked example of estimating the original null
+distribution. We simulate an empirical null of maximal statistics
+generated from 100 permutations, in addition to a relatively small
+sample of natural statistic scores. By using the statistics and the
+associated p scores, we recover an estimated null distribution. Here&#8217;s
+a plot of the inverse of the CDF( T &lt;= t ) function of both distributions.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">nutmeg.stats.stats_utils</span> <span class="kn">as</span> <span class="nn">su</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">pp</span>
+
+<span class="c"># simulate some maximal null distribution from 100 permutations</span>
+<span class="n">null</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mf">100</span><span class="p">,),</span> <span class="n">loc</span><span class="o">=</span><span class="mf">4</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.2</span><span class="p">))</span>
+<span class="c"># create test scores from our experiment</span>
+<span class="c"># (but for ease of demonstration, clip the values to be within the null dist)</span>
+<span class="n">t_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mf">20</span><span class="p">,),</span> <span class="n">loc</span><span class="o">=</span><span class="mf">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">),</span>
+    <span class="n">null</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">null</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*.</span><span class="mf">99</span>
+    <span class="p">)</span>
+
+<span class="c"># Score the t_scores based on the empirical null distribution</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">su</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">t_scores</span><span class="p">,</span> <span class="n">null</span><span class="p">)</span>
+<span class="n">p_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">null</span><span class="p">)</span><span class="o">+</span><span class="mf">1</span><span class="p">,</span><span class="n">endpoint</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">p_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">p_table</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+<span class="c"># Now, try to recover the null distribution, based on these few</span>
+<span class="c"># T-score and P-score pairs -- use the negative edges</span>
+<span class="n">edges</span><span class="p">,</span> <span class="n">pbins</span> <span class="o">=</span> <span class="n">su</span><span class="o">.</span><span class="n">map_t</span><span class="p">(</span><span class="o">-</span><span class="n">t_scores</span><span class="p">,</span> <span class="n">p_scores</span><span class="p">,</span> <span class="mf">1</span><span class="o">/</span><span class="mf">100.</span><span class="p">)</span>
+
+<span class="n">edges</span> <span class="o">=</span> <span class="o">-</span><span class="n">edges</span><span class="p">[::</span><span class="o">-</span><span class="mf">1</span><span class="p">]</span>
+
+<span class="n">p_recovered</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span> <span class="p">(</span> <span class="n">edges</span> <span class="o">&gt;</span> <span class="n">t_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t_scores</span><span class="p">))]</span>
+    <span class="p">)</span>
+<span class="k">assert</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">p_scores</span><span class="o">*</span><span class="mf">100</span><span class="p">)</span> <span class="o">==</span> <span class="n">p_recovered</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="n">probability</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">100</span><span class="p">)</span><span class="o">/</span><span class="mf">100.</span>
+
+<span class="n">si</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">p_scores</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">p_scores</span><span class="p">[</span><span class="n">si</span><span class="p">]</span><span class="o">*</span><span class="mf">100</span><span class="p">),</span> <span class="n">t_scores</span><span class="p">[</span><span class="n">si</span><span class="p">]</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">probability</span><span class="p">,</span> <span class="n">null</span><span class="p">)</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">probability</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+
+<span class="n">x_locs</span> <span class="o">=</span> <span class="mf">1</span> <span class="o">-</span> <span class="mf">1</span><span class="o">/</span><span class="mf">100.</span> <span class="o">-</span> <span class="n">p_scores</span>
+<span class="n">y_mins</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_locs</span><span class="p">)</span>
+<span class="n">y_maxs</span> <span class="o">=</span> <span class="n">t_scores</span>
+
+<span class="n">pp</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">x_locs</span><span class="p">,</span> <span class="n">y_mins</span><span class="p">,</span> <span class="n">y_maxs</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_locs</span><span class="p">,</span> <span class="n">y_maxs</span><span class="p">,</span> <span class="s">&#39;go&#39;</span><span class="p">)</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">&#39;estimated null with 20 samples&#39;</span><span class="p">)</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>[<a class="reference external" href="../plot_directive/devel/null_est1.py">source code</a>, <a class="reference external" href="../plot_directive/devel/null_est1.hires.png">hires.png</a>, <a class="reference external" href="../plot_directive/devel/null_est1.pdf">pdf</a>]</p>
+<img alt="../images/null_est1.png" src="../images/null_est1.png" />
+<p>You can see this estimated distribution has the property of having a
+equal or greater threshold for each quantile than the original
+distribution, and that the threshold is determined by the minimum
+known statistic within a given quantile range. The exceptions are the
+quantile range outside of the known p values, which are set to an
+arbitrary value outside of the known statistic range.</p>
+<p>Typically there are many more samples of the statistic-to-p-value
+relationship than there were samples on the null distribution. This,
+fortunately, improves the estimate (within the sampled range).</p>
+<p>[<a class="reference external" href="../plot_directive/devel/null_est2.py">source code</a>, <a class="reference external" href="../plot_directive/devel/null_est2.hires.png">hires.png</a>, <a class="reference external" href="../plot_directive/devel/null_est2.pdf">pdf</a>]</p>
+<img alt="../images/null_est2.png" src="../images/null_est2.png" />
+</div>
+<div class="section" id="timefreqsnpmclusters">
+<h3><a title="nutmeg.stats.tfstats_results.TimeFreqSnPMClusters" class="reference external" href="../api/generated/nutmeg.stats.tfstats_results.html#nutmeg.stats.tfstats_results.TimeFreqSnPMClusters"><tt class="xref docutils literal"><span class="pre">TimeFreqSnPMClusters</span></tt></a><a class="headerlink" href="#timefreqsnpmclusters" title="Permalink to this headline">¶</a></h3>
+<p>Cluster level analysis is also an option when running the SnPM
+tests. This analysis follows the framework of
+<a class="reference internal" href="#hayasaka-nichols-2004">[Hayasaka_Nichols_2004]</a>. Along with all the results and capabilities
+of the <em>TimeFreqSnPMStats</em>, the <em>TimeFreqSnPMClusters</em> object can make
+thresholds based on cluster statistics, which are calculated from one
+of various &#8220;combining functions&#8221; specified in the paper.</p>
+<p>More information to follow.</p>
+<table class="docutils citation" frame="void" id="nichols-holmes-2001" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[Nichols_Holmes_2001]</a></td><td>T. Nichols and A. Holmes. Nonparametric
+Permutation Tests For Functional Neuroimaging: A Primer with
+Examples. <em>Human Brain Mapping</em>, 25:1-25</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="hayasaka-nichols-2004" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[Hayasaka_Nichols_2004]</a></td><td>S. Hayasaka and T. Nichols. Combining voxel
+intensity and cluster extent with permutation test framework. <em>NeuroImage</em>,
+23:54-63</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="stats_mod.html" title="Statistics Module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             >previous</a> |</li>
+  <li><a href="../index.html">Home</a> |&nbsp;</li>
+  <li><a href="../contents.html">Documentation</a> |&nbsp;</li>
+
+          <li><a href="index.html" >Developer&#8217;s Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
+      Last updated on Oct 19, 2010.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

@@ -67,6 +67,7 @@
 <li><a class="reference external" href="#module-nutmeg.stats.tfstats_results">Module: <tt class="docutils literal"><span class="pre">stats.tfstats_results</span></tt></a></li>
 <li><a class="reference external" href="#classes">Classes</a><ul>
 <li><a class="reference external" href="#adaptedtimefreqsnpmresults"><tt class="docutils literal"><span class="pre">AdaptedTimeFreqSnPMResults</span></tt></a></li>
+<li><a class="reference external" href="#timefreqsnpmclusters"><tt class="docutils literal"><span class="pre">TimeFreqSnPMClusters</span></tt></a></li>
 <li><a class="reference external" href="#timefreqsnpmresults"><tt class="docutils literal"><span class="pre">TimeFreqSnPMResults</span></tt></a></li>
 </ul>
 </li>
@@ -167,6 +168,109 @@ test results, vox_stat_ranking(r) = 0.75</p>
 </dd></dl>
 
 </div>
+<div class="section" id="timefreqsnpmclusters">
+<h3><a title="nutmeg.stats.tfstats_results.TimeFreqSnPMClusters" class="reference internal" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMClusters"><tt class="xref docutils literal"><span class="pre">TimeFreqSnPMClusters</span></tt></a><a class="headerlink" href="#timefreqsnpmclusters" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMClusters">
+<em class="property">
+class </em><tt class="descclassname">nutmeg.stats.tfstats_results.</tt><tt class="descname">TimeFreqSnPMClusters</tt><big>(</big><em>vox_stat</em>, <em>vox_map</em>, <em>vox_stat_ranking</em>, <em>max_stat_dist</em>, <em>min_stat_dist</em>, <em>snpm_ptail_clusters</em>, <em>snpm_ptail_nulls</em>, <em>snpm_ntail_clusters</em>, <em>snpm_ntail_nulls</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMClusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a title="nutmeg.stats.tfstats_results.TimeFreqSnPMResults" class="reference internal" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMResults"><tt class="xref docutils literal"><span class="pre">nutmeg.stats.tfstats_results.TimeFreqSnPMResults</span></tt></a></p>
+<p>This class analyzes the cluster information at each permutation
+from a SnPM-style test in order to score the clusters found at
+the truly labeled test.</p>
+<p>In addition, it can make thresholds and calculate P scores based
+on an empirical null distribution (ie, everything that
+TimeFreqSnPMResults can do).</p>
+<dl class="method">
+<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMClusters.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>vox_stat</em>, <em>vox_map</em>, <em>vox_stat_ranking</em>, <em>max_stat_dist</em>, <em>min_stat_dist</em>, <em>snpm_ptail_clusters</em>, <em>snpm_ptail_nulls</em>, <em>snpm_ntail_clusters</em>, <em>snpm_ntail_nulls</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMClusters.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>All TimeFreqSnPMResults arguments, plus</strong> :</p>
+<p><strong>snpm_ptail_clusters: list</strong> :</p>
+<blockquote>
+<p>List of ScoredStatClusters, for each (t,f) point</p>
+</blockquote>
+<p><strong>snpm_ptail_nulls: ndarray</strong> :</p>
+<blockquote>
+<p>Array of positive-tail null distributions for each (t,f) point</p>
+</blockquote>
+<p><strong>snpm_ntail_clusters: list</strong> :</p>
+<blockquote>
+<p>List of ScoredStatClusters, for each (t,f) point</p>
+</blockquote>
+<p><strong>snpm_ntail_nulls: ndarray</strong> :</p>
+<blockquote class="last">
+<p>Array of negative-tail null distributions for each (t,f) point</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMClusters.from_stats_and_clusters">
+<em class="property">
+static </em><tt class="descname">from_stats_and_clusters</tt><big>(</big><em>stats_res</em>, <em>pos_clusters</em>, <em>pos_nulls</em>, <em>neg_clusters</em>, <em>neg_nulls</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMClusters.from_stats_and_clusters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMClusters.map_of_significant_clusters">
+<tt class="descname">map_of_significant_clusters</tt><big>(</big><em>tail</em>, <em>alpha</em>, <em>corrected_dims=()</em>, <em>pooled_dims=()</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMClusters.map_of_significant_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a map based on a score that mixes cluster-size
+significance and peak cluster value significance. This score
+is then compared to an empirical null distribution generated
+by permutation testing of the samples, and a map is created
+across all (voxels, time, freq) where the cluster scores
+are deemed significant compared to <cite>alpha</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>tail</strong> : str in {&#8216;pos&#8217;, &#8216;neg&#8217;}</p>
+<blockquote>
+<p>Return clusters where test statistic if significantly large
+or small, respectively</p>
+</blockquote>
+<p><strong>alpha</strong> : float, p &lt; alpha significance level</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cluster_map</strong> : ndarray</p>
+<blockquote class="last">
+<p>binary map which is non-negative at significant clusters</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This method is based on
+<cite>Combining voxel intensity and cluster extent with permutation 
+test framework</cite>, Hayasaka and Nichols, 2004</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMClusters.pscore_clusters">
+<tt class="descname">pscore_clusters</tt><big>(</big><em>tail</em>, <em>corrected_dims=()</em>, <em>pooled_dims=()</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMClusters.pscore_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>scores</strong> :</p>
+<p><strong>A list of p values for each list of clusters (at each (t,f) point)</strong> :</p>
+<p class="last"><strong>scored against the null</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="timefreqsnpmresults">
 <h3><a title="nutmeg.stats.tfstats_results.TimeFreqSnPMResults" class="reference internal" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMResults"><tt class="xref docutils literal"><span class="pre">TimeFreqSnPMResults</span></tt></a><a class="headerlink" href="#timefreqsnpmresults" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
@@ -204,43 +308,6 @@ test results, vox_stat_ranking(r) = 0.75</p>
 <p><strong>min_stat_dist</strong> : ndarray</p>
 <blockquote class="last">
 <p>The minimal test result found at each voxel</p>
-</blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="nutmeg.stats.tfstats_results.TimeFreqSnPMResults.map_of_significant_clusters">
-<tt class="descname">map_of_significant_clusters</tt><big>(</big><em>tail</em>, <em>alpha=0.050000000000000003</em>, <em>gamma=0.050000000000000003</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.TimeFreqSnPMResults.map_of_significant_clusters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make a map based on cluster-size significance.
-First find all the clusters of voxels exceeding the
-individual-statistic p value of alpha. Then, from a distribution
-of cluster sizes, return a map of clusters whose size exceed
-the p value of gamma.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>tail</strong> : str in {&#8216;pos&#8217;, &#8216;neg&#8217;}</p>
-<blockquote>
-<p>Use p values for whether the test statistic if significantly
-large or small, respectively</p>
-</blockquote>
-<p><strong>alpha</strong> : float</p>
-<blockquote>
-<p>Individual test statistic confidence level</p>
-</blockquote>
-<p><strong>gamma</strong> : float</p>
-<blockquote>
-<p>Cluster size statistic confidence level</p>
-</blockquote>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cluster_map</strong> : ndarray</p>
-<blockquote class="last">
-<p>binary map which is non-negative at significant clusters</p>
 </blockquote>
 </td>
 </tr>
@@ -300,7 +367,7 @@ dimensions (IE, duplicate maximal stats across those dims)</p>
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>alpha</strong> : float</p>
 <blockquote>
-<p>The significance threshold (as in p &lt; 0.05)</p>
+<p>The significance threshold (as in p &lt; alpha)</p>
 </blockquote>
 <p><strong>tail</strong> : str</p>
 <blockquote>
@@ -377,6 +444,60 @@ if significantly large or small, respectively</p>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="nutmeg.stats.tfstats_results.map_of_clusters_and_labels">
+<tt class="descclassname">nutmeg.stats.tfstats_results.</tt><tt class="descname">map_of_clusters_and_labels</tt><big>(</big><em>stats</em>, <em>tail</em>, <em>tf</em>, <em>pcrit</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.map_of_clusters_and_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a statistics map and a list of clusters based on the
+presence of clusters that exceed a critical p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>stats: a TimeFreqSnPMClusters object</strong> :</p>
+<p><strong>tail: str {&#8216;pos&#8217;, &#8216;neg&#8217;}</strong> :</p>
+<p><strong>tf: tuple (time,freq) index</strong> :</p>
+<p><strong>pcrit: float in (0.0,1.0)</strong> :</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>stats_image, clusters</strong> :</p>
+<p><strong>The `stats_image` is the image of the statistical test values.</strong> :</p>
+<p><strong>`clusters` is a list of the significant clusters. If there</strong> :</p>
+<p class="last"><strong>are no cluster scores exceeding pcrit, then clusters returns as None.</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.stats.tfstats_results.quick_plot_clusters">
+<tt class="descclassname">nutmeg.stats.tfstats_results.</tt><tt class="descname">quick_plot_clusters</tt><big>(</big><em>imgs</em>, <em>clusters</em>, <em>titles=None</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.quick_plot_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>imgs: ndarray, or list</strong> :</p>
+<blockquote>
+<p>The stats image for each cluster (may be one or many images)</p>
+</blockquote>
+<p><strong>clusters: list of StatClusters</strong> :</p>
+<p class="last"><strong>titles: list of figure titles</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.stats.tfstats_results.quick_plot_critical_clusters">
+<tt class="descclassname">nutmeg.stats.tfstats_results.</tt><tt class="descname">quick_plot_critical_clusters</tt><big>(</big><em>stats</em>, <em>tail</em>, <em>tf</em>, <em>pcrit</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.quick_plot_critical_clusters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.stats.tfstats_results.quick_plot_top_n">
+<tt class="descclassname">nutmeg.stats.tfstats_results.</tt><tt class="descname">quick_plot_top_n</tt><big>(</big><em>stats</em>, <em>tail</em>, <em>n=3</em><big>)</big><a class="headerlink" href="#nutmeg.stats.tfstats_results.quick_plot_top_n" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
@@ -409,7 +530,7 @@ if significantly large or small, respectively</p>
     </div>
     <div class="footer">
       &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
-      Last updated on Jun 10, 2010.
+      Last updated on Oct 19, 2010.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
     </div>
   </body>

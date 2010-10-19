@@ -1,0 +1,20 @@
+=======
+VV Link
+=======
+
+* TCP/IP link feeds coordinates, slice images
+* DICOM coordinates (?)
+
+
+
+Open IGT Link
+-------------
+
+
+
+
+
+
+
+
+

@@ -117,7 +117,7 @@
 <dl class="class">
 <dt id="nutmeg.utils.array_pickler_mixin">
 <em class="property">
-class </em><tt class="descclassname">nutmeg.utils.</tt><tt class="descname">array_pickler_mixin</tt><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin" title="Permalink to this definition">¶</a></dt>
+class </em><tt class="descclassname">nutmeg.utils.</tt><tt class="descname">array_pickler_mixin</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref docutils literal"><span class="pre">object</span></tt></p>
 <p>Can save-itself-as/load-itself-from a funky structured array.</p>
 <p>The structure is VERY brittle.</p>
@@ -145,14 +145,20 @@ functionality to conform to the following rules:</p>
 corresponding class object attribute AND the keyword argument
 name in the class constructor.</p>
 </li>
-<li><p class="first">All attributes named in the lists must be of type:
+<li><p class="first">All attributes named in the lists must be one of:
 * ndarray
 * array_pickler_mixin subclass
 * any type that can be reconstructed such that</p>
 <blockquote>
-<p>a == type(a) (asarray(a) )
-(satisfied by most built-in types)</p>
+<p>a == type(a)(asarray(a))
+(satisfied by many built-in types)</p>
 </blockquote>
+<ul class="simple">
+<li>any type that has special staticmethods &#8216;_array_from_{attr}&#8217;
+and &#8216;_reconstruct_{attr}&#8217; defined on the class. The first
+method creates an ndarray from an object of this type, and the
+second one reconstructs an object in a round-trip sense.</li>
+</ul>
 </li>
 </ul>
 <p class="rubric">Examples</p>
@@ -178,8 +184,8 @@ name in the class constructor.</p>
 </div>
 <dl class="method">
 <dt id="nutmeg.utils.array_pickler_mixin.__init__">
-<tt class="descname">__init__</tt><big>(</big><big>)</big><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin.__init__" title="Permalink to this definition">¶</a></dt>
-<dd>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</dd></dl>
+<tt class="descname">__init__</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="classmethod">
 <dt id="nutmeg.utils.array_pickler_mixin.from_array">
@@ -187,16 +193,17 @@ name in the class constructor.</p>
 classmethod </em><tt class="descname">from_array</tt><big>(</big><em>klass</em>, <em>a</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin.from_array" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="classmethod">
+<dl class="staticmethod">
 <dt id="nutmeg.utils.array_pickler_mixin.load">
 <em class="property">
-classmethod </em><tt class="descname">load</tt><big>(</big><em>klass</em>, <em>f</em><big>)</big><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin.load" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+static </em><tt class="descname">load</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin.load" title="Permalink to this definition">¶</a></dt>
+<dd>Load up ndarray from file &#8216;f&#8217;, and attempt to reconstruct
+the original object from the data within the array.</dd></dl>
 
 <dl class="method">
 <dt id="nutmeg.utils.array_pickler_mixin.save">
 <tt class="descname">save</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#nutmeg.utils.array_pickler_mixin.save" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd>Roll this object as an ndarray and call np.save</dd></dl>
 
 </dd></dl>
 
@@ -209,9 +216,19 @@ classmethod </em><tt class="descname">load</tt><big>(</big><em>klass</em>, <em>f
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="nutmeg.utils.load_any">
+<tt class="descclassname">nutmeg.utils.</tt><tt class="descname">load_any</tt><big>(</big><em>fpath</em><big>)</big><a class="headerlink" href="#nutmeg.utils.load_any" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="nutmeg.utils.parameterize_cmap">
 <tt class="descclassname">nutmeg.utils.</tt><tt class="descname">parameterize_cmap</tt><big>(</big><em>coordmap</em><big>)</big><a class="headerlink" href="#nutmeg.utils.parameterize_cmap" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="nutmeg.utils.tablify_list">
+<tt class="descclassname">nutmeg.utils.</tt><tt class="descname">tablify_list</tt><big>(</big><em>l</em>, <em>nr</em>, <em>nc</em><big>)</big><a class="headerlink" href="#nutmeg.utils.tablify_list" title="Permalink to this definition">¶</a></dt>
+<dd>Make a 2D table from a 1D sequence (of possibly heterogenous elements)</dd></dl>
 
 </div>
 </div>
@@ -245,7 +262,7 @@ classmethod </em><tt class="descname">load</tt><big>(</big><em>klass</em>, <em>f
     </div>
     <div class="footer">
       &copy; Copyright 2009-2010, UCSF Biomagnetic Imaging Laboratory.
-      Last updated on Jun 10, 2010.
+      Last updated on Oct 19, 2010.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
     </div>
   </body>

@@ -63,8 +63,17 @@ Functions
 .. autofunction:: nutmeg.stats.snpm_testing.binary_pattern
 
 
+.. autofunction:: nutmeg.stats.snpm_testing.label_clusters
+
+
 .. autofunction:: nutmeg.stats.snpm_testing.rank
 
 
 .. autofunction:: nutmeg.stats.snpm_testing.run_snpm_tests
+
+
+.. autofunction:: nutmeg.stats.snpm_testing.score_clusters
+
+
+.. autofunction:: nutmeg.stats.snpm_testing.statistic_image_from_voxels
 

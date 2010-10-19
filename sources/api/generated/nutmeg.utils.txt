@@ -30,5 +30,11 @@ Functions
 .. autofunction:: nutmeg.utils.cmap_from_array
 
 
+.. autofunction:: nutmeg.utils.load_any
+
+
 .. autofunction:: nutmeg.utils.parameterize_cmap
+
+
+.. autofunction:: nutmeg.utils.tablify_list
 
