@@ -126,7 +126,7 @@ class ParametricTestCase(unittest.TestCase):
                 except KeyboardInterrupt:
                     raise
                 except:
-                    result.addError(self, self._exc_info())
+                    result.addError(self, self.run())
                     return
                 # Test execution
                 ok = False
@@ -137,18 +137,18 @@ class ParametricTestCase(unittest.TestCase):
                     # We stop the loop
                     break
                 except self.failureException:
-                    result.addFailure(self, self._exc_info())
+                    result.addFailure(self, self.run())
                 except KeyboardInterrupt:
                     raise
                 except:
-                    result.addError(self, self._exc_info())
+                    result.addError(self, self.run())
                 # TearDown
                 try:
                     self.tearDown()
                 except KeyboardInterrupt:
                     raise
                 except:
-                    result.addError(self, self._exc_info())
+                    result.addError(self, self.run())
                     ok = False
                 if ok: result.addSuccess(self)
                 
