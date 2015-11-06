@@ -10,15 +10,15 @@
 # corr pneg | 0                 | alpha            | mask higher
 # cluster   | 0                 | 0.5              | mask lower
 import numpy as np
-import enthought.traits.api as t_api
-import enthought.traits.ui.api as ui_api
-import enthought.traits.api as traits
-from enthought.traits.api \
+import traits.api as t_api
+import traits.ui.api as ui_api
+import traits.api as traits
+from traits.api \
     import Instance, Enum, Tuple, Event, \
     String, List, on_trait_change, File, Array, Button, Range, \
     Property, cached_property, Bool, Int
     
-from enthought.traits.ui.api import Item, Group, View, VGroup, \
+from traits.ui.api import Item, Group, View, VGroup, \
      HGroup, EnumEditor, ListEditor, RangeEditor, CheckListEditor
 
 from xipy.overlay.interface import ThresholdMap

@@ -9,17 +9,17 @@ import matplotlib.cm as cm
 # do this to kick-in ETSConfig code.. 
 import nutmeg
 
-from enthought.traits.api \
+from traits.api \
     import Instance, Enum, Dict, Constant, Str, \
     List, on_trait_change, Float, File, Array, Button, Range, Property, \
     cached_property, Event, Bool, Tuple, Int, DelegatesTo
     
-from enthought.traits.ui.api \
+from traits.ui.api \
     import Item, Group, View, VGroup, HGroup, HSplit, \
     EnumEditor, CheckListEditor, ListEditor, message, ButtonEditor, \
     RangeEditor, Include
 
-## from enthought.traits.ui.file_dialog import open_file
+## from traits.ui.file_dialog import open_file
 from xipy.vis.qt4_widgets import browse_files
 from xipy.overlay.interface import OverlayInterface, OverlayWindowInterface
 from xipy.slicing.image_slicers import SampledVolumeSlicer, \

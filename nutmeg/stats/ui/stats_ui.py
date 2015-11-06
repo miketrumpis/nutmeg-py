@@ -8,24 +8,24 @@ from nutmeg.core import tfbeam
 from nutmeg.vis import plot_tfbeam
 
 import numpy as np
-from enthought.traits.api import Str, List, HasTraits, Button, File, \
+from traits.api import Str, List, HasTraits, Button, File, \
      Instance, Int, Range, Property, Any, Event, Enum, Bool
-from enthought.traits.api import on_trait_change, cached_property
-from enthought.traits.ui.api import View, Item, Group, VSplit, \
+from traits.api import on_trait_change, cached_property
+from traits.ui.api import View, Item, Group, VSplit, \
      VGroup, HGroup, RangeEditor, FileEditor, TextEditor, SetEditor, \
      TabularEditor, InstanceEditor, ListEditor, ListStrEditor, message, \
      spring, CheckListEditor
-from enthought.traits.ui.api import TableEditor
+from traits.ui.api import TableEditor
 
-from enthought.traits.ui.table_column \
+from traits.ui.table_column \
     import ObjectColumn, ExpressionColumn, ListColumn
-from enthought.traits.ui.menu \
+from traits.ui.menu \
     import Menu, Action
-from enthought.traits.ui.tabular_adapter \
+from traits.ui.tabular_adapter \
     import TabularAdapter
 
-from enthought.traits.ui.qt4.tabular_editor import TabularEditorEvent
-## from enthought.traits.ui.qt4.table_editor import TableEditor
+from traits.ui.qt4.tabular_editor import TabularEditorEvent
+## from traits.ui.qt4.table_editor import TableEditor
 
 sep_char = os.path.sep
 

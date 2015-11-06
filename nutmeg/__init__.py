@@ -1,6 +1,6 @@
 __docformat__ = 'restructuredtext'
 
-from enthought.etsconfig.api import ETSConfig
+from traits.etsconfig.etsconfig import ETSConfig
 ETSConfig.toolkit = 'qt4'
 
 
